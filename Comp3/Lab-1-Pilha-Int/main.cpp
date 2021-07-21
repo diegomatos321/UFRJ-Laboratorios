@@ -69,7 +69,7 @@ const PilhaInt& PilhaInt::operator = (const PilhaInt& operadorParaAtribuir)
 {
   atual = operadorParaAtribuir.atual;
 
-  for (unsigned int i = 0; i <= atual; i++)
+  for (int i = 0; i <= atual; i++)
   {
     pilha[i] = operadorParaAtribuir.pilha[i];
   }
@@ -80,7 +80,7 @@ const PilhaInt& PilhaInt::operator = (const PilhaInt& operadorParaAtribuir)
 void PilhaInt::print(ostream &o)
 {
   o << "[ ";
-  for (unsigned int i = 0; i <= atual; i++)
+  for (int i = 0; i <= atual; i++)
   {
     o << pilha[i];
 
