@@ -4,21 +4,23 @@
 
 using namespace std;
 
-class PilhaInt 
+class PilhaInt
 {
-  private:
-    int atual = -1;
-    int pilha[TAMANHO_MAXIMO_PILHA];
-  
-  public:
-    PilhaInt();
+private:
+  int atual = -1;
+  int pilha[TAMANHO_MAXIMO_PILHA];
 
-    void empilha(int valor);
-    int desempilha();
-    void print_msg(ostream &o, const char *msg);
+public:
+  PilhaInt();
+
+  void empilha(int valor);
+  int desempilha();
+  void print(ostream &o);
+  PilhaInt &operator << (int valor);
+  const PilhaInt &operator = (const PilhaInt& pilha);
 };
 
-PilhaInt::PilhaInt() 
+PilhaInt::PilhaInt()
 {
   for (unsigned int i = 0; i < TAMANHO_MAXIMO_PILHA; i++)
   {
@@ -26,22 +28,22 @@ PilhaInt::PilhaInt()
   }
 }
 
-void PilhaInt::empilha(int valor) 
+void PilhaInt::empilha(int valor)
 {
   if (atual < TAMANHO_MAXIMO_PILHA)
   {
     atual++;
     pilha[atual] = valor;
   }
-  else{
-    print_msg(cout, "Erro!!");
-    // cout << "Error !" << endl;
+  else
+  {
+    cout << "Error !" << endl;
   }
 }
 
-int PilhaInt::desempilha() 
+int PilhaInt::desempilha()
 {
-  if (atual > 0)
+  if (atual >= 0)
   {
     int valorRetirado = pilha[atual];
     pilha[atual] = 0;
@@ -51,27 +53,63 @@ int PilhaInt::desempilha()
   }
   else
   {
-    print_msg(cout, "Erro!!");
-    // cout << "Error !" << endl;
+    cout << "Error !" << endl;
     return -1;
   }
 }
 
-void print_msg(ostream &o, const char *msg) 
+PilhaInt& PilhaInt::operator << (int valor)
 {
-  o << msg << endl;
+  empilha(valor);
+
+  return *this;
 }
 
-int main() 
+const PilhaInt& PilhaInt::operator = (const PilhaInt& operadorParaAtribuir)
 {
-  PilhaInt pilha1;
+  atual = operadorParaAtribuir.atual;
 
-  pilha1.empilha(1);
-  pilha1.empilha(12);
-  pilha1.empilha(5);
-  pilha1.empilha(7);
+  for (unsigned int i = 0; i <= atual; i++)
+  {
+    pilha[i] = operadorParaAtribuir.pilha[i];
+  }
+  
+  return *this;
+}
 
-  cout << pilha1.desempilha() << endl;
+void PilhaInt::print(ostream &o)
+{
+  o << "[ ";
+  for (unsigned int i = 0; i <= atual; i++)
+  {
+    o << pilha[i];
 
-  return 0;
+    if (i == atual) 
+    {
+      break;
+    }
+
+    o << ", ";
+  }
+  o << " ]";
+}
+
+int main()
+{
+  PilhaInt p, q;
+
+  q << 2;
+  p << 19 << 18 << 17 << 30;
+
+  q = p;
+  p.desempilha();
+  q << 7;
+
+  p.print( cout );
+  q.print( cout );
+
+  // cout << "q = " << ssq.str() << "\n" << "p = " << ssp.str() << endl;
+
+  // Essa linha é apenas para gerar um erro se o "operator=" não for definido. Ignore-a!
+  // auto l = &PilhaInt::operator=; (p.*l)(q);
 }
