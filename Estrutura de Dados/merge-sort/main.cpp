@@ -1,34 +1,39 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+#define TAM 10
 
 using namespace std;
 
 void mergeSort(int arr[], int inicio, int fim);
 void merge(int arr[], int inicio, int meio, int fim);
+void printArray(int arr[], int tam);
 
 int main()
 {
-  int listaDeInteiros[] = {9, 7, 3, 6, 2};
+  srand(time(NULL));
 
-  for (int i = 0; i < 5; i++)
+  int listaDeInteiros[TAM];
+  for (unsigned i = 0; i < TAM; i++)
   {
-    cout << "Unordered" << endl;
-    cout << "[ " << listaDeInteiros[i] << " ]" << endl;
-  }
-
-  mergeSort(listaDeInteiros, 0, 5);
-
-  for (int i = 0; i < 5; i++)
-  {
-    cout << "Ordered" << endl;
-    cout << "[ " << listaDeInteiros[i] << " ]" << endl;
+    listaDeInteiros[i] = rand() % 10 + 1;
   }
   
+  cout << "Unordered" << endl;
+  printArray(listaDeInteiros, TAM);
+
+  mergeSort(listaDeInteiros, 0, TAM-1);
+
+  cout << "Ordered" << endl;
+  printArray(listaDeInteiros, TAM);
+
   return 0;
 }
 
 void mergeSort(int arr[], int inicio, int fim)
 {
-  if (fim - inicio > 1)
+  if (fim - inicio >= 1)
   {
     int meio = (inicio + fim) / 2;
 
@@ -41,9 +46,9 @@ void mergeSort(int arr[], int inicio, int fim)
 void merge(int arr[], int inicio, int meio, int fim)
 {
   int left = inicio, right = meio + 1, aux = inicio;
-  int* tempArr = (int*) malloc((fim) * sizeof(int));
+  int *tempArr = (int *)malloc((fim + 1) * sizeof(int));
 
-  while (left <= meio && right < fim)
+  while (left <= meio && right <= fim)
   {
     int leftElement = arr[left];
     int rightElement = arr[right];
@@ -78,4 +83,18 @@ void merge(int arr[], int inicio, int meio, int fim)
   }
 
   free(tempArr);
+}
+
+void printArray(int arr[], int tam)
+{
+  cout << "[ ";
+  for (int i = 0; i < tam; i++)
+  {
+    cout << arr[i];
+    if (i != tam - 1)
+    {
+      cout << ", ";
+    }
+  }
+  cout << " ]" << endl;
 }
