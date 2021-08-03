@@ -1,7 +1,4 @@
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
-
 #define TAM 10
 
 using namespace std;
@@ -10,28 +7,119 @@ void mergeSort(int arr[], int inicio, int fim);
 void merge(int arr[], int inicio, int meio, int fim);
 void printArray(int arr[], int tam);
 
+class Pilha
+{
+private:
+  int *pilha;
+  int index = -1;
+  int tamanhoDaPilha;
+
+  void redimensiona(int novoTamanho)
+  {
+    if (tamanhoDaPilha == novoTamanho)
+    {
+      return;
+    }
+
+    int *novaPilha;
+
+    novaPilha = (int *)realloc(pilha, novoTamanho * sizeof(int));
+
+    if (novaPilha != NULL)
+    {
+      pilha = novaPilha;
+
+      if (novoTamanho < index + 1)
+      {
+        index = novoTamanho - 1;
+      }
+
+      tamanhoDaPilha = novoTamanho;
+    }
+    else
+    {
+      puts("Error (re)allocating memory");
+      exit(1);
+    }
+  }
+
+public:
+  Pilha(int novoTamanho = 10)
+  {
+    pilha = (int *)malloc(novoTamanho * sizeof(int));
+    tamanhoDaPilha = novoTamanho;
+  }
+
+  void empilha(int numero)
+  {
+    index++;
+
+    if (index >= tamanhoDaPilha - 1)
+    {
+      redimensiona(2 * tamanhoDaPilha);
+    }
+
+    pilha[index] = numero;
+  }
+
+  void print()
+  {
+    cout << "[ ";
+    for (int i = 0; i <= index; i++)
+    {
+      cout << pilha[i];
+
+      if (i == index)
+      {
+        break;
+      }
+
+      cout << ", ";
+    }
+    cout << " ]";
+  }
+
+  int topo()
+  {
+    return index;
+  }
+
+  int capacidade()
+  {
+    return tamanhoDaPilha;
+  }
+
+  int* toArray()
+  {
+    return pilha;
+  }
+};
+
 int main()
 {
-  srand(time(NULL));
+  Pilha pilhaDeInteiros(TAM);
+  int i = 0;
+  int input;
 
-  int listaDeInteiros[TAM];
-  for (unsigned i = 0; i < TAM; i++)
+  while (true)
   {
-    listaDeInteiros[i] = rand() % 10 + 1;
+    i++;
+    cout << "Digite o " << i << " numero" << endl;
+    cin >> input;
+
+    if (input == -1) break;
+
+    pilhaDeInteiros.empilha(input);
   }
+
+  // mergeSort(pilhaDeInteiros.toArray(), pilhaDeInteiros.topo(), pilhaDeInteiros.capacidade() - 1);
   
-  cout << "Unordered" << endl;
-  printArray(listaDeInteiros, TAM);
-
-  mergeSort(listaDeInteiros, 0, TAM-1);
-
-  cout << "Ordered" << endl;
-  printArray(listaDeInteiros, TAM);
+  pilhaDeInteiros.print();
 
   return 0;
 }
 
-void mergeSort(int arr[], int inicio, int fim)
+void mergeSort(int* arr, int inicio, int fim)
 {
   if (fim - inicio >= 1)
   {
@@ -43,7 +131,7 @@ void mergeSort(int arr[], int inicio, int fim)
   }
 }
 
-void merge(int arr[], int inicio, int meio, int fim)
+void merge(int* arr, int inicio, int meio, int fim)
 {
   int left = inicio, right = meio + 1, aux = inicio;
   int *tempArr = (int *)malloc((fim + 1) * sizeof(int));
