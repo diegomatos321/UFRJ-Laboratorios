@@ -64,29 +64,15 @@ public:
 
   void print()
   {
-    cout << "[ ";
     for (int i = 0; i <= index; i++)
     {
-      cout << pilha[i];
-
-      if (i == index)
-      {
-        break;
-      }
-
-      cout << ", ";
+      cout << pilha[i] << endl;
     }
-    cout << " ]";
   }
 
   int topo()
   {
     return index;
-  }
-
-  int capacidade()
-  {
-    return tamanhoDaPilha;
   }
 
   int* toArray()
@@ -98,21 +84,17 @@ public:
 int main()
 {
   Pilha pilhaDeInteiros(TAM);
-  int i = 0;
-  int input;
+  int input = 0;
 
-  while (true)
+  while (!feof(stdin))
   {
-    i++;
-    cout << "Digite o " << i << " numero" << endl;
-    cin >> input;
-
-    if (input == -1) break;
-
-    pilhaDeInteiros.empilha(input);
+    if (scanf("%d", &input) == 1)
+    {
+      pilhaDeInteiros.empilha(input);
+    }
   }
 
-  // mergeSort(pilhaDeInteiros.toArray(), pilhaDeInteiros.topo(), pilhaDeInteiros.capacidade() - 1);
+  mergeSort(pilhaDeInteiros.toArray(), 0, pilhaDeInteiros.topo());
   
   pilhaDeInteiros.print();
 
