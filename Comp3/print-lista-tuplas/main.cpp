@@ -1,20 +1,23 @@
 #include <iostream>
-// #include <vector>
 
 using namespace std;
 
 class AbstractPair {
   public:
-    virtual void imprime(ostream& o);
-    virtual ~AbstractPair();
+    virtual void imprime(ostream& o){};
+    virtual ~AbstractPair(){};
 };
 
 template <typename TipoA, typename TipoB>
-class Pair: AbstractPair {
+class ImplPair: public AbstractPair {
   public:
-    Pair(TipoA novaChave, TipoB novoValor) {
+    ImplPair(TipoA novaChave, TipoB novoValor){
       chave = novaChave;
       valor = novoValor;
+    }
+
+    virtual void imprime(ostream& o) {
+      o << chave << " = " << valor << endl;
     }
   
   private:
@@ -22,11 +25,24 @@ class Pair: AbstractPair {
     TipoB valor;
 };
 
-/* template <typename TipoA, typename TipoB>
-AbstractPair makePair(TipoA novaChave, TipoB novoValor) {
-  Pair novoPair<TipoA, TipoB>(novaChave, novoValor);
-  return novoPair;
-} */
+class Pair {
+  public:
+    template <typename TipoA, typename TipoB>
+    Pair( TipoA a, TipoB b ) {
+      p = new ImplPair<TipoA, TipoB>(a, b);
+    }
+
+    void imprime(ostream& o) {
+      p -> imprime(o);
+    }
+
+    ~Pair() {
+      delete p;
+    }
+  
+  private:
+    AbstractPair *p;
+};
 
 void print( ostream& o, initializer_list<Pair> lista ) {
   for (Pair par: lista) {
@@ -35,11 +51,6 @@ void print( ostream& o, initializer_list<Pair> lista ) {
 }
 
 int main() {
-  // vector<AbstractPair> listaDePares;
-
-/*   AbstractPair p1 = makePair("Janeiro", 1);
-  AbstractPair p2 = makePair("Fevereiro", 2);
-  AbstractPair p3 = makePair("Março", 3); */
 
   print( cout, { { "jan", 1 }, { 2, "fev" }, { string( "pi" ), 3.14 } } );
 
