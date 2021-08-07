@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -12,14 +13,12 @@ void teste8();
 class PilhaInt
 {
 private:
-  int atual = -1;
-  int tamanhoDaPilha;
-  int *pilha;
+  vector<int> pilha;
 
 public:
-  PilhaInt(int capacidade = 10);
+  PilhaInt();
+  PilhaInt(int capacidade);
   PilhaInt(const PilhaInt &pilhaRef);
-  ~PilhaInt();
 
   void empilha(int valor);
   int desempilha();
@@ -31,118 +30,55 @@ public:
   const PilhaInt &operator=(const PilhaInt &pilha);
 };
 
+PilhaInt::PilhaInt() {}
+
 PilhaInt::PilhaInt(int capacidade)
 {
-  tamanhoDaPilha = capacidade;
-  pilha = (int*)malloc(tamanhoDaPilha * sizeof(int));
-
-  for (int i = 0; i < tamanhoDaPilha; i++)
-  {
-    pilha[i] = 0;
-  }
+  pilha.reserve(capacidade);
 }
 
-PilhaInt::PilhaInt(const PilhaInt &pilhaRef)
-{
-  tamanhoDaPilha = pilhaRef.capacidade();
-  pilha = (int*)malloc(tamanhoDaPilha * sizeof(int));
-
-  for (int i = 0; i < tamanhoDaPilha; i++)
-  {
-    pilha[i] = pilhaRef.pilha[i];
-  }
-
-  atual = pilhaRef.atual;
-}
-
-PilhaInt::~PilhaInt()
-{
-  free(pilha);
-}
+PilhaInt::PilhaInt(const PilhaInt &pilhaRef) : pilha(pilhaRef.pilha) {}
 
 void PilhaInt::empilha(int valor)
 {
-  if (++atual < tamanhoDaPilha)
-  {
-    pilha[atual] = valor;
-  }
-  else
-  {
-    atual--;
-    redimensiona(2 * tamanhoDaPilha);
-    empilha(valor);
-  }
+  pilha.push_back(valor);
 }
 
 int PilhaInt::desempilha()
 {
-  if (atual >= 0)
-  {
-    int valorRetirado = pilha[atual];
-    pilha[atual] = 0;
-    atual--;
+  int aux = pilha.back();
+  pilha.pop_back();
 
-    return valorRetirado;
-  }
-  else
-  {
-    cout << "Error !" << endl;
-    return -1;
-  }
+  return aux;
 }
 
 int PilhaInt::capacidade() const
 {
-  return tamanhoDaPilha;
+  return pilha.capacity();
 }
 
 void PilhaInt::redimensiona(int novoTamanho)
 {
-  if (tamanhoDaPilha == novoTamanho)
+  if (capacidade() == novoTamanho)
   {
     return;
   }
 
-  int *novaPilha;
-
-  novaPilha = (int *)realloc(pilha, novoTamanho * sizeof(int));
-
-  if (novaPilha != NULL)
-  {
-    pilha = novaPilha;
-
-    if (novoTamanho < atual + 1)
-    {
-      atual = novoTamanho - 1;
-    }
-
-    tamanhoDaPilha = novoTamanho;
-  }
-  else
-  {
-    puts ("Error (re)allocating memory");
-    exit(1);
-  }
+  pilha.resize(novoTamanho);
+  pilha.shrink_to_fit();
 }
 
-PilhaInt &PilhaInt::operator << (int valor)
+PilhaInt &PilhaInt::operator<<(int valor)
 {
   empilha(valor);
 
   return *this;
 }
 
-const PilhaInt &PilhaInt::operator = (const PilhaInt &operadorParaAtribuir)
+const PilhaInt &PilhaInt::operator=(const PilhaInt &operadorParaAtribuir)
 {
-  const int novaCapacidade = operadorParaAtribuir.capacidade();
-
-  redimensiona(novaCapacidade);
-  atual = operadorParaAtribuir.atual;
-
-  for (int i = 0; i <= atual; i++)
-  {
-    pilha[i] = operadorParaAtribuir.pilha[i];
-  }
+  redimensiona(operadorParaAtribuir.capacidade());
+  pilha = operadorParaAtribuir.pilha;
 
   return *this;
 }
@@ -150,11 +86,11 @@ const PilhaInt &PilhaInt::operator = (const PilhaInt &operadorParaAtribuir)
 void PilhaInt::print(ostream &o)
 {
   o << "[ ";
-  for (int i = 0; i <= atual; i++)
+  for (unsigned int i = 0; i < pilha.size(); i++)
   {
     o << pilha[i];
 
-    if (i == atual)
+    if (i == pilha.size() - 1)
     {
       break;
     }
@@ -171,21 +107,21 @@ int main()
   // teste4();
   // teste5();
   // teste7();
-  teste8();
+  // teste8();
   return 0;
 }
 
-void teste1() 
+void teste1()
 {
   PilhaInt p;
 
-  p.empilha( 1 );
+  p.empilha(1);
   p << 3 << 9 << 13 << 89;
 
   cout << p.desempilha() << endl;
   cout << p.desempilha() << endl;
 
-  p.print( cout );
+  p.print(cout);
 }
 
 void teste2()
@@ -210,25 +146,25 @@ void teste4()
   c.desempilha();
   c << 7;
 
-  a.print( cout ); 
+  a.print(cout);
   cout << endl;
 
-  b.print( cout ); 
+  b.print(cout);
   cout << endl;
 
-  c.print( cout ); 
+  c.print(cout);
   cout << endl;
 }
 
 void teste5()
 {
-  PilhaInt a{7}, b{500000}, c{5};
+  PilhaInt a{7}, b{5000}, c{5};
 
   a << 8 << 3 << 1 << 4 << 5;
 
-  for( int i = 0; i < b.capacidade(); i++ )
+  for (int i = 0; i < b.capacidade(); i++)
     b << i;
-  
+
   c = a;
   a = b;
   b = c;
@@ -242,22 +178,22 @@ void teste7()
 
   a << 5 << 6 << 3 << 2 << 9 << 13;
 
-  a.redimensiona( 81 ); 
+  a.redimensiona(81);
   cout << a.capacidade() << endl;
 
-  a.redimensiona( 11 ); 
+  a.redimensiona(11);
   cout << a.capacidade() << endl;
 
-  a.redimensiona( 6 );
+  a.redimensiona(6);
   cout << a.capacidade() << endl;
 
-  a.print( cout ); 
+  a.print(cout);
   cout << endl;
 
-  a.redimensiona( 3 ); 
+  a.redimensiona(3);
   cout << a.capacidade() << endl;
 
-  a.print( cout ); 
+  a.print(cout);
   cout << endl;
 }
 
@@ -265,7 +201,7 @@ void teste8()
 {
   PilhaInt a{3};
 
-  for( int i = 0; i < 20; i++ ) 
+  for (int i = 0; i < 20; i++)
   {
     a << i;
     cout << a.capacidade() << " ";
@@ -273,6 +209,6 @@ void teste8()
 
   cout << endl;
 
-  a.print( cout ); 
+  a.print(cout);
   cout << endl;
 }
