@@ -1,4 +1,7 @@
 #include <iostream>
+#include <initializer_list>
+#include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -32,7 +35,7 @@ class Pair {
       p = new ImplPair<TipoA, TipoB>(a, b);
     }
 
-    void imprime(ostream& o) {
+    void imprime(ostream& o) const {
       p -> imprime(o);
     }
 
@@ -45,14 +48,14 @@ class Pair {
 };
 
 void print( ostream& o, initializer_list<Pair> lista ) {
-  for (Pair par: lista) {
+  for (const Pair& par : lista) {
     par.imprime(o);
   }
 }
 
 int main() {
-
-  print( cout, { { "jan", 1 }, { 2, "fev" }, { string( "pi" ), 3.14 } } );
+  Pair p{ "1", "2" };
+  print( cout, { { "jan", 1 }, { string( "pi" ), 3.14 }, p } );
 
   return 0;
 }
