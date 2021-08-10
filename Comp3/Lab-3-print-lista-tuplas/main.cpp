@@ -1,7 +1,5 @@
 #include <iostream>
 #include <initializer_list>
-#include <vector>
-#include <memory>
 
 using namespace std;
 
@@ -47,7 +45,7 @@ class Pair {
     AbstractPair *p;
 };
 
-void print( ostream& o, initializer_list<Pair> lista ) {
+void print( ostream& o, const initializer_list<Pair>& lista ) {
   for (const Pair& par : lista) {
     par.imprime(o);
   }

@@ -1,4 +1,4 @@
-# Print com lista de tuplas
+# Lab 3 - Print com lista de tuplas
 
 Faça uma template ou função "print" que recebe um lista de pares de tipos variáveis e as imprime. Isso pode ser feito usando pair ou tuple com dois elementos.
 
