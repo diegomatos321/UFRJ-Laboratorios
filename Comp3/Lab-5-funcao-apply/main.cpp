@@ -50,7 +50,7 @@ ostream &operator<<(ostream &o, const vector<T> &v)
 int main(int argc, char *argv[]) {
   // teste3();
   // teste5();
-  teste8();
+  // teste8();
   teste9();
 
   return 0;
