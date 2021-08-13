@@ -1,0 +1,1 @@
+Leia um grafo da entrada (teclado), e imprima uma ordenacao topologica valida. Voce deve utilizar o algoritmo descrito em aula, ou seja, calcular o grau de entrada dos vertices, e utilizar o grau de entrada para obter a ordenacao. Nao utilize busca em profundidade. O grafo deve ser implementado utilizando listas encadeadas ( um vetor de listas encadeadas).
