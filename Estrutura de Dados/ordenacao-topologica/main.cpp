@@ -1,4 +1,7 @@
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -117,26 +120,25 @@ int main()
 
 void inicializarGrafo(Grafo &grafo)
 {
-  for (int i = 0; i < grafo.getQuantidaDeVertices(); i++)
+  string linha;
+  
+  for (int i = -1; i < grafo.getQuantidaDeVertices(); i++)
   {
-    int index1 = 0, index2 = 0;
-    Vertice* verticeAtual = grafo.getVertice(i);
+    int pos = 0, numLido = 0, numChars = 0;
 
-    scanf("%d %d", &index1, &index2);
-
-    if (index1)
+    getline(cin, linha);
+    
+    while (sscanf(&linha[pos], "%d %n", &numLido, &numChars) > 0) 
     {
-      Vertice *conexao1 = grafo.getVertice(index1 - 1);
+      pos += numChars;
 
-      conexao1->incrementGrauDeEntrada(1);
-      verticeAtual->addConexao(conexao1);
-
-      if (index2)
+      if(linha.length() != 0)
       {
-        Vertice *conexao2 = grafo.getVertice(index2 - 1);
+        Vertice* verticeAtual = grafo.getVertice(i);
+        Vertice* conexao = grafo.getVertice(numLido-1);
 
-        conexao2->incrementGrauDeEntrada(1);
-        verticeAtual->addConexao(conexao2);
+        conexao->incrementGrauDeEntrada(1);
+        verticeAtual->addConexao(conexao);
       }
     }
   }
