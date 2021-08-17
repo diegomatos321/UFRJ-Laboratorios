@@ -8,14 +8,14 @@ using namespace std;
 
 class Vertice {
   private:
-    int value = 0;
-    int grauDeEntrada = 0;
+    int value;
+    int grauDeEntrada;
     vector<Vertice*> conexoes;
 
   public:
     Vertice() {};
     Vertice(int novoValor) : value(novoValor) {}
-    Vertice(const Vertice &verticeCopia) : conexoes(verticeCopia.getConexoes()), value(verticeCopia.getValue()) {}
+    Vertice(const Vertice &verticeCopia) : value(verticeCopia.getValue()), conexoes(verticeCopia.getConexoes()) {}
 
     void addConexao(Vertice* novaConexao)
     {
@@ -60,7 +60,7 @@ class Grafo {
       quantidadeDeVertices = novaQuantidadeDeVertices;
       quantidadeDeArestas = novaQuantidadeDeArestas;
       
-      for (size_t i = 0; i < quantidadeDeVertices; i++)
+      for (int i = 0; i < quantidadeDeVertices; i++)
       {
         Vertice VerticeAtual(i + 1);
         listaDeVertices.push_back(VerticeAtual);
@@ -94,7 +94,7 @@ class Grafo {
     }
 };
 
-void inicializarGrafo(Grafo &grafo);
+void lerEntradasNoGrafo(Grafo &grafo);
 vector<Vertice*> ordenacaoTopologica(Grafo &grafo);
 
 int main()
@@ -104,9 +104,9 @@ int main()
   scanf("%d %d", &quantidadeDeVertices, &quantidadeDeArestas);
 
   Grafo grafo(quantidadeDeVertices, quantidadeDeArestas);
-  inicializarGrafo(grafo);
+  lerEntradasNoGrafo(grafo);
 
-  grafo.print();
+  // grafo.print();
 
   vector<Vertice*> ordem = ordenacaoTopologica(grafo);
   for (Vertice* Vertice : ordem)
@@ -118,7 +118,7 @@ int main()
   return 0;
 }
 
-void inicializarGrafo(Grafo &grafo)
+void lerEntradasNoGrafo(Grafo &grafo)
 {
   string linha;
   
