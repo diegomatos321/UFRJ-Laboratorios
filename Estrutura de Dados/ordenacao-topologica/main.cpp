@@ -3,137 +3,175 @@
 
 using namespace std;
 
-class Node {
+class Vertice {
   private:
     int value = 0;
     int grauDeEntrada = 0;
-    vector<Node*> conexoes;
-  
-  public:
-    Node(int novoValor): value(novoValor) {}
-    Node(const Node& noCopia): conexoes(noCopia.getConexoes()) {
-      value = noCopia.getValue();
-    }
+    vector<Vertice*> conexoes;
 
-    void addConexao(Node* novaConexao) {
+  public:
+    Vertice() {};
+    Vertice(int novoValor) : value(novoValor) {}
+    Vertice(const Vertice &verticeCopia) : conexoes(verticeCopia.getConexoes()), value(verticeCopia.getValue()) {}
+
+    void addConexao(Vertice* novaConexao)
+    {
       conexoes.push_back(novaConexao);
     }
 
-    void incrementGrauDeEntrada(int value) {
+    void incrementGrauDeEntrada(int value)
+    {
       grauDeEntrada += value;
     }
 
-    vector<Node*> getConexoes() const {
+    vector<Vertice*> getConexoes() const
+    {
       return conexoes;
     }
 
-    int getValue() const {
+    int getValue() const
+    {
       return value;
     }
 
-    void setValue(int novoValor) {
+    void setValue(int novoValor)
+    {
       value = novoValor;
     }
 
-    int getGrauEntrada() {
+    int getGrauEntrada()
+    {
       return grauDeEntrada;
     }
 };
 
-void inicializarGrafo(vector<Node>& grafo, unsigned int quantidadeDeNos);
-vector<Node*> ordenacaoTopologica(vector<Node>& grafo, unsigned int quantidadeDeNos);
-void printGrafo(const vector<Node>& grafo);
-void printNode(const Node& noAtual);
+class Grafo {
+  private:
+    int quantidadeDeVertices = 0;
+    int quantidadeDeArestas = 0;
+    vector<Vertice> listaDeVertices;
 
-int main() {
-  unsigned int quantidadeDeNos = 0;
+  public:
+    Grafo(int novaQuantidadeDeVertices, int novaQuantidadeDeArestas)
+    {
+      quantidadeDeVertices = novaQuantidadeDeVertices;
+      quantidadeDeArestas = novaQuantidadeDeArestas;
+      
+      for (size_t i = 0; i < quantidadeDeVertices; i++)
+      {
+        Vertice VerticeAtual(i + 1);
+        listaDeVertices.push_back(VerticeAtual);
+      } 
+    }
 
-  scanf("%d %d", &quantidadeDeNos);
+    void print()
+    {
+      for (Vertice vertice : listaDeVertices)
+      {
+        cout << vertice.getValue();
 
-  Node arestaReferencia(0);
-  vector<Node> grafo(quantidadeDeNos, arestaReferencia);
-  inicializarGrafo(grafo, quantidadeDeNos);
+        for (Vertice* conexao : vertice.getConexoes())
+        {
+          cout << " -> ";
+          cout << conexao->getValue();
+        }
 
-  printGrafo(grafo);
+        cout << endl;
+      }
+    }
 
-  vector<Node*> ordem = ordenacaoTopologica(grafo, quantidadeDeNos);
-  for (unsigned int i = 0; i < quantidadeDeNos; i++)
+    int getQuantidaDeVertices()
+    {
+      return quantidadeDeVertices;
+    }
+
+    Vertice* getVertice(int index)
+    {
+      return &listaDeVertices[index];
+    }
+};
+
+void inicializarGrafo(Grafo &grafo);
+vector<Vertice*> ordenacaoTopologica(Grafo &grafo);
+
+int main()
+{
+  int quantidadeDeVertices = 0, quantidadeDeArestas = 0;
+
+  scanf("%d %d", &quantidadeDeVertices, &quantidadeDeArestas);
+
+  Grafo grafo(quantidadeDeVertices, quantidadeDeArestas);
+  inicializarGrafo(grafo);
+
+  grafo.print();
+
+  vector<Vertice*> ordem = ordenacaoTopologica(grafo);
+  for (Vertice* Vertice : ordem)
   {
-    cout << ordem[i]->getValue() << ", ";
+    cout << Vertice->getValue() << " ";
   }
   cout << endl;
 
   return 0;
 }
 
-void inicializarGrafo(vector<Node>& grafo, unsigned int quantidadeDeNos) {
-  for (size_t i = 0; i < quantidadeDeNos; i++)
+void inicializarGrafo(Grafo &grafo)
+{
+  for (int i = 0; i < grafo.getQuantidaDeVertices(); i++)
   {
-    int value1 = 0, value2 = 0;
-    grafo[i].setValue(i+1);
+    int index1 = 0, index2 = 0;
+    Vertice* verticeAtual = grafo.getVertice(i);
 
-    scanf("%d %d", &value1, &value2);
+    scanf("%d %d", &index1, &index2);
 
-    if (value1) {
-      // Node* conexao1 = new Node(value1);
-      grafo[value1-1].setValue(value1);
-      grafo[value1-1].incrementGrauDeEntrada(1);
-      grafo[i].addConexao(&grafo[value1-1]);
+    if (index1)
+    {
+      Vertice *conexao1 = grafo.getVertice(index1 - 1);
 
-      if (value2) {
-        // Node* conexao2 = new Node(value2);
-        grafo[value2-1].incrementGrauDeEntrada(1);
-        grafo[value2-1].setValue(value2);
-        grafo[i].addConexao(&grafo[value2-1]);
+      conexao1->incrementGrauDeEntrada(1);
+      verticeAtual->addConexao(conexao1);
+
+      if (index2)
+      {
+        Vertice *conexao2 = grafo.getVertice(index2 - 1);
+
+        conexao2->incrementGrauDeEntrada(1);
+        verticeAtual->addConexao(conexao2);
       }
     }
   }
 }
 
-vector<Node*> ordenacaoTopologica(vector<Node>& grafo, unsigned int quantidadeDeNos) {
-  vector<Node*> ordemTopologica;
-  vector<Node*> filaDeArestasComGrauDeEntradaZero;
+vector<Vertice*> ordenacaoTopologica(Grafo &grafo)
+{
+  vector<Vertice*> ordemTopologica;
+  vector<Vertice*> filaDeVerticesComGrauDeEntradaZero;
 
-  for (unsigned int i = 0; i < quantidadeDeNos; i++)
+  for (int i = 0; i < grafo.getQuantidaDeVertices(); i++)
   {
-    if (grafo[i].getGrauEntrada() == 0) {
-      filaDeArestasComGrauDeEntradaZero.push_back(&grafo[i]);
+    Vertice* verticeAtual = grafo.getVertice(i);
+    if (verticeAtual->getGrauEntrada() == 0)
+    {
+      filaDeVerticesComGrauDeEntradaZero.push_back(verticeAtual);
     }
   }
-  
-  // int i = 0;
-  while (!filaDeArestasComGrauDeEntradaZero.empty())
-  {
-    Node* aresta_n = filaDeArestasComGrauDeEntradaZero.back();
-    filaDeArestasComGrauDeEntradaZero.pop_back();
-    ordemTopologica.push_back(aresta_n);
 
-    for (Node* conexao : aresta_n->getConexoes()) {
+  while (!filaDeVerticesComGrauDeEntradaZero.empty())
+  {
+    Vertice *vertice_n = filaDeVerticesComGrauDeEntradaZero.front();
+    filaDeVerticesComGrauDeEntradaZero.erase(filaDeVerticesComGrauDeEntradaZero.begin());
+    ordemTopologica.push_back(vertice_n);
+
+    for (Vertice *conexao : vertice_n->getConexoes())
+    {
       conexao->incrementGrauDeEntrada(-1);
 
-      if (conexao->getGrauEntrada() == 0) {
-        filaDeArestasComGrauDeEntradaZero.push_back(conexao);
+      if (conexao->getGrauEntrada() == 0)
+      {
+        filaDeVerticesComGrauDeEntradaZero.push_back(conexao);
       }
     }
   }
-  
 
   return ordemTopologica;
-}
-
-void printGrafo(const vector<Node>& grafo) {
-  for (Node noAtual : grafo) {
-    printNode(noAtual);
-  }
-}
-
-void printNode(const Node& noAtual) {
-  cout << noAtual.getValue();
-
-  for (Node* aresta : noAtual.getConexoes()) {
-    cout << " -> ";
-    cout << aresta->getValue();
-  }
-
-  cout << endl;
 }
