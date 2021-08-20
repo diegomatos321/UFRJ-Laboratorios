@@ -1,3 +1,6 @@
+#include <iostream>
+#include <type_traits>
+
 using namespace std;
 
 template<int Dimensoes, typename Tipo> class Vetor;
@@ -9,29 +12,13 @@ class MeioDaOperacaoAtribuicao {
   
   public:
     MeioDaOperacaoAtribuicao(Vetor<Dimensoes, Tipo>* ptrVetor): vetor(ptrVetor) {}
-    ~MeioDaOperacaoAtribuicao() {
+/*     ~MeioDaOperacaoAtribuicao() {
       delete vetor;
-    }
+    } */
 
     MeioDaOperacaoAtribuicao operator , (Tipo coordenada) {
       *vetor = coordenada;
       return *this;
-    }
-};
-
-template<int Dimensoes, typename Tipo>
-class MeioDoProdutoVetorial {
-  private:
-    Vetor<Dimensoes, Tipo>* vetor;
-  
-  public:
-    MeioDoProdutoVetorial(Vetor<Dimensoes, Tipo>* ptrVetor): vetor(ptrVetor) {}
-    ~MeioDoProdutoVetorial() {
-      delete vetor;
-    }
-
-    MeioDoProdutoVetorial operator * (Vetor<Dimensoes, Tipo>& vetorB) {
-      return *vetor * vetorB;;
     }
 };
 
@@ -74,101 +61,76 @@ class Vetor {
 
     Tipo& operator [] (int i) {
       if (i > Dimensoes) {
-        cout << "Index fora do tamanho" << endl;
         exit(1);
       }
 
       return coordenadas[i];
     }
 
-    // ToDo: Criar produto vetorial
-    Vetor<Dimensoes, Tipo> operator * (Vetor<Dimensoes, Tipo>& vetor) {
+    Vetor operator + (Vetor<Dimensoes, Tipo>& vetorB) {
       Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
       {
-        novoVetor[i] = coordenadas[i] * vetor[i];
+        novoVetor[i] = coordenadas[i] + vetorB[i];
       }
-
+      
       return novoVetor;
     }
 
-    template<typename T>
-    Vetor operator * (T numero) {
-      Vetor<Dimensoes, T> novoVetor;
-
-      for (int i = 0; i < Dimensoes; i++)
-      {
-        novoVetor[i] = coordenadas[i] * numero;
-      }
-
-      return novoVetor;
-    }
-
-    Vetor operator / (Vetor<Dimensoes, Tipo>& vetor) {
+    template<typename Numerico, typename = typename enable_if<is_arithmetic<Numerico>::value>::type>
+    Vetor operator + (Numerico escalar) {
       Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
       {
-        novoVetor[i] = coordenadas[i] / vetor[i];
+        novoVetor[i] = coordenadas[i] + escalar;
       }
       
       return novoVetor;
     }
 
-    template<typename T>
-    Vetor operator / (T numero) {
-      Vetor<Dimensoes, T> novoVetor;
-
-      for (int i = 0; i < Dimensoes; i++)
-      {
-        novoVetor[i] = coordenadas[i] / numero;
-      }
-      
-      return novoVetor;
-    }
-    
-    Vetor operator + (Vetor<Dimensoes, Tipo>& vetor) {
+    Vetor operator - (Vetor<Dimensoes, Tipo>& vetorB) {
       Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
       {
-        novoVetor[i] = coordenadas[i] + vetor[i];
+        novoVetor[i] = coordenadas[i] - vetorB[i];
       }
       
       return novoVetor;
     }
 
-    template<typename T>
-    Vetor operator + (T numero) {
-      Vetor<Dimensoes, T> novoVetor;
-
-      for (int i = 0; i < Dimensoes; i++)
-      {
-        novoVetor[i] = coordenadas[i] + numero;
-      }
-      
-      return novoVetor;
-    }
-
-    Vetor operator - (Vetor<Dimensoes, Tipo>& vetor) {
+    template<typename Numerico, typename = typename enable_if<is_arithmetic<Numerico>::value>::type>
+    Vetor operator - (Numerico escalar) {
       Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
       {
-        novoVetor[i] = coordenadas[i] - vetor[i];
+        novoVetor[i] = coordenadas[i] - escalar;
       }
       
       return novoVetor;
     }
 
-    template<typename T>
-    Vetor operator - (T numero) {
-      Vetor<Dimensoes, T> novoVetor;
+    Vetor operator * (Vetor<Dimensoes, Tipo>& vetorB) {
+      Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
       {
-        novoVetor[i] = coordenadas[i] - numero;
+        novoVetor[i] = coordenadas[i] * vetorB[i];
+      }
+      
+      return novoVetor;
+    }
+
+    template<typename Numerico, typename = typename enable_if<is_arithmetic<Numerico>::value>::type>
+    Vetor operator * (Numerico escalar) {
+      Vetor<Dimensoes, Tipo> novoVetor;
+
+      for (int i = 0; i < Dimensoes; i++)
+      {
+        novoVetor[i] = coordenadas[i] * escalar;
       }
       
       return novoVetor;
