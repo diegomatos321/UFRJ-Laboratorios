@@ -23,6 +23,28 @@ class MeioDaOperacaoAtribuicao {
 };
 
 template<int Dimensoes, typename Tipo>
+class MeioDoProdutoVetorial {
+  private:
+    Vetor<Dimensoes, Tipo>* vetor;
+  
+  public:
+    MeioDoProdutoVetorial(Vetor<Dimensoes, Tipo>* ptrVetor): vetor(ptrVetor) {}
+/*     ~MeioDoProdutoVetorial() {
+      delete vetor;
+    } */
+
+    MeioDoProdutoVetorial operator * (Vetor<Dimensoes, Tipo>& vetorB) {
+      *vetor * vetorB;
+
+      return *this;
+    }
+
+    void imprime(ostream& out) {
+      vetor->imprime(out);
+    }
+};
+
+template<int Dimensoes, typename Tipo>
 class Vetor {
   private:
     Tipo coordenadas[Dimensoes];
@@ -35,16 +57,7 @@ class Vetor {
         coordenadas[i] = 0;
       }
     }
-/*     Vetor(Vetor& vetorCopia): index(vetorCopia.index) {
-      cout << "Construtor de Cópia ";
-      imprime(cout);
-      cout << endl;
-      for (int i = 0; i < Dimensoes; i++)
-      {
-        coordenadas[i] = vetorCopia[i];
-      }
-    }
- */
+
     void imprime( ostream& out ) const {
       for( Tipo x : coordenadas ) 
         out << x << " ";
@@ -113,7 +126,7 @@ class Vetor {
       return novoVetor;
     }
 
-    Vetor operator * (Vetor<Dimensoes, Tipo>& vetorB) {
+    MeioDoProdutoVetorial<Dimensoes, Tipo> operator * (Vetor<Dimensoes, Tipo>& vetorB) {
       Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
@@ -121,11 +134,11 @@ class Vetor {
         novoVetor[i] = coordenadas[i] * vetorB[i];
       }
       
-      return novoVetor;
+      return MeioDoProdutoVetorial<Dimensoes, Tipo>(this);
     }
 
     template<typename Numerico, typename = typename enable_if<is_arithmetic<Numerico>::value>::type>
-    Vetor operator * (Numerico escalar) {
+    MeioDoProdutoVetorial<Dimensoes, Tipo> operator * (Numerico escalar) {
       Vetor<Dimensoes, Tipo> novoVetor;
 
       for (int i = 0; i < Dimensoes; i++)
@@ -133,12 +146,19 @@ class Vetor {
         novoVetor[i] = coordenadas[i] * escalar;
       }
       
-      return novoVetor;
+      return MeioDoProdutoVetorial<Dimensoes, Tipo>(this);
     }
 };
 
 template<int Dimensoes, typename Tipo>
 ostream& operator << ( ostream& out, const Vetor<Dimensoes,Tipo>& v) {
+  v.imprime( out );
+
+  return out;
+}
+
+template<int Dimensoes, typename Tipo>
+ostream& operator << ( ostream& out, const MeioDoProdutoVetorial<Dimensoes,Tipo>& v) {
   v.imprime( out );
 
   return out;
