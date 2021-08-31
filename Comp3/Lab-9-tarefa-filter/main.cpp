@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <initializer_list>
 #include <vector>
 
 #include "filter.cpp"
@@ -17,10 +18,10 @@ void print(T x) {
 }
 
 int main() {
-  // teste1();
+  teste1();
   // teste2();
   // teste3();
-  teste4();
+  // teste4();
 
   return 0;
 }

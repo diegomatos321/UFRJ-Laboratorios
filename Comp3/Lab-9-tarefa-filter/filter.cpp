@@ -2,56 +2,40 @@
 #include <type_traits>
 #include <string>
 #include <vector>
+#include <iterator>
 
 using namespace std;
 
-template<int Tamanho, typename Functor>
-auto operator | (const int (&lista)[Tamanho], Functor lambda) {
-  if constexpr(is_same<decltype(lambda(lista[0])), bool>::value) {
-    vector<int> tempVetor;
-
-    for (int i = 0; i < Tamanho; i++) {
-      if (lambda(lista[i]) == true) {
-        tempVetor.push_back(lista[i]);
-      }
-    }
-
-    return tempVetor;
-  }
-  else {
-    for (int i = 0; i < Tamanho; i++) {
-      lambda(lista[i]);
-    } 
-  }
+template<typename Tipo>
+Tipo getTipo(Tipo tipo) {
+  return tipo;
 }
 
-template<typename Numero, typename Functor, typename = typename enable_if<is_arithmetic<Numero>::value>::type>
-void operator | (const Numero& x, Functor lambda) {
-  lambda(x);
-}
+template<typename Iteravel, typename Functor>
+auto operator | (const Iteravel& iteravel, Functor lambda) {
+  if constexpr(is_same<decltype(lambda(*begin(iteravel))), bool>::value) {
+    vector<decltype(getTipo(*begin(iteravel)))> tempVetor;
 
-template<typename Vector, typename Functor>
-auto operator | (const Vector& vetor, const Functor lambda) {
-  if constexpr(is_same<decltype(lambda(vetor[0])), bool>::value) {
-    Vector tempVetor;
-    for (auto x : vetor) {
+    for (auto x : iteravel) {
       if (lambda(x)) {
         tempVetor.push_back(x);
       }
-    } 
+    }
+
+    return tempVetor;
+  }
+  else if constexpr(is_same<decltype(lambda(*begin(iteravel))), void>::value == false) {
+    vector<decltype(lambda(*begin(iteravel)))> tempVetor;
+
+    for (auto x : iteravel) {
+      tempVetor.push_back(lambda(x));
+    }
 
     return tempVetor;
   }
   else {
-    for (auto x : vetor) {
+    for (auto x : iteravel) {
       lambda(x);
     }
-  }
-}
-
-template<typename Functor>
-void operator | (const string& str, Functor lambda) {
-  for(const char& c : str) {
-    lambda(c);
   }
 }
