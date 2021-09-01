@@ -10,8 +10,8 @@ class Var;
 
 class Undefined {
   public:
-    virtual void imprime(ostream& out) {
-      out << "Undefined";
+    virtual void imprime(ostream& out) const {
+      out << "undefined";
     }
 
     virtual Undefined& getValor(string chave) {
@@ -39,7 +39,7 @@ class Int: public Undefined {
       return n;
     }
 
-    void imprime(ostream& out) {
+    void imprime(ostream& out) const {
       out << n;
     }
 /* 
@@ -54,8 +54,12 @@ class Double: public Undefined {
   public:
     Double( double n ):n(n) {}
 
-    void imprime(ostream& out) {
+    void imprime(ostream& out) const {
       out << n;
+    }
+
+    double value() const {
+      return n;
     }
 };
 
@@ -64,9 +68,15 @@ class String: public Undefined {
     string n;
   public:
     String( string n ):n(n) {}
-
-    void imprime(ostream& out) {
+    template<int Tamanho>
+    String( const char (&n)[Tamanho] ):n(n) {}
+    
+    void imprime(ostream& out) const {
       out << n;
+    }
+
+    string value() const {
+      return n;
     }
 };
 
@@ -74,6 +84,13 @@ class Var {
   private:
     shared_ptr<Undefined> valor;
   public:
+    Var(): valor( new Undefined() ) {}
+    Var(const int n): valor( new Int(n) ) {}
+    Var(const double n): valor( new Double(n) ) {}
+    Var(const string n): valor( new String(n) ) {}
+    template<int Tamanho>
+    Var(const char (&n)[Tamanho]): valor( new String(n) ) {}
+
     class Erro {
       public:
         Erro( string msg ): msg(msg) {}
@@ -85,21 +102,6 @@ class Var {
       private:
         string msg;
     };
-    Var(): valor( new Undefined() ) {}
-    // Var(const string& novaString): valor(new String(novaString)) {}
-
-    template<typename Tipo>
-    Var(const Tipo& novaVariavel) {
-      if constexpr(is_same<string, Tipo>::value || is_same<char, decltype(novaVariavel[0])>::value) {
-        valor = shared_ptr<Undefined>( new String( novaVariavel ) );
-      }
-      if constexpr(is_same<int, Tipo>::value) {
-        valor = shared_ptr<Undefined>( new Int( novaVariavel ) );
-      }
-      if constexpr(is_same<double, Tipo>::value) {
-        valor = shared_ptr<Undefined>( new Double( novaVariavel ) );
-      }
-    }
 
     Undefined& operator [] (string& chave) {
       return valor->getValor(chave);

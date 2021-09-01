@@ -36,10 +36,9 @@ int main( int argc, char* argv[] ) try {
 }
 
 void teste1() {
-  Var a, b;
-/*   b = 10;
+  Var a, b = 10;
   cout << a << " " << b << endl;
-  a = 3.14; */
+  a = 3.14;
   b = "uma string";
-  cout /* << a << " " */ << b << endl;
+  cout << a << " " << b << endl;
 }
