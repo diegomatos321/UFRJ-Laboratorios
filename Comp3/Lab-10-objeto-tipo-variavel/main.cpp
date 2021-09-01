@@ -11,6 +11,7 @@
 using namespace std;
 
 void teste1();
+void teste2();
 
 /* Var print( const Var& o ) {
   cout << "{ nome: " << o["nome"]
@@ -28,7 +29,8 @@ void teste1();
 } */
 
 int main( int argc, char* argv[] ) try {     
-  teste1();
+  // teste1();
+  teste2();
 
   return 0;
 } catch( Var::Erro e ) {
@@ -41,4 +43,10 @@ void teste1() {
   a = 3.14;
   b = "uma string";
   cout << a << " " << b << endl;
+}
+
+void teste2() {
+  Var a;
+  a = 3;
+  cout << a["mes"] << endl;
 }

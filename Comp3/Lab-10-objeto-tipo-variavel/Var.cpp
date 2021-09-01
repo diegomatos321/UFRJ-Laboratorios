@@ -6,20 +6,16 @@
 
 using namespace std;
 
-class Var;
-
 class Undefined {
   public:
-    virtual void imprime(ostream& out) const {
-      out << "undefined";
-    }
-
-    virtual Undefined& getValor(string chave) {
-      // throw new Var::Erro("Essa variável não é um objeto");
+    virtual void imprime(ostream& out) const;
+    virtual Undefined getValor(const string& chave);
+/*     template<int Tamanho>
+    virtual Undefined& getValor(const char (&frase)[Tamanho]) {
       cout << "Essa variável não é um objeto" << endl;
 
       return *this;
-    }
+    } */
 
 /*     virtual Var sel_soma( Undefined* arg1 ) const { return Undefined(); }
     virtual Var soma( int arg2 ) const { return Undefined(); }
@@ -35,13 +31,8 @@ class Int: public Undefined {
   public:
     Int( int n ):n(n) {}
 
-    int value() const {
-      return n;
-    }
-
-    void imprime(ostream& out) const {
-      out << n;
-    }
+    int value() const;
+    void imprime(ostream& out) const;
 /* 
     virtual Var sel_soma( Undefined* arg1 ) const { arg1->soma( n ); }
     virtual Var soma( int arg2 ) const { return n + arg2; }
@@ -54,13 +45,8 @@ class Double: public Undefined {
   public:
     Double( double n ):n(n) {}
 
-    void imprime(ostream& out) const {
-      out << n;
-    }
-
-    double value() const {
-      return n;
-    }
+    void imprime(ostream& out) const;
+    double value() const;
 };
 
 class String: public Undefined {
@@ -68,16 +54,9 @@ class String: public Undefined {
     string n;
   public:
     String( string n ):n(n) {}
-    template<int Tamanho>
-    String( const char (&n)[Tamanho] ):n(n) {}
-    
-    void imprime(ostream& out) const {
-      out << n;
-    }
 
-    string value() const {
-      return n;
-    }
+    void imprime(ostream& out) const;
+    string value() const;
 };
 
 class Var {
@@ -89,7 +68,7 @@ class Var {
     Var(const double n): valor( new Double(n) ) {}
     Var(const string n): valor( new String(n) ) {}
     template<int Tamanho>
-    Var(const char (&n)[Tamanho]): valor( new String(n) ) {}
+    Var(const char (&n)[Tamanho]): valor( new String(string(n)) ) {}
 
     class Erro {
       public:
@@ -103,16 +82,47 @@ class Var {
         string msg;
     };
 
-    Undefined& operator [] (string& chave) {
-      return valor->getValor(chave);
-    }
-
-    void imprime(ostream& out) const {
-      valor->imprime(out);
-    }
+    void imprime(ostream& out) const;
+    Undefined operator [] (const string& chave);
+    template<int Tamanho>
+    Undefined operator [] (const char (&chave)[Tamanho]);
 };
 
+void Undefined::imprime(ostream& out) const { out << "undefined"; };
+Undefined Undefined::getValor(const string& chave) {
+  throw Var::Erro("Essa variável não é um objeto");
+  return Undefined();
+}
+
+int Int::value() const { return n; }
+void Int::imprime(ostream& out) const { out << n; }
+
+void Double::imprime(ostream& out) const { out << n; }
+double Double::value() const { return n; }
+
+void String::imprime(ostream& out) const { out << n; }
+string String::value() const { return n; }
+
+void Var::imprime(ostream& out) const {
+  valor->imprime(out);
+}
+
+Undefined Var::operator [] (const string& chave) {
+  return valor->getValor(chave);
+}
+
+template<int Tamanho>
+Undefined Var::operator [] (const char (&chave)[Tamanho]) {
+  return valor->getValor(string(chave));
+}
+
 ostream& operator << (ostream& out , const Var& a ) { 
+  a.imprime(out);
+
+  return out;
+}
+
+ostream& operator << (ostream& out , const Undefined& a ) { 
   a.imprime(out);
 
   return out;
