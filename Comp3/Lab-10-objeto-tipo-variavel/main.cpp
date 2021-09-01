@@ -12,6 +12,7 @@ using namespace std;
 
 void teste1();
 void teste2();
+void teste3();
 
 /* Var print( const Var& o ) {
   cout << "{ nome: " << o["nome"]
@@ -30,7 +31,8 @@ void teste2();
 
 int main( int argc, char* argv[] ) try {     
   // teste1();
-  teste2();
+  // teste2();
+  teste3();
 
   return 0;
 } catch( Var::Erro e ) {
@@ -49,4 +51,9 @@ void teste2() {
   Var a;
   a = 3;
   cout << a["mes"] << endl;
+}
+void teste3() {
+  Var a;
+  a = newObject();
+  cout << a(5) << endl;
 }

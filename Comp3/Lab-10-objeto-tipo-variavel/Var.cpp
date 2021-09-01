@@ -3,19 +3,15 @@
 #include <type_traits>
 #include <iterator>
 #include <memory>
+#include <map>
 
 using namespace std;
 
 class Undefined {
   public:
-    virtual void imprime(ostream& out) const;
+    virtual void imprime(ostream& out) const { out << "undefined"; };
     virtual Undefined getValor(const string& chave);
-/*     template<int Tamanho>
-    virtual Undefined& getValor(const char (&frase)[Tamanho]) {
-      cout << "Essa variável não é um objeto" << endl;
-
-      return *this;
-    } */
+    virtual Undefined func(const int variavel);
 
 /*     virtual Var sel_soma( Undefined* arg1 ) const { return Undefined(); }
     virtual Var soma( int arg2 ) const { return Undefined(); }
@@ -31,8 +27,8 @@ class Int: public Undefined {
   public:
     Int( int n ):n(n) {}
 
-    int value() const;
-    void imprime(ostream& out) const;
+    int value() const { return n; }
+    void imprime(ostream& out) const { out << n; }
 /* 
     virtual Var sel_soma( Undefined* arg1 ) const { arg1->soma( n ); }
     virtual Var soma( int arg2 ) const { return n + arg2; }
@@ -45,8 +41,8 @@ class Double: public Undefined {
   public:
     Double( double n ):n(n) {}
 
-    void imprime(ostream& out) const;
-    double value() const;
+    void imprime(ostream& out) const { out << n; }
+    double value() const { return n; }
 };
 
 class String: public Undefined {
@@ -55,9 +51,36 @@ class String: public Undefined {
   public:
     String( string n ):n(n) {}
 
-    void imprime(ostream& out) const;
-    string value() const;
+    void imprime(ostream& out) const { out << n; }
+    string value() const { return n; }
 };
+
+class Object: public Undefined {
+  private:
+    map<string, Undefined> varByKey;
+  
+  public:
+    Object(){};
+    Object(map<string, Undefined> n): varByKey(n){};
+
+    void imprime(ostream& out) const { 
+      for (auto x : varByKey) {
+        x.second.imprime(out);
+      }
+    }
+
+    map<string, Undefined> value() {
+      return varByKey;
+    }
+    
+    Undefined getValor(const string& chave) {
+      return varByKey[chave];
+    }
+};
+
+Object newObject() {
+  return Object();
+}
 
 class Var {
   private:
@@ -66,9 +89,10 @@ class Var {
     Var(): valor( new Undefined() ) {}
     Var(const int n): valor( new Int(n) ) {}
     Var(const double n): valor( new Double(n) ) {}
-    Var(const string n): valor( new String(n) ) {}
+    Var(const string& n): valor( new String(n) ) {}
     template<int Tamanho>
     Var(const char (&n)[Tamanho]): valor( new String(string(n)) ) {}
+    Var(Object n): valor( new Object(n.value()) ) {}
 
     class Erro {
       public:
@@ -82,38 +106,32 @@ class Var {
         string msg;
     };
 
-    void imprime(ostream& out) const;
-    Undefined operator [] (const string& chave);
+    void imprime(ostream& out) const {
+      valor->imprime(out);
+    }
+
+    Undefined operator [] (const string& chave) {
+      return valor->getValor(chave);
+    }
+
     template<int Tamanho>
-    Undefined operator [] (const char (&chave)[Tamanho]);
+    Undefined operator [] (const char (&chave)[Tamanho]) {
+      return valor->getValor(string(chave));
+    }
+
+    Undefined operator () (int variavel) {
+      return valor->func(variavel);
+    }
 };
 
-void Undefined::imprime(ostream& out) const { out << "undefined"; };
 Undefined Undefined::getValor(const string& chave) {
   throw Var::Erro("Essa variável não é um objeto");
+}
+
+Undefined Undefined::func(const int variavel) {
+  throw Var::Erro("Essa variável não pode ser usada como função");
+
   return Undefined();
-}
-
-int Int::value() const { return n; }
-void Int::imprime(ostream& out) const { out << n; }
-
-void Double::imprime(ostream& out) const { out << n; }
-double Double::value() const { return n; }
-
-void String::imprime(ostream& out) const { out << n; }
-string String::value() const { return n; }
-
-void Var::imprime(ostream& out) const {
-  valor->imprime(out);
-}
-
-Undefined Var::operator [] (const string& chave) {
-  return valor->getValor(chave);
-}
-
-template<int Tamanho>
-Undefined Var::operator [] (const char (&chave)[Tamanho]) {
-  return valor->getValor(string(chave));
 }
 
 ostream& operator << (ostream& out , const Var& a ) { 
