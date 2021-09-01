@@ -2,55 +2,42 @@
 #include <initializer_list>
 #include <memory>
 
+#include "leak.cpp"
+#include "tuplas.cpp"
+
 using namespace std;
 
-class AbstractPair {
-  public:
-    virtual ~AbstractPair() = default;
-    virtual void imprime(ostream& o) = 0;
-};
-
-template <typename TipoA, typename TipoB>
-class ImplPair: public AbstractPair {
-  private:
-    TipoA chave;
-    TipoB valor;
-  
-  public:
-    ImplPair(TipoA novaChave, TipoB novoValor){
-      chave = novaChave;
-      valor = novoValor;
-    }
-
-    virtual void imprime(ostream& o) {
-      o << chave << " = " << valor << endl;
-    }
-  
-};
-
-class Pair {
-  public:
-    template <typename TipoA, typename TipoB>
-    Pair( TipoA a, TipoB b ): p(new ImplPair<TipoA, TipoB>(a, b)){
-    }
-
-    void imprime(ostream& o) const {
-      p -> imprime(o);
-    }
-  
-  private:
-    shared_ptr<AbstractPair> p;
-};
-
-void print( ostream& o, const initializer_list<Pair>& lista ) {
-  for (const Pair& par : lista) {
-    par.imprime(o);
-  }
-}
+void teste1();
+void teste2();
+void teste3();
+void teste4();
 
 int main() {
-  Pair p{ "1", "2" };
-  print( cout, { { "jan", 1 }, { string( "pi" ), 3.14 }, p } );
+  teste1();
+  teste2();
+  teste3();
+  teste4();
 
   return 0;
+}
+
+void teste1() {
+  print( cout, { { "jan", Leak() }, { string( "pi" ), Leak() } } );
+}
+
+void teste2() {
+  Leak *l = new Leak[2];
+  print( cout, { { "jan", l[0] }, { string( "pi" ), l[1] } } );
+  delete [] l;
+}
+
+void teste3() {
+  shared_ptr<Leak> l ( new Leak() );
+  print( cout, { { "jan", *l }, { string( "pi" ), *l } } );
+}
+
+void teste4() {
+  Leak a, b, c;
+  vector<Leak> v = { a, b };
+  print( cout, { { "v", v }, { "c", c } } );
 }
