@@ -7,18 +7,34 @@
 
 using namespace std;
 
+class Var;
+
 class Undefined {
   public:
     virtual void imprime(ostream& out) const { out << "undefined"; };
     virtual Undefined getValor(const string& chave);
     virtual Undefined func(const int variavel);
 
-/*     virtual Var sel_soma( Undefined* arg1 ) const { return Undefined(); }
-    virtual Var soma( int arg2 ) const { return Undefined(); }
-    virtual Var soma( double arg2 ) const { return Undefined(); }
-    virtual Var soma( char arg2 ) const { return Undefined(); }
-    virtual Var soma( bool arg2 ) const { return Undefined(); }
-    virtual Var soma( string arg2 ) const { return Undefined(); }   */
+    virtual Var sel_soma( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var soma( int arg2 ) const;
+    virtual Var soma( double arg2 ) const;
+    virtual Var soma( char arg2 ) const;
+    virtual Var soma( bool arg2 ) const;
+    virtual Var soma( const string arg2 ) const;
+
+    virtual Var sel_produto( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var produto( int arg2 ) const;
+    virtual Var produto( double arg2 ) const;
+    virtual Var produto( char arg2 ) const;
+    virtual Var produto( bool arg2 ) const;
+    virtual Var produto( const string arg2 ) const;
+
+    virtual Var sel_divisao( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var divisao( int arg2 ) const;
+    virtual Var divisao( double arg2 ) const;
+    virtual Var divisao( char arg2 ) const;
+    virtual Var divisao( bool arg2 ) const;
+    virtual Var divisao( const string arg2 ) const;
 };
 
 class Int: public Undefined {
@@ -29,10 +45,18 @@ class Int: public Undefined {
 
     int value() const { return n; }
     void imprime(ostream& out) const { out << n; }
-/* 
-    virtual Var sel_soma( Undefined* arg1 ) const { arg1->soma( n ); }
-    virtual Var soma( int arg2 ) const { return n + arg2; }
-    virtual Var soma( double arg2 ) const { return n + arg2; } */
+
+    virtual Var sel_soma( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var soma( int arg2 ) const;
+    virtual Var soma( double arg2 ) const;
+
+    virtual Var sel_produto( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var produto( int arg2 ) const;
+    virtual Var produto( double arg2 ) const;
+
+    virtual Var sel_divisao( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var divisao( int arg2 ) const;
+    virtual Var divisao( double arg2 ) const;
 };
 
 class Double: public Undefined {
@@ -43,6 +67,18 @@ class Double: public Undefined {
 
     void imprime(ostream& out) const { out << n; }
     double value() const { return n; }
+
+    virtual Var sel_soma( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var soma( int arg2 ) const;
+    virtual Var soma( double arg2 ) const;
+
+    virtual Var sel_produto( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var produto( int arg2 ) const;
+    virtual Var produto( double arg2 ) const;
+
+    virtual Var sel_divisao( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var divisao( int arg2 ) const;
+    virtual Var divisao( double arg2 ) const;
 };
 
 class String: public Undefined {
@@ -53,6 +89,9 @@ class String: public Undefined {
 
     void imprime(ostream& out) const { out << n; }
     string value() const { return n; }
+
+    virtual Var sel_soma( const shared_ptr<Undefined> arg1 ) const;
+    virtual Var soma( string& arg2 ) const;
 };
 
 class Object: public Undefined {
@@ -106,6 +145,10 @@ class Var {
         string msg;
     };
 
+    shared_ptr<Undefined> ptr() const {
+      return valor;
+    }
+
     void imprime(ostream& out) const {
       valor->imprime(out);
     }
@@ -122,6 +165,18 @@ class Var {
     Undefined operator () (int variavel) {
       return valor->func(variavel);
     }
+
+    Var operator + (const Var& arg1) const {
+      return valor->sel_soma(arg1.ptr());
+    }
+
+    Var operator * (const Var& arg1) const {
+      return valor->sel_produto(arg1.ptr());
+    }
+
+    Var operator / (const Var& arg1) const {
+      return valor->sel_divisao(arg1.ptr());
+    }
 };
 
 Undefined Undefined::getValor(const string& chave) {
@@ -134,6 +189,52 @@ Undefined Undefined::func(const int variavel) {
   return Undefined();
 }
 
+Var Undefined::sel_soma( const shared_ptr<Undefined> arg1 ) const { return Var(); }
+Var Undefined::soma( int arg2 ) const { return Var(); }
+Var Undefined::soma( double arg2 ) const { return Var(); }
+Var Undefined::soma( char arg2 ) const { return Var(); }
+Var Undefined::soma( bool arg2 ) const { return Var(); }
+Var Undefined::soma( const string arg2 ) const { return Var(); }  
+
+Var Undefined::sel_produto( const shared_ptr<Undefined> arg1 ) const { return Var(); }
+Var Undefined::produto( int arg2 ) const { return Var(); }
+Var Undefined::produto( double arg2 ) const { return Var(); }
+Var Undefined::produto( char arg2 ) const { return Var(); }
+Var Undefined::produto( bool arg2 ) const { return Var(); }
+Var Undefined::produto( const string arg2 ) const { return Var(); }  
+
+Var Undefined::sel_divisao( const shared_ptr<Undefined> arg1 ) const { return Var(); }
+Var Undefined::divisao( int arg2 ) const { return Var(); }
+Var Undefined::divisao( double arg2 ) const { return Var(); }
+Var Undefined::divisao( char arg2 ) const { return Var(); }
+Var Undefined::divisao( bool arg2 ) const { return Var(); }
+Var Undefined::divisao( const string arg2 ) const { return Var(); }  
+
+Var Int::sel_soma( const shared_ptr<Undefined> arg1 ) const { arg1->soma( n ); }
+Var Int::soma( int arg2 ) const { return Var(n + arg2); }
+Var Int::soma( double arg2 ) const { return Var(n + arg2); }
+
+Var Int::sel_produto( const shared_ptr<Undefined> arg1 ) const { arg1->produto( n ); }
+Var Int::produto( int arg2 ) const { return Var(n * arg2); }
+Var Int::produto( double arg2 ) const { return Var(n * arg2); }
+
+Var Int::sel_divisao( const shared_ptr<Undefined> arg1 ) const { arg1->divisao( n ); }
+Var Int::divisao( int arg2 ) const { return Var(n / arg2); }
+Var Int::divisao( double arg2 ) const { return Var(n / arg2); }
+
+
+Var Double::sel_soma( const shared_ptr<Undefined> arg1 ) const { arg1->soma( n ); }
+Var Double::soma( int arg2 ) const { return Var(n + arg2); }
+Var Double::soma( double arg2 ) const { return Var(n + arg2); }
+
+Var Double::sel_produto( const shared_ptr<Undefined> arg1 ) const { arg1->produto( n ); }
+Var Double::produto( int arg2 ) const { return Var(n * arg2); }
+Var Double::produto( double arg2 ) const { return Var(n * arg2); }
+
+Var Double::sel_produto( const shared_ptr<Undefined> arg1 ) const { arg1->produto( n ); }
+Var Double::produto( int arg2 ) const { return Var(n / arg2); }
+Var Double::produto( double arg2 ) const { return Var(n / arg2); }
+
 ostream& operator << (ostream& out , const Var& a ) { 
   a.imprime(out);
 
@@ -145,8 +246,9 @@ ostream& operator << (ostream& out , const Undefined& a ) {
 
   return out;
 }
-/* Var operator > ( const Var& a, const Var& b ) { return b<a; }
+
+Var operator > ( const Var& a, const Var& b ) { return b<a; }
 Var operator != ( const Var& a, const Var& b ) { return (a<b) || (b<a); }
 Var operator == ( const Var& a, const Var& b ) { return !(a!=b); }
 Var operator <= ( const Var& a, const Var& b ) { return !(b<a); }
-Var operator >= ( const Var& a, const Var& b ) { return !(a<b); } */
+Var operator >= ( const Var& a, const Var& b ) { return !(a<b); }

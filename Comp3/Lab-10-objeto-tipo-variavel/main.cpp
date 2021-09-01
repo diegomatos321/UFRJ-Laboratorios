@@ -12,7 +12,7 @@ using namespace std;
 
 void teste1();
 void teste2();
-void teste3();
+void teste4();
 
 /* Var print( const Var& o ) {
   cout << "{ nome: " << o["nome"]
@@ -32,7 +32,8 @@ void teste3();
 int main( int argc, char* argv[] ) try {     
   // teste1();
   // teste2();
-  teste3();
+  // teste3();
+  teste4();
 
   return 0;
 } catch( Var::Erro e ) {
@@ -52,8 +53,18 @@ void teste2() {
   a = 3;
   cout << a["mes"] << endl;
 }
+
 void teste3() {
   Var a;
   a = newObject();
   cout << a(5) << endl;
+}
+
+void teste4() {
+  Var a[5] = { true, 'X', 2, 2.1, "abracadabra" };
+  Var b = 200, c = 300.1, d = "palavra ";
+  for( auto& x: a ) {
+    cout << x+b << "," << x+c << "," << x+d << "," << 3 / x << "," << 1.1 * x << ","
+        << Var(x && true) << "," << Var(x && false) <<  "," << Var(b >= x) << "," << Var(x < d) << endl;
+  }
 }
