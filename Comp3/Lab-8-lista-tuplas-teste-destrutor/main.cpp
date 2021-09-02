@@ -14,9 +14,9 @@ void teste4();
 
 int main() {
   teste1();
-  teste2();
-  teste3();
-  teste4();
+  // teste2();
+  // teste3();
+  // teste4();
 
   return 0;
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <initializer_list>
+#include <iterator>
 #include <memory>
 
 using namespace std;
@@ -17,8 +18,18 @@ class ImplPair: public AbstractPair {
     TipoB valor;
   
   public:
-    ImplPair(TipoA novaChave, TipoB novoValor){
-      chave = novaChave;
+    ImplPair(const TipoA& novaChave, const TipoB& novoValor){
+      if (begin(novaChave)) {
+        int i = 0;
+        for (auto x: novaChave) {
+          chave[i] = x;
+          i++;
+        }
+      }
+      else {
+        chave = novaChave;
+      }
+
       valor = novoValor;
     }
     ~ImplPair() {}
@@ -34,8 +45,10 @@ class Pair {
 
   public:
     template <typename TipoA, class TipoB>
-    Pair(TipoA a, TipoB b ): p(new ImplPair<TipoA, TipoB>(a, b)){
+    Pair(const TipoA& a, const TipoB& b ): p(new ImplPair<TipoA, TipoB>(a, b)){
     }
+    Pair(const Pair& copiaPair): p(copiaPair.p) {}
+    ~Pair() {}
 
     void imprime(ostream& o) const {
       p -> imprime(o);
