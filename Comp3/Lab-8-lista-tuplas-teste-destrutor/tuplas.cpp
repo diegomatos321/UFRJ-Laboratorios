@@ -17,7 +17,7 @@ class ImplPair: public AbstractPair {
     TipoB valor;
   
   public:
-    ImplPair(TipoA novaChave, const TipoB& novoValor): chave(novaChave), valor(novoValor) {}
+    ImplPair(TipoA novaChave, TipoB& novoValor): chave(novaChave), valor(novoValor) {}
     ~ImplPair() {}
 
     void imprime(ostream& o) const {
@@ -31,7 +31,7 @@ class Pair {
 
   public:
     template <typename TipoA, class TipoB>
-    Pair(TipoA a, const TipoB& b ): p(new ImplPair<TipoA, TipoB>(a, b)){
+    Pair(TipoA a, TipoB b ): p(new ImplPair<TipoA, TipoB>(a, b)){
     }
     ~Pair() {}
 
@@ -40,8 +40,8 @@ class Pair {
     }
 };
 
-void print( ostream& o, const initializer_list<Pair>& lista ) {
-  for (const Pair& par : lista) {
+void print( ostream& o, initializer_list<Pair> lista ) {
+  for (Pair par : lista) {
     par.imprime(o);
   }
 }
