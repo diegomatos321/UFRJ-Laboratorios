@@ -1,27 +1,35 @@
 #include <iostream>
+#include <tuple>
 
 using namespace std;
 
-template<typename Functor, typename Parametro>
+template<typename Functor, typename ...Parametros>
 class Bind;
 
-// TODO: Vários argumentos
-template<typename Functor, typename Parametro>
-Bind<Functor, Parametro> bind(Functor lambda, Parametro n) {
-  return Bind<Functor, Parametro>(lambda, n);
+template<typename Functor, typename ...Parametros>
+auto bind(Functor lambda, Parametros... argumentos) {
+  return Bind<Functor, Parametros...>(lambda, argumentos...);
 }
 
-template<typename Functor, typename Parametro>
+template<typename Functor, typename ...Parametros>
 class Bind {
   private:
     Functor lambda;
-    Parametro n;
+    tuple<Parametros...> argumentos;
 
   public:
-    Bind(Functor expressao, Parametro argumento): lambda(expressao), n(argumento) {}
+    Bind(Functor expressao, Parametros... args): lambda(expressao), argumentos(args...) {}
 
-    template<typename OutroParametro>
-    auto operator () (OutroParametro argumento) {
-      return lambda(n, argumento);
+    template<typename ParametroFinal>
+    auto operator () (ParametroFinal ultimoArgumento) {
+			tuple<ParametroFinal> tempTuple(ultimoArgumento);
+			tuple<Parametros..., ParametroFinal> tupleFinal = tuple_cat(argumentos, tempTuple);
+
+      return apply(lambda, tupleFinal);
     }
 };
+
+/* template <typename Functor, typename ...Argumentos>
+ostream& operator << (ostream& cout, const Bind<F, A...>& bind) {
+	return cout << bind.call();
+} */
