@@ -88,6 +88,24 @@ class Produto {
 };
 
 template<typename TipoA, typename TipoB>
+class Potencia {
+  private:
+    TipoA valorA;
+    TipoB valorB;
+  
+  public:
+    Potencia(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
+
+    double e(double generico) const {
+      return pow(valorA.e(generico), valorB.e(generico));
+    }
+
+    double dx(double generico) const {
+      return valorB.e(generico) * pow(valorA.e(generico), valorB.e(generico) - 1) * valorA.dx(generico);
+    }
+};
+
+template<typename TipoA, typename TipoB>
 class Divisao {
   private:
     TipoA valorA;
@@ -139,11 +157,45 @@ class Cosseno {
     }
 };
 
+template<typename Tipo>
+class Exponencial {
+  private:
+    Tipo valor;
+  
+  public:
+    Exponencial(Tipo tipo): valor(tipo) {}
+
+    double e(double generico) const {
+        return exp(valor.e(generico));
+    }
+
+    double dx(double generico) const {
+        return exp(valor.e(generico)) * valor.dx(generico);
+    }
+};
+
+template<typename Tipo>
+class Logaritmo {
+  private:
+    Tipo valor;
+  
+  public:
+    Logaritmo(Tipo tipo): valor(tipo) {}
+
+    double e(double generico) const {
+        return log(valor.e(generico));
+    }
+
+    double dx(double generico) const {
+        return 1/valor.e(generico) * valor.dx(generico);
+    }
+};
+
 template<typename TipoA, typename TipoB>
 auto operator + (TipoA tipoA, TipoB tipoB) {
-  if constexpr(is_integral_v<TipoA> || is_floating_point_v<TipoA>)
+  if constexpr(is_arithmetic_v<TipoA>)
       return Soma<Cte, TipoB>(tipoA, tipoB);
-  else if constexpr(is_integral_v<TipoB> || is_floating_point_v<TipoB>)
+  else if constexpr(is_arithmetic_v<TipoB>)
       return Soma<TipoA, Cte>( tipoA, tipoB );
   else
       return Soma<TipoA, TipoB>(tipoA, tipoB);
@@ -151,9 +203,9 @@ auto operator + (TipoA tipoA, TipoB tipoB) {
 
 template<typename TipoA, typename TipoB>
 auto operator - (TipoA tipoA, TipoB tipoB) {
-  if constexpr(is_integral_v<TipoA> || is_floating_point_v<TipoA>)
+  if constexpr(is_arithmetic_v<TipoA>)
       return Subtracao<Cte, TipoB>(tipoA, tipoB);
-  else if constexpr(is_integral_v<TipoB> || is_floating_point_v<TipoB>)
+  else if constexpr(is_arithmetic_v<TipoB>)
       return Subtracao<TipoA, Cte>( tipoA, tipoB );
   else
       return Subtracao<TipoA, TipoB>(tipoA, tipoB);
@@ -161,9 +213,9 @@ auto operator - (TipoA tipoA, TipoB tipoB) {
 
 template<typename TipoA, typename TipoB>
 auto operator * (TipoA tipoA, TipoB tipoB) {
-  if constexpr(is_integral_v<TipoA> || is_floating_point_v<TipoA>)
+  if constexpr(is_arithmetic_v<TipoA>)
       return Produto<Cte, TipoB>(tipoA, tipoB);
-  else if constexpr(is_integral_v<TipoB> || is_floating_point_v<TipoB>)
+  else if constexpr(is_arithmetic_v<TipoB>)
       return Produto<TipoA, Cte>( tipoA, tipoB );
   else
       return Produto<TipoA, TipoB>(tipoA, tipoB);
@@ -171,12 +223,19 @@ auto operator * (TipoA tipoA, TipoB tipoB) {
 
 template<typename TipoA, typename TipoB>
 auto operator / (TipoA tipoA, TipoB tipoB) {
-  if constexpr(is_integral_v<TipoA> || is_floating_point_v<TipoA>)
+  if constexpr(is_arithmetic_v<TipoA>)
       return Divisao<Cte, TipoB>(tipoA, tipoB);
-  else if constexpr(is_integral_v<TipoB> || is_floating_point_v<TipoB>)
+  else if constexpr(is_arithmetic_v<TipoB>)
       return Divisao<TipoA, Cte>( tipoA, tipoB );
   else
       return Divisao<TipoA, TipoB>(tipoA, tipoB);
+}
+
+template<typename TipoA, typename TipoB>
+Potencia<TipoA, Cte> operator ->* (TipoA tipoA, TipoB tipoB) {
+  static_assert(!is_same_v<double, TipoB>, "Operador de potenciação definido apenas para inteiros");
+
+  return Potencia<TipoA, Cte>(tipoA, tipoB);
 }
 
 template<typename Tipo>
@@ -187,6 +246,16 @@ Seno<Tipo> sin(Tipo x) {
 template<typename Tipo>
 Cosseno<Tipo> cos(Tipo x) {
   return Cosseno<Tipo>(x);
+}
+
+template<typename Tipo>
+Exponencial<Tipo> exp(Tipo x) {
+  return Exponencial<Tipo>(x);
+}
+
+template<typename Tipo>
+Logaritmo<Tipo> log(Tipo x) {
+  return Logaritmo<Tipo>(x);
 }
 
 X x;
