@@ -5,5 +5,14 @@
 using namespace std;
 
 int main() {
+  BalancedBinarySearchTree myTree;
+  myTree.Insert(10);
+/*   myTree.Insert(15);
+  myTree.Insert(14);
+  myTree.Insert(16);
+  myTree.Insert(7);
+  myTree.Insert(8);
+  myTree.Insert(5); */
+
   return 0;
 }
