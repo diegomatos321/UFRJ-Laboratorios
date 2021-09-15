@@ -9,9 +9,9 @@ class Node {
     int level = 0;
   
   public:
-    shared_ptr<Node> leftSubTree = nullptr;
-    shared_ptr<Node> rightSubTree = nullptr;
-
+    unique_ptr<Node> leftSubTree = nullptr;
+    unique_ptr<Node> rightSubTree = nullptr;
+    
     Node(int newData): data(newData) {};
     Node(int newData, int newHeight): data(newData), height(newHeight) {};
     Node(int newData, int newHeight, int newLevel): data(newData), height(newHeight), level(newLevel) {};
@@ -24,14 +24,22 @@ class Node {
       height = newHeight;
     }
 
+    int getHeight() const {
+      return height;
+    }
+
     void setLevel(int newLevel) {
       level = newLevel;
+    }
+
+    int getLevel() const {
+      return level;
     }
 };
 
 class BalancedBinarySearchTree {
   private:
-    shared_ptr<Node> treeRoot = nullptr;
+    unique_ptr<Node> treeRoot = nullptr;
   
   public:
     BalancedBinarySearchTree() {}
@@ -40,7 +48,24 @@ class BalancedBinarySearchTree {
       return Search(treeRoot, data);
     }
 
-    bool Search(shared_ptr<Node> root, int data) {
+    void Insert(int data) {
+      Insert(treeRoot, data);
+    }
+
+    void preOrderPrint() {
+      preOrderPrint(treeRoot);
+    }
+
+    void inOrderPrint() {
+      inOrderPrint(treeRoot);
+    }
+
+    void postOrderPrint() {
+      postOrderPrint(treeRoot);
+    }
+  
+  private:
+    bool Search(unique_ptr<Node>& root, int data) const {
       if (root == nullptr)
         return false;
       if (data == root->getData())
@@ -49,23 +74,44 @@ class BalancedBinarySearchTree {
         return Search(root->leftSubTree, data);
       if (data >= root->getData())
         return Search(root->rightSubTree, data);
-    } 
-
-    void Insert(int data) {
-      Insert(treeRoot, data);
     }
 
-    void Insert(shared_ptr<Node> root, int data) {
+    void Insert(unique_ptr<Node>& root, int data) {
       if (root == nullptr) {
-        root = make_shared<Node>(data);
+        root = make_unique<Node>(data);
         return;
       }
 
-      if (data <= root->getData()) {
+      if (data <= root->getData()) 
         Insert(root->leftSubTree, data);
-      } 
-      else if (data > root->getData()) {
+      else if (data > root->getData())
         Insert(root->rightSubTree, data);
-      }
+    }
+
+    void preOrderPrint(unique_ptr<Node>& root) const {
+      if (root == nullptr)
+        return;
+
+      cout << root->getData() << endl;
+      inOrderPrint(root->leftSubTree);
+      inOrderPrint(root->rightSubTree);
+    }
+
+    void inOrderPrint(unique_ptr<Node>& root) const {
+      if (root == nullptr)
+        return;
+
+      inOrderPrint(root->leftSubTree);
+      cout << root->getData() << endl;
+      inOrderPrint(root->rightSubTree);
+    }
+
+    void postOrderPrint(unique_ptr<Node>& root) const {
+      if (root == nullptr)
+        return;
+
+      inOrderPrint(root->leftSubTree);
+      inOrderPrint(root->rightSubTree);
+      cout << root->getData() << endl;
     }
 };
