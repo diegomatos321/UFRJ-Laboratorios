@@ -15,6 +15,14 @@ class X {
     double dx(double generico) const {
       return 1;
     }
+
+    string str() const {
+      return "x";
+    }
+    
+    string dx_str() const {
+      return "1";
+    }
 };
 
 class Cte {
@@ -30,6 +38,14 @@ class Cte {
 
     double dx(double generico) const {
       return 0;
+    }
+
+    string str() const {
+      return "(" + to_string(valorConstante) + ")";
+    }
+    
+    string dx_str() const {
+      return "(0)";
     }
 };
 
@@ -49,6 +65,14 @@ class Soma {
     double dx(double generico) const {
       return valorA.dx(generico) + valorB.dx(generico);
     }
+    
+    string str() const {
+      return "(" + valorA.str() + ")+(" + valorB.str() + ")";
+    }
+    
+    string dx_str() const {
+      return "(" + valorA.dx_str() + ")+(" + valorB.dx_str() + ")";
+    }
 };
 
 template<typename TipoA, typename TipoB>
@@ -66,6 +90,14 @@ class Subtracao {
 
     double dx(double generico) const {
       return valorA.dx(generico) - valorB.dx(generico);
+    }
+
+    string str() const {
+      return "(" + valorA.str() + ")-(" + valorB.str() + ")";
+    }
+    
+    string dx_str() const {
+      return "(" + valorA.dx_str() + ")-(" + valorB.dx_str() + ")";
     }
 };
 
@@ -85,6 +117,14 @@ class Produto {
     double dx(double generico) const {
       return (valorA.e(generico) * valorB.dx(generico)) + (valorA.dx(generico) * valorB.e(generico));
     }
+
+    string str() const {
+      return "(" + valorA.str() + ")*(" + valorB.dx_str() + ")+(" + (valorA.dx_str() + ")*(" + valorB.str() + ")";
+    }
+    
+    string dx_str() const {
+      return "(" + valorA.dx_str() + ")*(" + valorB.dx_str() + ")";
+    }
 };
 
 template<typename TipoA, typename TipoB>
@@ -103,6 +143,14 @@ class Potencia {
     double dx(double generico) const {
       return valorB.e(generico) * pow(valorA.e(generico), valorB.e(generico) - 1) * valorA.dx(generico);
     }
+
+    string str() const {
+      return "(" + valorA.str() + ")^(" + valorB.str() + ")";
+    }
+    
+    string dx_str() const {
+      return "(" + valorA.dx_str() + ")^(" + valorB.dx_str() + ")";
+    }
 };
 
 template<typename TipoA, typename TipoB>
@@ -120,6 +168,14 @@ class Divisao {
 
     double dx(double generico) const {
       return ((valorA.e(generico) * valorB.dx(generico)) - (valorA.dx(generico) * valorB.e(generico))) / pow(valorB.e(generico), 2);
+    }
+
+    string str() const {
+      return "(" + valorA.str() + ")/(" + valorB.str() + ")";
+    }
+    
+    string dx_str() const {
+      return "(" + valorA.dx_str() + ")/(" + valorB.dx_str() + ")";
     }
 };
 

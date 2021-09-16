@@ -15,8 +15,8 @@ int main() {
 }
 
 void teste1() {
-  double v = 5.1;
+  // double v = 5.1;
   auto f = 3.0 * x * x;
 
-  cout << "f(" << v << ")=" << f.e( v ) << ", f'(" << v << ")=" << f.dx( v ) << endl;
+  cout << "f(x) = " << f.str() << ", f'(x) = " << f.dx_str() << endl;
 }
