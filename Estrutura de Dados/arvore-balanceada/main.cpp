@@ -16,6 +16,7 @@ int main() {
 
   // myTree.preOrderPrint();
   myTree.inOrderPrint();
+  cout << myTree.getHeight() << endl;
   // myTree.postOrderPrint();
   return 0;
 }

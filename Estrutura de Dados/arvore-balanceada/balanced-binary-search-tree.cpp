@@ -1,3 +1,5 @@
+#include <iostream>
+#include <algorithm>
 #include <memory>
 
 using namespace std;
@@ -13,8 +15,6 @@ class Node {
     unique_ptr<Node> rightSubTree = nullptr;
     
     Node(int newData): data(newData) {};
-    Node(int newData, int newHeight): data(newData), height(newHeight) {};
-    Node(int newData, int newHeight, int newLevel): data(newData), height(newHeight), level(newLevel) {};
 
     int getData() const {
       return data;
@@ -52,6 +52,10 @@ class BalancedBinarySearchTree {
       Insert(treeRoot, data);
     }
 
+    int getHeight() const {
+      return treeRoot->getHeight();
+    }
+
     void preOrderPrint() {
       preOrderPrint(treeRoot);
     }
@@ -77,22 +81,49 @@ class BalancedBinarySearchTree {
     }
 
     void Insert(unique_ptr<Node>& root, int data) {
+      int balancedFactor = 0;
+
       if (root == nullptr) {
         root = make_unique<Node>(data);
         return;
       }
 
-      if (data <= root->getData()) 
+      if (data <= root->getData())
         Insert(root->leftSubTree, data);
-      else if (data > root->getData())
+      else if (data > root->getData()) 
         Insert(root->rightSubTree, data);
+      
+      root->setHeight(calculateHeight(root));
+      balancedFactor = getBalancedFactor(root);
+    }
+
+    int calculateHeight(unique_ptr<Node>& root) const {
+      if (root->leftSubTree == nullptr && root->rightSubTree == nullptr)
+        return 0;
+      else if (root->leftSubTree != nullptr && root->rightSubTree == nullptr)
+        return root->leftSubTree->getHeight() + 1;
+      else if (root->leftSubTree == nullptr && root->rightSubTree != nullptr)
+        return root->rightSubTree->getHeight() + 1;
+      else if (root->leftSubTree != nullptr && root->rightSubTree != nullptr)
+       return max(root->leftSubTree->getHeight(), root->rightSubTree->getHeight()) + 1;
+    }
+
+    int getBalancedFactor(unique_ptr<Node>& root) {
+      if (root->leftSubTree == nullptr && root->rightSubTree == nullptr)
+        return 0;
+      else if (root->leftSubTree != nullptr && root->rightSubTree == nullptr)
+        return root->leftSubTree->getHeight();
+      else if (root->leftSubTree == nullptr && root->rightSubTree != nullptr)
+        return -root->rightSubTree->getHeight();
+      else if (root->leftSubTree != nullptr && root->rightSubTree != nullptr)
+       return root->leftSubTree->getHeight() - root->rightSubTree->getHeight();
     }
 
     void preOrderPrint(unique_ptr<Node>& root) const {
       if (root == nullptr)
         return;
 
-      cout << root->getData() << endl;
+      cout << root->getData() << "(" << root->getHeight() << ")" << endl;
       inOrderPrint(root->leftSubTree);
       inOrderPrint(root->rightSubTree);
     }
@@ -102,7 +133,7 @@ class BalancedBinarySearchTree {
         return;
 
       inOrderPrint(root->leftSubTree);
-      cout << root->getData() << endl;
+      cout << root->getData() << "(" << root->getHeight() << ")" << endl;
       inOrderPrint(root->rightSubTree);
     }
 
@@ -112,6 +143,6 @@ class BalancedBinarySearchTree {
 
       inOrderPrint(root->leftSubTree);
       inOrderPrint(root->rightSubTree);
-      cout << root->getData() << endl;
+      cout << root->getData() << "(" << root->getHeight() << ")" << endl;
     }
 };
