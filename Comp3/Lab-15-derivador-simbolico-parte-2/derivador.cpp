@@ -3,6 +3,8 @@
 #include <string>
 #include <type_traits>
 #include <math.h>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -41,11 +43,21 @@ class Cte {
     }
 
     string str() const {
-      return "(" + to_string(valorConstante) + ")";
+      stringstream stream;
+      double parteInteira = 0;
+
+      if (modf(valorConstante, &parteInteira) == 0) {
+        stream << fixed << setprecision(0) << parteInteira;
+      }
+      else {
+        stream << valorConstante << setprecision(2);
+      }
+
+      return stream.str();
     }
     
     string dx_str() const {
-      return "(0)";
+      return "0";
     }
 };
 
@@ -67,11 +79,11 @@ class Soma {
     }
     
     string str() const {
-      return "(" + valorA.str() + ")+(" + valorB.str() + ")";
+      return "((" + valorA.str() + ")+(" + valorB.str() + "))";
     }
     
     string dx_str() const {
-      return "(" + valorA.dx_str() + ")+(" + valorB.dx_str() + ")";
+      return "((" + valorA.dx_str() + ")+(" + valorB.dx_str() + "))";
     }
 };
 
@@ -93,11 +105,11 @@ class Subtracao {
     }
 
     string str() const {
-      return "(" + valorA.str() + ")-(" + valorB.str() + ")";
+      return "((" + valorA.str() + ")-(" + valorB.str() + "))";
     }
     
     string dx_str() const {
-      return "(" + valorA.dx_str() + ")-(" + valorB.dx_str() + ")";
+      return "((" + valorA.dx_str() + ")-(" + valorB.dx_str() + "))";
     }
 };
 
@@ -119,37 +131,11 @@ class Produto {
     }
 
     string str() const {
-      return "(" + valorA.str() + ")*(" + valorB.dx_str() + ")+(" + (valorA.dx_str() + ")*(" + valorB.str() + ")";
+      return "((" + valorA.str() + ")*(" + valorB.str() + "))";
     }
     
     string dx_str() const {
-      return "(" + valorA.dx_str() + ")*(" + valorB.dx_str() + ")";
-    }
-};
-
-template<typename TipoA, typename TipoB>
-class Potencia {
-  private:
-    TipoA valorA;
-    TipoB valorB;
-  
-  public:
-    Potencia(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
-
-    double e(double generico) const {
-      return pow(valorA.e(generico), valorB.e(generico));
-    }
-
-    double dx(double generico) const {
-      return valorB.e(generico) * pow(valorA.e(generico), valorB.e(generico) - 1) * valorA.dx(generico);
-    }
-
-    string str() const {
-      return "(" + valorA.str() + ")^(" + valorB.str() + ")";
-    }
-    
-    string dx_str() const {
-      return "(" + valorA.dx_str() + ")^(" + valorB.dx_str() + ")";
+      return "(((" + valorA.dx_str() + ")*(" + valorB.str() + "))+((" + valorA.str() + ")*(" + valorB.dx_str() + ")))";
     }
 };
 
@@ -171,11 +157,41 @@ class Divisao {
     }
 
     string str() const {
-      return "(" + valorA.str() + ")/(" + valorB.str() + ")";
+      return "((" + valorA.str() + ")/(" + valorB.str() + "))";
     }
     
     string dx_str() const {
-      return "(" + valorA.dx_str() + ")/(" + valorB.dx_str() + ")";
+      return "((((" + valorA.dx_str() + ")*(" + valorB.str() + "))-((" + valorA.str() + ")*(" + valorB.dx_str() + ")))/((" + valorB.str() + "^2)))";
+    }
+};
+
+template<typename TipoA, typename TipoB>
+class Potencia {
+  private:
+    TipoA valorA;
+    TipoB valorB;
+  
+  public:
+    Potencia(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
+
+    double e(double generico) const {
+      return pow(valorA.e(generico), valorB.e(generico));
+    }
+
+    double dx(double generico) const {
+      return valorB.e(generico) * pow(valorA.e(generico), valorB.e(generico) - 1) * valorA.dx(generico);
+    }
+
+    string str() const {
+      return "(" + valorA.str() + ")^" + valorB.str();
+    }
+    
+    string dx_str() const {
+      auto tempSub = Subtracao<TipoB, Cte>(valorB, 1);
+      stringstream streamSubtraction;
+      streamSubtraction << fixed << setprecision(0) << tempSub.e(1);
+
+      return "(" + valorB.str() + "*(" + valorA.dx_str() + ")*(" + valorA.str() + ")^" + streamSubtraction.str() + ")";
     }
 };
 
@@ -194,6 +210,14 @@ class Seno {
     double dx(double generico) const {
       return cos(valor.e(generico)) * valor.dx(generico);
     }
+
+    string str() const {
+      return "sin(" + valor.str() + ")";
+    }
+
+    string dx_str() const {
+      return "cos(" + valor.str() + ")*(" + valor.dx_str() + ")";
+    }
 };
 
 template<typename Tipo>
@@ -210,6 +234,14 @@ class Cosseno {
 
     double dx(double generico) const {
         return -sin(valor.e(generico)) * valor.dx(generico);
+    }
+
+    string str() const {
+      return "cos(" + valor.str() + ")";
+    }
+
+    string dx_str() const {
+      return "-sin(" + valor.str() + ")*(" + valor.dx_str() + ")";
     }
 };
 
@@ -228,6 +260,14 @@ class Exponencial {
     double dx(double generico) const {
         return exp(valor.e(generico)) * valor.dx(generico);
     }
+
+    string str() const {
+      return "exp(" + valor.str() + ")";
+    }
+
+    string dx_str() const {
+      return "(exp(" + valor.str() + ")*(" + valor.dx_str() + "))";
+    }
 };
 
 template<typename Tipo>
@@ -244,6 +284,14 @@ class Logaritmo {
 
     double dx(double generico) const {
         return 1/valor.e(generico) * valor.dx(generico);
+    }
+
+    string str() const {
+      return "log((" + valor.str() + "))";
+    }
+
+    string dx_str() const {
+      return "1/(" + valor.str() + ")*(" + valor.dx_str() + ")";
     }
 };
 
