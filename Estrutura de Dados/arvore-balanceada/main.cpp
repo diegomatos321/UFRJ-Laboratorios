@@ -7,16 +7,12 @@ using namespace std;
 int main() {
   BalancedBinarySearchTree myTree;
   myTree.Insert(10);
-  myTree.Insert(15);
-  myTree.Insert(14);
-  myTree.Insert(16);
-  myTree.Insert(7);
-  myTree.Insert(8);
-  myTree.Insert(5);
-
-  // myTree.preOrderPrint();
+  myTree.Insert(20);
   myTree.inOrderPrint();
-  cout << myTree.getHeight() << endl;
+  myTree.Insert(30);
+
+  myTree.preOrderPrint();
+  // myTree.inOrderPrint();
   // myTree.postOrderPrint();
-  return 0;
+  return EXIT_SUCCESS;
 }

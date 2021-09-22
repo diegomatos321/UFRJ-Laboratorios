@@ -2,12 +2,14 @@
 #include <algorithm>
 #include <memory>
 
+#define BASE_HEIGHT 1
+
 using namespace std;
 
 class Node {
   private:
     int data = 0;
-    int height = 0;
+    int height = BASE_HEIGHT;
     int level = 0;
   
   public:
@@ -69,14 +71,14 @@ class BalancedBinarySearchTree {
     }
   
   private:
-    bool Search(unique_ptr<Node>& root, int data) const {
+    bool Search(const unique_ptr<Node>& root, int data) const {
       if (root == nullptr)
         return false;
-      if (data == root->getData())
+      else if (data == root->getData())
         return true;
-      if (data <= root->getData())
+      else if (data <= root->getData())
         return Search(root->leftSubTree, data);
-      if (data >= root->getData())
+      else
         return Search(root->rightSubTree, data);
     }
 
@@ -95,35 +97,84 @@ class BalancedBinarySearchTree {
       
       root->setHeight(calculateHeight(root));
       balancedFactor = getBalancedFactor(root);
+
+      if (leftLeftCase(balancedFactor, data, root))
+        rightRotation(root);
+      else if (rightRightCase(balancedFactor, data, root))
+        leftRotation(root);
+      else if (leftRightCase(balancedFactor, data, root)) {
+        leftRotation(root->leftSubTree);
+        rightRotation(root);
+      } else if (rightLeftCase(balancedFactor, data, root)) {
+        rightRotation(root->rightSubTree);
+        leftRotation(root);
+      }
     }
 
     int calculateHeight(unique_ptr<Node>& root) const {
       if (root->leftSubTree == nullptr && root->rightSubTree == nullptr)
-        return 0;
+        return BASE_HEIGHT;
       else if (root->leftSubTree != nullptr && root->rightSubTree == nullptr)
         return root->leftSubTree->getHeight() + 1;
       else if (root->leftSubTree == nullptr && root->rightSubTree != nullptr)
         return root->rightSubTree->getHeight() + 1;
-      else if (root->leftSubTree != nullptr && root->rightSubTree != nullptr)
-       return max(root->leftSubTree->getHeight(), root->rightSubTree->getHeight()) + 1;
+      
+      return max(root->leftSubTree->getHeight(), root->rightSubTree->getHeight()) + 1;
     }
 
     int getBalancedFactor(unique_ptr<Node>& root) {
       if (root->leftSubTree == nullptr && root->rightSubTree == nullptr)
         return 0;
       else if (root->leftSubTree != nullptr && root->rightSubTree == nullptr)
-        return root->leftSubTree->getHeight();
+        return -root->leftSubTree->getHeight();
       else if (root->leftSubTree == nullptr && root->rightSubTree != nullptr)
-        return -root->rightSubTree->getHeight();
-      else if (root->leftSubTree != nullptr && root->rightSubTree != nullptr)
-       return root->leftSubTree->getHeight() - root->rightSubTree->getHeight();
+        return root->rightSubTree->getHeight();
+      
+      return root->rightSubTree->getHeight() - root->leftSubTree->getHeight();
+    }
+
+    bool leftLeftCase(int balancedFactor, int data, const unique_ptr<Node>& root) const {
+      return balancedFactor < -1 && data < root->getData();
+    }
+
+    bool leftRightCase(int balancedFactor, int data, const unique_ptr<Node>& root) const {
+      return balancedFactor < -1 && data > root->getData();
+    }
+
+    bool rightLeftCase(int balancedFactor, int data, const unique_ptr<Node>& root) const {
+      return balancedFactor > 1 && data < root->getData();
+    }
+
+    bool rightRightCase(int balancedFactor, int data, const unique_ptr<Node>& root) const {
+      return balancedFactor > 1 && data > root->getData();
+    }
+
+    void rightRotation(unique_ptr<Node>& root) {
+      unique_ptr<Node> tempLeftSubTree = move(root->leftSubTree);
+
+      root->leftSubTree = move(tempLeftSubTree->rightSubTree);
+      tempLeftSubTree->rightSubTree = move(root);
+
+      tempLeftSubTree->setHeight(calculateHeight(tempLeftSubTree));
+      root = move(tempLeftSubTree);
+    }
+    
+    void leftRotation(unique_ptr<Node>& root) {
+      unique_ptr<Node> newRoot = move(root->rightSubTree);
+
+      root->rightSubTree = move(newRoot->leftSubTree);
+      newRoot->leftSubTree = move(root);
+
+      root->setHeight(root->getHeight() - 2);
+      newRoot->setHeight(calculateHeight(newRoot));
+      root = move(newRoot);
     }
 
     void preOrderPrint(unique_ptr<Node>& root) const {
       if (root == nullptr)
         return;
 
-      cout << root->getData() << "(" << root->getHeight() << ")" << endl;
+      cout << root->getData() << "(" << root->getHeight() << ") ";
       inOrderPrint(root->leftSubTree);
       inOrderPrint(root->rightSubTree);
     }
@@ -133,7 +184,7 @@ class BalancedBinarySearchTree {
         return;
 
       inOrderPrint(root->leftSubTree);
-      cout << root->getData() << "(" << root->getHeight() << ")" << endl;
+      cout << root->getData() << "(" << root->getHeight() << ") ";
       inOrderPrint(root->rightSubTree);
     }
 
@@ -143,6 +194,6 @@ class BalancedBinarySearchTree {
 
       inOrderPrint(root->leftSubTree);
       inOrderPrint(root->rightSubTree);
-      cout << root->getData() << "(" << root->getHeight() << ")" << endl;
+      cout << root->getData() << "(" << root->getHeight() << ") ";
     }
 };
