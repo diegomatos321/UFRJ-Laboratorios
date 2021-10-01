@@ -2,7 +2,8 @@
 * Aluno: Diego Vasconcelos Schardosim de Matos
 * Dre: 120098723
 
-Questão 1: Algoritmo de inserção para uma lista encadeada, ordenada em ordem crescente, sem dependender do nó cabeça.
+## Questão 1: 
+Algoritmo de inserção para uma lista encadeada, ordenada (em ordem crescente), sem dependender do nó cabeça.
 ```C++
 void insert(int data, Node** currentNode) {
   if(*currentNode == nullptr) {
