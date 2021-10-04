@@ -6,17 +6,17 @@
 using namespace std;
 
 void teste1();
-void teste2();
-void teste3();
-void teste4();
-void teste8();
-void teste9();
-void teste11();
-void teste12();
+// void teste2();
+// void teste3();
+// void teste4();
+// void teste8();
+// void teste9();
+// void teste11();
+// void teste12();
 
 int main() {
-  // teste1();
-  teste2();
+  teste1();
+  // teste2();
   // teste3();
   // teste4();
   // teste8();
@@ -29,8 +29,8 @@ int main() {
 
 void teste1() {
   // auto f = 3.0 + x + x;
-  // auto f = 0 + x + x;
-  auto f = 0 - x + x;
+  auto f = 3.0 + x * x;
+  // auto f = 3.0 + x + x;
 
   cout << "f(x) = " << f.str() << ", f'(x) = " << f.dx_str() << endl;
 }
@@ -43,7 +43,7 @@ void teste2() {
   cout << "f(x) = " << f.str() << ", f'(x) = " << f.dx_str() << endl;
 }
 
-void teste3() {
+/* void teste3() {
   auto f = x - (x - 5.0);
 
   cout << "f(x) = " << f.str() << ", f'(x) = " << f.dx_str() << endl;
@@ -77,4 +77,4 @@ void teste12() {
   auto f = log( (8.1/(x+1.0)->*3 - 9.2 ) * (x + 3) *sin( cos( x / 3.14 ) ));
 
   cout << "f(x) = " << f.str() << ", f'(x) = " << f.dx_str() << endl;
-}
+} */

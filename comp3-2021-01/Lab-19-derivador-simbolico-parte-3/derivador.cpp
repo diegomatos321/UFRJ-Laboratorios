@@ -8,12 +8,12 @@
 
 using namespace std;
 
-bool adicaoDesnecessaria(string tipo);
-bool subtracaoDesnecessaria(string tipo);
-bool produtoDesnecessario(string tipo);
-
 class X {
   public:
+    const int precedencia() const {
+      return 4;
+    }
+
     double e(double generico) const {
       return generico;
     }
@@ -37,6 +37,10 @@ class Cte {
   
   public:
     Cte(double constante): valorConstante(constante) {}
+
+    const int precedencia() const {
+      return 4;
+    }
 
     double e(double generico) const {
       return valorConstante;
@@ -74,6 +78,10 @@ class Soma {
   public:
     Soma(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
 
+    const int precedencia() const {
+      return 1;
+    }
+
     double e(double generico) const {
       return valorA.e(generico) + valorB.e(generico);
     }
@@ -83,21 +91,37 @@ class Soma {
     }
     
     string str() const {
-      if(adicaoDesnecessaria(valorA.str()) && !adicaoDesnecessaria(valorB.str()))
-        return "(" + valorB.str() + ")";
-      else if(!adicaoDesnecessaria(valorA.str()) && adicaoDesnecessaria(valorB.str())) 
-        return "(" + valorA.str() + ")";
-      
-      return "((" + valorA.str() + ")+(" + valorB.str() + "))";
+      string esquerda, direita, result;
+
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      // Todo: Criar Função Excecao Soma
+      if(esquerda == "0")
+        result = direita;
+      else if(direita == "0")
+        result = esquerda;
+      else
+        result = esquerda + "+" + direita;
+
+      return result;
     }
     
     string dx_str() const {
-      if(adicaoDesnecessaria(valorA.str()) && !adicaoDesnecessaria(valorB.str()))
-        return "(" + valorB.dx_str() + ")";
-      else if(!adicaoDesnecessaria(valorA.str()) && adicaoDesnecessaria(valorB.str())) 
-        return "(" + valorA.dx_str() + ")";
+      string esquerda, direita, result;
 
-      return "((" + valorA.dx_str() + ")+(" + valorB.dx_str() + "))";
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.dx_str() + ")" : valorA.dx_str());
+      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.dx_str() + ")" : valorB.dx_str());
+
+      // Todo: Criar Função Excecao Soma
+      if(esquerda == "0")
+        result = direita;
+      else if(direita == "0")
+        result = esquerda;
+      else
+        result = esquerda + "+" + direita;
+
+      return result;
     }
 };
 
@@ -110,6 +134,10 @@ class Subtracao {
   public:
     Subtracao(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
 
+    const int precedencia() const {
+      return 1;
+    }
+
     double e(double generico) const {
       return valorA.e(generico) - valorB.e(generico);
     }
@@ -119,21 +147,36 @@ class Subtracao {
     }
 
     string str() const {
-      if(subtracaoDesnecessaria(valorA.str()) && !subtracaoDesnecessaria(valorB.str()))
-        return "-(" + valorB.str() + ")";
-      else if(!subtracaoDesnecessaria(valorA.str()) && subtracaoDesnecessaria(valorB.str())) 
-        return "(" + valorA.str() + ")";
+      string esquerda, direita, result;
+
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
       
-      return "((" + valorA.str() + ")-(" + valorB.str() + "))";
+      // Todo: Criar Função Excecao Subtracao
+      if(esquerda == "0")
+        result = direita;
+      else if(direita == "0")
+        result = esquerda;
+      else
+        result = esquerda + "-" + direita;
+      
+      return result;
     }
     
     string dx_str() const {
-      if(subtracaoDesnecessaria(valorA.str()) && !subtracaoDesnecessaria(valorB.str()))
-        return "-(" + valorB.dx_str() + ")";
-      else if(!subtracaoDesnecessaria(valorA.str()) && subtracaoDesnecessaria(valorB.str())) 
-        return "(" + valorA.dx_str() + ")";
-      
-      return "((" + valorA.dx_str() + ")-(" + valorB.dx_str() + "))";
+      string esquerda, direita, result;
+
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.dx_str() + ")" : valorA.dx_str());
+      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.dx_str() + ")" : valorB.dx_str());
+
+      if(esquerda == "0")
+        result = direita;
+      else if(direita == "0")
+        result = esquerda;
+      else
+        result = esquerda + "-" + direita;
+
+      return result;
     }
 };
 
@@ -146,6 +189,10 @@ class Produto {
   public:
     Produto(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
 
+    const int precedencia() const {
+      return 2;
+    }
+
     double e(double generico) const {
       return valorA.e(generico) * valorB.e(generico);
     }
@@ -155,28 +202,68 @@ class Produto {
     }
 
     string str() const {
-      if(produtoDesnecessario(valorA.str()) && !produtoDesnecessario(valorB.str())) {
-        if(valorA.str() == "1")
-          return "*" + valorB.str();
-        
-        return "*0";
-      } else if(!produtoDesnecessario(valorA.str()) && produtoDesnecessario(valorB.str())) {
-        if(valorB.str() == "1")
-          return "*" + valorA.str();
-        
-        return "*0";
-      }
+      string esquerda, direita, result;
 
-      return "((" + valorA.str() + ")*(" + valorB.str() + "))";
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      // TODO: Transformar em função = Excecao Produto
+      if(esquerda == "1")
+        result = direita;
+      else if(direita == "1")
+        result = esquerda;
+      else if(esquerda == "0" || direita == "0")
+        result = "0";
+      else
+        result = esquerda + "*" + direita;
+      
+      return result;
     }
     
     string dx_str() const {
-      string resultado = "(";
+      string esquerda, direita, str_valorA, str_valorB, dx_valorA, dx_valorB, result;
 
-      if(produtoDesnecessario(valorA.dx_str))
+      str_valorA = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      str_valorB = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      dx_valorA = (precedencia() > valorA.precedencia() ? "(" + valorA.dx_str() + ")" : valorA.dx_str());
+      dx_valorB = (precedencia() >= valorB.precedencia() ? "(" + valorB.dx_str() + ")" : valorB.dx_str());
+
+      if(dx_valorA == "1")
+        esquerda = str_valorB;
+      else if(str_valorB == "1")
+        esquerda = dx_valorA;
+      else if(dx_valorA == "0" || str_valorB == "0")
+        esquerda = "0";
+      else
+        esquerda = "(" + dx_valorA + "*" + str_valorB + ")";
       
+      if(str_valorA == "1")
+        direita = dx_valorB;
+      else if(dx_valorB == "1")
+        direita = str_valorA;
+      else if(str_valorA == "0" || dx_valorB == "0")
+        direita = "0";
+      else
+        direita = "(" + str_valorA + "*" + dx_valorB + ")";
 
-      return "(((" + valorA.dx_str() + ")*(" + valorB.str() + "))+((" + valorA.str() + ")*(" + valorB.dx_str() + ")))";
+      if(esquerda == "1" || esquerda == "0")
+        esquerda = "";
+      if(direita == "1" || direita == "0")
+        direita = "";
+      
+      if(esquerda == "" && direita != "")
+        result = direita;
+      else if(esquerda != "" && direita == "")
+        result = esquerda;
+      else if(esquerda == "" && direita == "")
+        result = "";
+      else
+        result = esquerda + "+" + direita;
+
+      return result;
+      
+      // return "(((" + valorA.dx_str() + ")*(" + valorB.str() + "))+((" + valorA.str() + ")*(" + valorB.dx_str() + ")))";
     }
 };
 
@@ -401,18 +488,6 @@ Exponencial<Tipo> exp(Tipo x) {
 template<typename Tipo>
 Logaritmo<Tipo> log(Tipo x) {
   return Logaritmo<Tipo>(x);
-}
-
-bool adicaoDesnecessaria(string tipo) {
-  return tipo == "0";
-}
-
-bool subtracaoDesnecessaria(string tipo) {
-  return tipo == "0";
-}
-
-bool produtoDesnecessario(string tipo) {
-  return tipo == "1" || tipo == "0";
 }
 
 X x;
