@@ -18,7 +18,12 @@ class Node {
     // Supondo que o valor da propria raiz foi corretamente incluida
     // Durante a inserção
     void calculateSoma() {
-      soma = esquerda->soma + direita->soma;
+      if(esquerda != nullptr && direita == nullptr)
+        soma = esquerda->soma + chave;
+      else if(esquerda == nullptr && direita != nullptr)
+        soma = direita->soma + chave;
+      else
+        soma = esquerda->soma + direita->soma + chave;
     }
 };
 
@@ -53,7 +58,8 @@ class ArvoreBinariaDeBusca {
         Insert(data, &(*currentNode)->direita);
       }
 
-      (*currentNode)->soma += data;
+      // (*currentNode)->soma += data;
+      (*currentNode)->calculateSoma();
     }
 
     void inOrderPrint(Node* root) const {
