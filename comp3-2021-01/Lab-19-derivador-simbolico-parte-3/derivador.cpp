@@ -8,6 +8,11 @@
 
 using namespace std;
 
+string excecaoSoma(string esquerda, string direita);
+string excecaoSubtracao(string esquerda, string direita);
+string excecaoProduto(string esquerda, string direita);
+string excecaoPotencia(string esquerda, string direita);
+
 class X {
   public:
     const int precedencia() const {
@@ -96,32 +101,13 @@ class Soma {
       esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
       direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
 
-      // Todo: Criar Função Excecao Soma
-      if(esquerda == "0")
-        result = direita;
-      else if(direita == "0")
-        result = esquerda;
-      else
-        result = esquerda + "+" + direita;
+      result = excecaoSoma(esquerda, direita);
 
       return result;
     }
     
     string dx_str() const {
-      string esquerda, direita, result;
-
-      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.dx_str() + ")" : valorA.dx_str());
-      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.dx_str() + ")" : valorB.dx_str());
-
-      // Todo: Criar Função Excecao Soma
-      if(esquerda == "0")
-        result = direita;
-      else if(direita == "0")
-        result = esquerda;
-      else
-        result = esquerda + "+" + direita;
-
-      return result;
+      return excecaoSoma(valorA.dx_str(), valorB.dx_str());
     }
 };
 
@@ -151,32 +137,14 @@ class Subtracao {
 
       esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
       direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
-      
-      // Todo: Criar Função Excecao Subtracao
-      if(esquerda == "0")
-        result = direita;
-      else if(direita == "0")
-        result = esquerda;
-      else
-        result = esquerda + "-" + direita;
-      
+
+      result = excecaoSubtracao(esquerda, direita);
+
       return result;
     }
     
     string dx_str() const {
-      string esquerda, direita, result;
-
-      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.dx_str() + ")" : valorA.dx_str());
-      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.dx_str() + ")" : valorB.dx_str());
-
-      if(esquerda == "0")
-        result = direita;
-      else if(direita == "0")
-        result = esquerda;
-      else
-        result = esquerda + "-" + direita;
-
-      return result;
+      return excecaoSubtracao(valorA.dx_str(), valorB.dx_str());
     }
 };
 
@@ -205,17 +173,9 @@ class Produto {
       string esquerda, direita, result;
 
       esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
-      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+      direita = (precedencia() > valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
 
-      // TODO: Transformar em função = Excecao Produto
-      if(esquerda == "1")
-        result = direita;
-      else if(direita == "1")
-        result = esquerda;
-      else if(esquerda == "0" || direita == "0")
-        result = "0";
-      else
-        result = esquerda + "*" + direita;
+      result = excecaoProduto(esquerda, direita);
       
       return result;
     }
@@ -223,47 +183,12 @@ class Produto {
     string dx_str() const {
       string esquerda, direita, str_valorA, str_valorB, dx_valorA, dx_valorB, result;
 
-      str_valorA = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
-      str_valorB = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
-
-      dx_valorA = (precedencia() > valorA.precedencia() ? "(" + valorA.dx_str() + ")" : valorA.dx_str());
-      dx_valorB = (precedencia() >= valorB.precedencia() ? "(" + valorB.dx_str() + ")" : valorB.dx_str());
-
-      if(dx_valorA == "1")
-        esquerda = str_valorB;
-      else if(str_valorB == "1")
-        esquerda = dx_valorA;
-      else if(dx_valorA == "0" || str_valorB == "0")
-        esquerda = "0";
-      else
-        esquerda = "(" + dx_valorA + "*" + str_valorB + ")";
+      esquerda = excecaoProduto(valorA.dx_str(), valorB.str());
+      direita = excecaoProduto(valorA.str(), valorB.dx_str());
       
-      if(str_valorA == "1")
-        direita = dx_valorB;
-      else if(dx_valorB == "1")
-        direita = str_valorA;
-      else if(str_valorA == "0" || dx_valorB == "0")
-        direita = "0";
-      else
-        direita = "(" + str_valorA + "*" + dx_valorB + ")";
-
-      if(esquerda == "1" || esquerda == "0")
-        esquerda = "";
-      if(direita == "1" || direita == "0")
-        direita = "";
-      
-      if(esquerda == "" && direita != "")
-        result = direita;
-      else if(esquerda != "" && direita == "")
-        result = esquerda;
-      else if(esquerda == "" && direita == "")
-        result = "";
-      else
-        result = esquerda + "+" + direita;
+      result = excecaoSoma(esquerda, direita);
 
       return result;
-      
-      // return "(((" + valorA.dx_str() + ")*(" + valorB.str() + "))+((" + valorA.str() + ")*(" + valorB.dx_str() + ")))";
     }
 };
 
@@ -276,6 +201,10 @@ class Divisao {
   public:
     Divisao(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
 
+    const int precedencia() const {
+      return 2;
+    }
+
     double e(double generico) const {
       return valorA.e(generico) / valorB.e(generico);
     }
@@ -285,11 +214,34 @@ class Divisao {
     }
 
     string str() const {
-      return "((" + valorA.str() + ")/(" + valorB.str() + "))";
+      string esquerda, direita, result;
+
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      direita = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      result = esquerda + "/" + direita;
+
+      return result;
+
+      // return "((" + valorA.str() + ")/(" + valorB.str() + "))";
     }
     
     string dx_str() const {
-      return "((((" + valorA.dx_str() + ")*(" + valorB.str() + "))-((" + valorA.str() + ")*(" + valorB.dx_str() + ")))/((" + valorB.str() + "^2)))";
+      string valorA_str, valorB_str, esquerda, meio, direita, result;
+
+      valorA_str = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      valorB_str = (precedencia() >= valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      esquerda = excecaoProduto(valorA.dx_str(), valorB_str);
+      meio = excecaoProduto(valorA_str, valorB.dx_str());
+      direita = excecaoPotencia(valorB_str, "2");
+
+      esquerda = excecaoSubtracao(esquerda, meio);
+      result = esquerda + "/" + direita;
+
+      return result;
+
+      // return "((((" + valorA.dx_str() + ")*(" + valorB.str() + "))-((" + valorA.str() + ")*(" + valorB.dx_str() + ")))/((" + valorB.str() + "^2)))";
     }
 };
 
@@ -302,6 +254,10 @@ class Potencia {
   public:
     Potencia(TipoA tipoA, TipoB tipoB): valorA(tipoA), valorB(tipoB) {}
 
+    const int precedencia() const {
+      return 3;
+    }
+
     double e(double generico) const {
       return pow(valorA.e(generico), valorB.e(generico));
     }
@@ -311,15 +267,35 @@ class Potencia {
     }
 
     string str() const {
-      return "(" + valorA.str() + ")^" + valorB.str();
+      string esquerda, direita, result;
+
+      esquerda = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      direita = (precedencia() > valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      result = excecaoPotencia(esquerda, direita);
+
+      return result;
+      // return "(" + valorA.str() + ")^" + valorB.str();
     }
     
     string dx_str() const {
+      string esquerda, direita, str_valorA, str_valorB, result;
+
       auto tempSub = Subtracao<TipoB, Cte>(valorB, 1);
       stringstream streamSubtraction;
       streamSubtraction << fixed << setprecision(0) << tempSub.e(1);
 
-      return "(" + valorB.str() + "*(" + valorA.dx_str() + ")*(" + valorA.str() + ")^" + streamSubtraction.str() + ")";
+      str_valorA = (precedencia() > valorA.precedencia() ? "(" + valorA.str() + ")" : valorA.str());
+      str_valorB = (precedencia() > valorB.precedencia() ? "(" + valorB.str() + ")" : valorB.str());
+
+      esquerda = excecaoProduto(str_valorB, valorA.dx_str());
+      direita = excecaoPotencia(str_valorA, streamSubtraction.str());
+
+      result = excecaoProduto(esquerda, direita);
+
+      return result;
+
+      // return "(" + valorB.str() + "*(" + valorA.dx_str() + ")*(" + valorA.str() + ")^" + streamSubtraction.str() + ")";
     }
 };
 
@@ -330,6 +306,10 @@ class Seno {
   
   public:
     Seno(Tipo tipo): valor(tipo) {}
+
+    const int precedencia() const {
+      return 3;
+    }
 
     double e(double generico) const {
       return sin(valor.e(generico));
@@ -344,7 +324,13 @@ class Seno {
     }
 
     string dx_str() const {
-      return "cos(" + valor.str() + ")*(" + valor.dx_str() + ")";
+      string esquerda, result;
+      
+      esquerda = "cos(" + valor.str() + ")";
+
+      result = excecaoProduto(esquerda, valor.dx_str());
+
+      return result;
     }
 };
 
@@ -355,6 +341,10 @@ class Cosseno {
   
   public:
     Cosseno(Tipo tipo): valor(tipo) {}
+
+    const int precedencia() const {
+      return 3;
+    }
 
     double e(double generico) const {
         return cos(valor.e(generico));
@@ -369,7 +359,13 @@ class Cosseno {
     }
 
     string dx_str() const {
-      return "-sin(" + valor.str() + ")*(" + valor.dx_str() + ")";
+      string esquerda, result;
+
+      esquerda = "-sin(" + valor.str() + ")";
+
+      result = excecaoProduto(esquerda, valor.dx_str());
+
+      return result;
     }
 };
 
@@ -381,20 +377,35 @@ class Exponencial {
   public:
     Exponencial(Tipo tipo): valor(tipo) {}
 
+    const int precedencia() const {
+      return 3;
+    }
+
     double e(double generico) const {
-        return exp(valor.e(generico));
+      return exp(valor.e(generico));
     }
 
     double dx(double generico) const {
-        return exp(valor.e(generico)) * valor.dx(generico);
+      return exp(valor.e(generico)) * valor.dx(generico);
     }
 
     string str() const {
-      return "exp(" + valor.str() + ")";
+      string result;
+
+      result = (precedencia() > valor.precedencia() ? "(" + valor.str() + ")" : valor.str());
+
+      return "exp" + result;
     }
 
     string dx_str() const {
-      return "(exp(" + valor.str() + ")*(" + valor.dx_str() + "))";
+      string esquerda, direita, result;
+
+      esquerda = "exp(" + valor.str() + ")";
+      direita = "(" + valor.dx_str() + ")";
+
+      result = excecaoProduto(esquerda, direita);
+
+      return result;
     }
 };
 
@@ -406,6 +417,10 @@ class Logaritmo {
   public:
     Logaritmo(Tipo tipo): valor(tipo) {}
 
+    const int precedencia() const {
+      return 3;
+    }
+
     double e(double generico) const {
         return log(valor.e(generico));
     }
@@ -415,11 +430,24 @@ class Logaritmo {
     }
 
     string str() const {
-      return "log((" + valor.str() + "))";
+      string str_valor, result;
+
+      str_valor = (precedencia() > valor.precedencia() ? "(" + valor.str() + ")" : valor.str());
+
+      result = "log" + str_valor + "";
+
+      return result;
     }
 
     string dx_str() const {
-      return "1/(" + valor.str() + ")*(" + valor.dx_str() + ")";
+      string esquerda, result;
+
+      esquerda = (precedencia() > valor.precedencia() ? "(" + valor.str() + ")" : valor.str());
+
+      result = excecaoProduto(esquerda, valor.dx_str());
+
+      return "1/" + result;
+      // return "1/(" + valor.str() + ")*(" + valor.dx_str() + ")";
     }
 };
 
@@ -488,6 +516,66 @@ Exponencial<Tipo> exp(Tipo x) {
 template<typename Tipo>
 Logaritmo<Tipo> log(Tipo x) {
   return Logaritmo<Tipo>(x);
+}
+
+string excecaoSoma(string esquerda, string direita) {
+  string result = "";
+
+  if(esquerda == "0" || esquerda == "(0)") 
+    result = direita;
+  else if(direita == "0" || direita == "(0)")
+    result = esquerda;
+  else
+    result = esquerda + "+" + direita;
+
+  return result;
+}
+
+string excecaoSubtracao(string esquerda, string direita) {
+  string result = "";
+
+  if(esquerda == "0" || esquerda == "(0)") 
+    result = "-" + direita;
+  else if(direita == "0" || direita == "(0)")
+    result = esquerda;
+  else
+    result = esquerda + "-" + direita;
+
+  return result;
+}
+
+string excecaoProduto(string esquerda, string direita) {
+  string result = "";
+
+  if(esquerda == "1" || esquerda == "(1)")
+    result = direita;
+  else if(direita == "1" || direita == "(1)")
+    result = esquerda;
+  else if(esquerda == "0" || direita == "0" || esquerda == "(0)" || direita == "(0)")
+    result = "0";
+  else
+    result = esquerda + "*" + direita;
+
+  return result;
+}
+
+string excecaoPotencia(string esquerda, string direita) {
+  string result = "";
+
+  if(direita == "0" || direita == "(0)")
+    result = "1";
+  else if((direita == "1" && esquerda != "x") || (direita == "1" && esquerda != "(x)") ||
+          (direita == "(1)" && esquerda != "(x)") || (direita == "(1)" && esquerda != "x"))
+    result = esquerda;
+  else if((direita == "1" && esquerda == "x") || (direita == "1" && esquerda == "(x)") ||
+          (direita == "(1)" && esquerda == "(x)") || (direita == "(1)" && esquerda == "x"))
+    result = esquerda;
+  else if(esquerda == "x" || esquerda == "(x)")
+    result = esquerda + "^" + direita;
+  else
+    result = esquerda + "^" + direita;
+
+  return result;
 }
 
 X x;
