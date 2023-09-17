@@ -80,11 +80,11 @@ class MyServer:
 
         if response.BODY is None:
             if response.HEADERS['STATUS_CODE'] == '404':
-                filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, '404.html')
-                response.BODY = open(filename).read()
+                filePath = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, '404.html')
+                response.Content(filePath, '.html', self.FORMAT)
             elif response.HEADERS['STATUS_CODE'] == '401':
-                filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, '401.html')
-                response.BODY = open(filename).read()
+                filePath = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, '401.html')
+                response.Content(filePath, '.html', self.FORMAT)
 
         if response.BODY is not None:
             body = response.BODY.encode(self.FORMAT)
@@ -98,27 +98,30 @@ class MyServer:
                 connectionSocket.send(body[start: end])
     
     def HandleGetMethod(self, request: Request) -> Response:
-        isValidObject = re.search('.*\.(html|ico)', request.HEADERS['PATH'])
+        _, extension = os.path.splitext(request.HEADERS['PATH'])
+        isValidObject = re.search('\.(html|js|css|ico)', extension)
         paths = request.HEADERS['PATH'].split('/')
 
         if isValidObject == None:
+            # Se a última string após a última '/' for um diretorio, ou estiver na home
+            # Ex: /teste -> Se 'teste' for um diretório
             if os.path.isdir(paths[len(paths) - 1]) or request.HEADERS['PATH'] == '/':
                 return self.TryGetIndexFile(request)
             else:
                 return Response().NotFound()
         
-        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *paths)
+        filePath = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *paths)
         
-        if os.path.exists(filename):
-            return Response().Succesfull().View(filename, self.FORMAT)
+        if os.path.exists(filePath):
+            return Response().Succesfull().Content(filePath, extension, self.FORMAT)
         else:
             return Response().NotFound()           
     
     def TryGetIndexFile(self, request: Request) -> Response:
-        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *request.HEADERS['PATH'].split('/'), 'index.html')
+        filePath = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *request.HEADERS['PATH'].split('/'), 'index.html')
         
-        if os.path.exists(filename):
-            return Response().Succesfull().View(filename, self.FORMAT)
+        if os.path.exists(filePath):
+            return Response().Succesfull().Content(filePath, '.html', self.FORMAT)
         else:
             return Response().NotFound()
     

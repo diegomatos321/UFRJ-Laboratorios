@@ -33,11 +33,18 @@ class Response:
 
         return self
 
-    def View(self, filename: str, format: str) -> Self:
-        body = open(filename).read()
+    def Content(self, filePath: str, extension: str, format: str) -> Self:
+        body = open(filePath).read()
 
         self.HEADERS['Content-Length'] = str(len(body.encode(format)))
-        self.HEADERS['Content-Type'] = 'text/html' 
+
+        if extension == '.js':
+            self.HEADERS['Content-Type'] = 'text/javascript; charset=' + format
+        elif extension == '.css':
+            self.HEADERS['Content-Type'] = 'text/css; charset=' + format
+        elif extension == '.html':
+            self.HEADERS['Content-Type'] = 'text/html; charset=' + format
+        
         self.BODY = body
 
         return self
