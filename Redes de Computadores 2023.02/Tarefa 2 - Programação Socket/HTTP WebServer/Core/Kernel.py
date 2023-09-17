@@ -129,7 +129,5 @@ class MyServer:
     
     def HandlePostMethod(self, request: Request) -> Response:
         if request.HEADERS['PATH'] == '/submit':
-            if request.BODY['nome'] == 'Diego' and request.BODY['senha'] == '123456':
-                return Response().Redirect(to='pagina.html')
-            else:
-                return Response().Unauthorized()
+            return LoginController().Submit(request)
+            
