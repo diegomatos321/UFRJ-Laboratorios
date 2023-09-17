@@ -78,6 +78,14 @@ class MyServer:
 
         connectionSocket.send(result.encode(self.FORMAT))
 
+        if response.BODY is None:
+            if response.HEADERS['STATUS_CODE'] == '404':
+                filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, '404.html')
+                response.BODY = open(filename).read()
+            elif response.HEADERS['STATUS_CODE'] == '401':
+                filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, '401.html')
+                response.BODY = open(filename).read()
+
         if response.BODY is not None:
             body = response.BODY.encode(self.FORMAT)
 
