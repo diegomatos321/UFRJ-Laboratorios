@@ -89,7 +89,10 @@ class MyServer:
                 response.Content(filePath, '.html', self.FORMAT)
 
         if response.BODY is not None:
-            body = response.BODY.encode(self.FORMAT)
+            try:
+                body = response.BODY.encode(self.FORMAT)
+            except (UnicodeDecodeError, AttributeError):
+                body = response.BODY
 
             # Calculo quantos pacotes são necessários a partir do tamanho do documento
             packages = math.ceil(len(body) / self.BUFFER_SIZE)
@@ -101,7 +104,7 @@ class MyServer:
     
     def HandleGetMethod(self, request: Request) -> Response:
         _, extension = os.path.splitext(request.HEADERS['PATH'])
-        isValidObject = re.search('\.(html|js|css|ico)', extension)
+        isValidObject = re.search('\.(html|js|css|svg|png|jpg|jpeg|ico)', extension)
         paths = request.HEADERS['PATH'].split('/')
 
         if isValidObject == None:

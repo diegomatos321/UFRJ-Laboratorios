@@ -34,16 +34,30 @@ class Response:
         return self
 
     def Content(self, filePath: str, extension: str, format: str) -> Self:
-        body = open(filePath, encoding=format).read()
-
-        self.HEADERS['Content-Length'] = str(len(body.encode(format)))
-
         if extension == '.js':
+            body = open(filePath, encoding=format).read()
+            self.HEADERS['Content-Length'] = str(len(body.encode(format)))
             self.HEADERS['Content-Type'] = 'text/javascript; charset=' + format
         elif extension == '.css':
+            body = open(filePath, encoding=format).read()
+            self.HEADERS['Content-Length'] = str(len(body.encode(format)))
             self.HEADERS['Content-Type'] = 'text/css; charset=' + format
         elif extension == '.html':
+            body = open(filePath, encoding=format).read()
+            self.HEADERS['Content-Length'] = str(len(body.encode(format)))
             self.HEADERS['Content-Type'] = 'text/html; charset=' + format
+        elif extension == '.svg':
+            body = open(filePath, mode='rb').read()
+            self.HEADERS['Content-Length'] = str(len(body))
+            self.HEADERS['Content-Type'] = 'image/svg+xml; charset=' + format
+        elif extension == '.png':
+            body = open(filePath, mode='rb').read()
+            self.HEADERS['Content-Length'] = str(len(body))
+            self.HEADERS['Content-Type'] = 'image/png; charset=' + format
+        elif extension == '.jpg':
+            body = open(filePath, mode='rb').read()
+            self.HEADERS['Content-Length'] = str(len(body))
+            self.HEADERS['Content-Type'] = 'image/jpg; charset=' + format
         
         self.BODY = body
 
