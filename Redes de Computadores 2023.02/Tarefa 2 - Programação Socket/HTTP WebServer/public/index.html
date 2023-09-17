@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olá mundo!</title>
-    <link rel="stylesheet" href="/css/index.css">
+    <title>Tela de Login - Programação em Socket</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 </head>
-<body>
-    <h1>Funcionou!</h1>
-    <a href="pagina.html">Outra pagina</a>
+<body style="min-width: 100vw; min-height: 100vh;" class="w-full h-full flex justify-center items-center bg-gray-100">
+    <section>
+        <div class="p-4 rounded-lg container shadow-lg bg-white space-y-4 md:w-[400px]">
+            <h1 style="display: none;" class="text-2xl"><strong>Tela de login</strong></h1>
 
-    <form action="submit" method="POST">
-        <div>
-            <label for="nome">Digite seu nome</label>
-            <input type="text" name="nome"/>
+            <img src="/images/Minerva_Oficial_UFRJ_Orientacao_Horizontal.png" title="Logo da UFRJ" alt="Logo da UFRJ">
+
+            <form action="submit" method="POST" class="space-y-4">
+                <div>
+                    <label for="nome">Usuário</label>
+                    <input type="text" name="nome" class="w-full rounded block" required/>
+                </div>
+        
+                <div>
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" class="w-full rounded block" required />
+                </div>
+        
+                <button class="w-full px-4 py-2 rounded bg-green-600 hover:bg-green-400 text-white">Fazer login</button>
+            </form>
         </div>
-
-        <div>
-            <label for="senha">Digite sua senha</label>
-            <input type="password" name="senha" />
-        </div>
-
-        <button>Fazer login</button>
-    </form>
-
-    <script src="/js/index.js"></script>
+    </section>
 </body>
 </html>
