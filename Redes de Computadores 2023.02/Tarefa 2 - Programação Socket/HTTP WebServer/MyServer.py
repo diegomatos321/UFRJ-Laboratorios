@@ -2,9 +2,11 @@ import socket
 import math
 import re
 import os
+from Request import Request
+from Response import Response
 
 class MyServer:
-    FORMAT: str = 'ascii'
+    FORMAT: str = 'UTF-8'
     BUFFER_SIZE: int = 4096
     PUBLIC_PATH: str = 'public'
     SERVER_IP: str|None = None
@@ -16,6 +18,42 @@ class MyServer:
         pass
 
     def Listen(self, server_port: int, server_ip: str|None = None) -> None:
+        self.Bootstrap(server_port, server_ip)
+
+        print("[STARTING] Server is starting...")
+        self.SERVER.listen(1)
+
+        while True:
+            print(f"[LISTENING] Server is listening on {self.SERVER_IP}:{self.SERVER_PORT}")
+
+            connectionSocket, addr = self.SERVER.accept()
+            print(f"[NEW CONNECTION] {addr} connected.")
+
+            try:
+                rawMessage = connectionSocket.recv(self.BUFFER_SIZE)
+
+                if not len(rawMessage):
+                    connectionSocket.close()
+                    continue
+
+                parsedMessage = rawMessage.decode(self.FORMAT)
+
+                request = Request(parsedMessage)
+                
+                if request.HEADERS['METHOD'] == 'GET':
+                    response = self.HandleGetMethod(request)
+                elif request.HEADERS['METHOD'] == 'POST':
+                    response = self.HandlePostMethod(request)
+
+                self.SendResponse(connectionSocket, response)
+                connectionSocket.close()
+            except IOError:
+                response = Response().NotFound()
+                
+                self.SendResponse(connectionSocket, response)
+                connectionSocket.close()
+
+    def Bootstrap(self, server_port:int, server_ip: str|None = None) -> None:
         self.SERVER_PORT = server_port
 
         if server_ip is None:
@@ -28,119 +66,20 @@ class MyServer:
         self.SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.SERVER.bind(ADRR)
 
-        print("[STARTING] Server is starting...")
-        self.SERVER.listen(1)
-
-        while True:
-            print(f"[LISTENING] Server is listening on {self.SERVER_IP}:{self.SERVER_PORT}")
-
-            connectionSocket, addr = self.SERVER.accept()
-            print(f"[NEW CONNECTION] {addr} connected.")
-
-            try:
-                rawRequest = connectionSocket.recv(self.BUFFER_SIZE)
-
-                if not len(rawRequest):
-                    connectionSocket.close()
-                    continue
-
-                request = rawRequest.decode(self.FORMAT)
-                
-                lines = request.split("\r\n")
-                METHOD, PATH, PROTOCOL = lines[0].split()
-
-                #Get request headers
-                REQUEST_HEADERS = {}
-                REQUEST_HEADERS['METHOD'] = METHOD
-                REQUEST_HEADERS['PATH'] = PATH
-                REQUEST_HEADERS['PROTOCOL'] = PROTOCOL
-                REQUEST_HEADERS['BODY'] = {}
-
-                contador = 1
-                for line in lines[1:]:
-                    contador += 1
-                    if line == '':
-                        break
-
-                    HEADER, VALUE = line.split(': ')
-                    REQUEST_HEADERS[HEADER] = VALUE
-                
-                if contador < len(lines):
-                    # O método GET retorna duas linhas em branco
-                    # Verificando se a proxima não está em branco
-                    if lines[contador] != '':
-                        contents = lines[contador].split('&')
-                        for content in contents:
-                            KEY, VALUE = content.split('=')
-                            REQUEST_HEADERS["BODY"][KEY] = VALUE
-                    
-                # RESPONSE_HEADERS FIXOS
-                RESPONSE_HEADERS = {}
-                RESPONSE_HEADERS['PROTOCOL'] = 'HTTP/1.1'
-                RESPONSE_HEADERS['Connection'] = "close"
-
-                #Handle method
-                if REQUEST_HEADERS['METHOD'] == 'GET':
-                    result = re.search('.*\.(html|ico)', REQUEST_HEADERS['PATH'])
-
-                    if result == None:
-                        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, 'index.html')
-                        if os.path.exists(filename):
-                            body = open(filename).read()
-                            
-                            RESPONSE_HEADERS['STATUS_CODE'] = chr(200)
-                            RESPONSE_HEADERS['STATUS_MESSAGE'] = 'OK'
-                            RESPONSE_HEADERS['Content-Length'] = chr(len(body.encode(self.FORMAT)))
-                            RESPONSE_HEADERS['Content-Type'] = 'text/html' #TODO Tipo do arquivo dinamico
-                            RESPONSE_HEADERS['body'] = body
-                        else:
-                            RESPONSE_HEADERS['STATUS_CODE'] = str(404)
-                            RESPONSE_HEADERS['STATUS_MESSAGE'] = 'Not Found'
-                    else:
-                        paths = REQUEST_HEADERS['PATH'].split('/')
-                        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *paths)
-                        
-                        if os.path.exists(filename):
-                            body = open(filename).read()
-                            
-                            RESPONSE_HEADERS['STATUS_CODE'] = ord(200)
-                            RESPONSE_HEADERS['STATUS_MESSAGE'] = 'OK'
-                            RESPONSE_HEADERS['Content-Length'] = ord(len(body.encode(self.FORMAT)))
-                            RESPONSE_HEADERS['Content-Type'] = 'text/html' #TODO Tipo do arquivo dinamico
-                            RESPONSE_HEADERS['body'] = body
-                        else:
-                            RESPONSE_HEADERS['STATUS_CODE'] = str(404)
-                            RESPONSE_HEADERS['STATUS_MESSAGE'] = 'Not Found'
-                elif REQUEST_HEADERS['METHOD'] == 'POST':
-                    if REQUEST_HEADERS['PATH'] == '/submit':
-                        if REQUEST_HEADERS['BODY']['nome'] == 'Diego' and REQUEST_HEADERS['BODY']['senha'] == '123456':
-                            RESPONSE_HEADERS['STATUS_CODE'] = str(301)
-                            RESPONSE_HEADERS['STATUS_MESSAGE'] = 'Moved Permanently'
-                            RESPONSE_HEADERS['Content-Type'] = 'text/html' #TODO Tipo do arquivo dinamico
-                            RESPONSE_HEADERS['Location'] = 'pagina.html'
-                        else:
-                            RESPONSE_HEADERS['STATUS_CODE'] = str(404)
-                            RESPONSE_HEADERS['STATUS_MESSAGE'] = 'Not Found'
-
-                self.SendResponse(connectionSocket, RESPONSE_HEADERS)
-                connectionSocket.close()
-            except IOError:
-                connectionSocket.close()
-
-    def SendResponse(self, connectionSocket: socket, RESPONSE_HEADERS: dict):
-        response = RESPONSE_HEADERS['PROTOCOL'] + ' ' + RESPONSE_HEADERS['STATUS_CODE'] + ' ' + RESPONSE_HEADERS['STATUS_MESSAGE'] + '\r\n'
+    def SendResponse(self, connectionSocket: socket.socket, response: Response) -> None:
+        result: str = response.HEADERS['PROTOCOL'] + ' ' + response.HEADERS['STATUS_CODE'] + ' ' + response.HEADERS['STATUS_MESSAGE'] + '\r\n'
         
-        for header, value in RESPONSE_HEADERS.items():
+        for header, value in response.HEADERS.items():
             if header == 'PROTOCOL' or header == 'STATUS_CODE' or header == 'STATUS_MESSAGE' or header == 'body':
                 continue
 
-            response += header + ': ' + value + '\r\n'
-        response += '\r\n'
+            result += header + ': ' + value + '\r\n'
+        result += '\r\n'
 
-        connectionSocket.send(response.encode(self.FORMAT))
+        connectionSocket.send(result.encode(self.FORMAT))
 
-        if RESPONSE_HEADERS.get('body') is not None:
-            body = RESPONSE_HEADERS['body'].encode(self.FORMAT)
+        if response.BODY is not None:
+            body = response.BODY.encode(self.FORMAT)
 
             # Calculo quantos pacotes são necessários a partir do tamanho do documento
             packages = math.ceil(len(body) / self.BUFFER_SIZE)
@@ -149,3 +88,32 @@ class MyServer:
                 start = package * self.BUFFER_SIZE
                 end = start + self.BUFFER_SIZE
                 connectionSocket.send(body[start: end])
+    
+    def HandleGetMethod(self, request: Request) -> Response:
+        isValidObject = re.search('.*\.(html|ico)', request.HEADERS['PATH'])
+
+        if isValidObject == None:
+            return self.TryGetIndexFile(request)
+        
+        paths = request.HEADERS['PATH'].split('/')
+        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *paths)
+        
+        if os.path.exists(filename):
+            return Response().Succesfull().View(filename)
+        else:
+            return Response().NotFound()           
+    
+    def TryGetIndexFile(self, request: Request) -> Response:
+        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, 'index.html')
+        
+        if os.path.exists(filename):
+            return Response().Succesfull().View(filename, self.FORMAT)
+        else:
+            return Response().NotFound()
+    
+    def HandlePostMethod(self, request: Request) -> Response:
+        if request.HEADERS['PATH'] == '/submit':
+            if request.BODY['nome'] == 'Diego' and request.BODY['senha'] == '123456':
+                return Response().Redirect(to='pagina.html')
+            else:
+                return Response().Unauthorized()
