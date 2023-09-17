@@ -1,4 +1,4 @@
-import MyServer
+from Core.Kernel import MyServer as HTTPWebServer
 
-server = MyServer.MyServer()
+server = HTTPWebServer()
 server.Listen(8080)
