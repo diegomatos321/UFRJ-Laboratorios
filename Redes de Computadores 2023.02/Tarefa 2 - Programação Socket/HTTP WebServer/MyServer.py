@@ -99,20 +99,23 @@ class MyServer:
     
     def HandleGetMethod(self, request: Request) -> Response:
         isValidObject = re.search('.*\.(html|ico)', request.HEADERS['PATH'])
+        paths = request.HEADERS['PATH'].split('/')
 
         if isValidObject == None:
-            return self.TryGetIndexFile(request)
+            if os.path.isdir(paths[len(paths) - 1]) or request.HEADERS['PATH'] == '/':
+                return self.TryGetIndexFile(request)
+            else:
+                return Response().NotFound()
         
-        paths = request.HEADERS['PATH'].split('/')
         filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *paths)
         
         if os.path.exists(filename):
-            return Response().Succesfull().View(filename)
+            return Response().Succesfull().View(filename, self.FORMAT)
         else:
             return Response().NotFound()           
     
     def TryGetIndexFile(self, request: Request) -> Response:
-        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, 'index.html')
+        filename = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *request.HEADERS['PATH'].split('/'), 'index.html')
         
         if os.path.exists(filename):
             return Response().Succesfull().View(filename, self.FORMAT)
