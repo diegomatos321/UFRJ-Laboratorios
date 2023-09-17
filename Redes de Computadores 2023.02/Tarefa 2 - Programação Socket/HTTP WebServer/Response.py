@@ -34,7 +34,7 @@ class Response:
         return self
 
     def Content(self, filePath: str, extension: str, format: str) -> Self:
-        body = open(filePath).read()
+        body = open(filePath, encoding=format).read()
 
         self.HEADERS['Content-Length'] = str(len(body.encode(format)))
 
