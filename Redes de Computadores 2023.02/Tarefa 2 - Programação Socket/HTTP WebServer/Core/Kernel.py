@@ -2,8 +2,9 @@ import socket
 import math
 import re
 import os
-from Request import Request
-from Response import Response
+from Core.Request import Request
+from Core.Response import Response
+from Controllers.LoginController import LoginController
 
 class MyServer:
     FORMAT: str = 'UTF-8'
@@ -14,7 +15,7 @@ class MyServer:
     SERVER_PATH: str = ''
 
     def __init__(self) -> None:
-        self.SERVER_PATH = os.path.dirname(__file__)
+        self.SERVER_PATH = os.path.join(os.path.dirname(__file__), '..')
         pass
 
     def Listen(self, server_port: int, server_ip: str|None = None) -> None:
@@ -74,6 +75,7 @@ class MyServer:
                 continue
 
             result += header + ': ' + value + '\r\n'
+        
         result += '\r\n'
 
         connectionSocket.send(result.encode(self.FORMAT))
