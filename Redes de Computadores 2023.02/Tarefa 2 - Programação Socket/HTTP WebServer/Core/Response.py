@@ -6,7 +6,8 @@ class Response:
 
     def __init__(self) -> None:
         self.HEADERS['PROTOCOL'] = 'HTTP/1.1'
-        self.HEADERS['Connection'] = "close"
+        #self.HEADERS['Connection'] = "close"
+        self.HEADERS['Connection'] = "keep-alive"
     
     def Succesfull(self) -> Self:
         self.HEADERS['STATUS_CODE'] = '200'

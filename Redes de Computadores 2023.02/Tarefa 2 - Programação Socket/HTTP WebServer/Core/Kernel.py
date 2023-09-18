@@ -2,6 +2,7 @@ import socket
 import math
 import re
 import os
+import threading
 from Core.Request import Request
 from Core.Response import Response
 from Controllers.LoginController import LoginController
@@ -28,31 +29,9 @@ class MyServer:
             print(f"[LISTENING] Server is listening on {self.SERVER_IP}:{self.SERVER_PORT}")
 
             connectionSocket, addr = self.SERVER.accept()
-            print(f"[NEW CONNECTION] {addr} connected.")
-
-            try:
-                rawMessage = connectionSocket.recv(self.BUFFER_SIZE)
-
-                if not len(rawMessage):
-                    connectionSocket.close()
-                    continue
-
-                parsedMessage = rawMessage.decode(self.FORMAT)
-
-                request = Request(parsedMessage)
-                
-                if request.HEADERS['METHOD'] == 'GET':
-                    response = self.HandleGetMethod(request)
-                elif request.HEADERS['METHOD'] == 'POST':
-                    response = self.HandlePostMethod(request)
-
-                self.SendResponse(connectionSocket, response)
-                connectionSocket.close()
-            except IOError:
-                response = Response().NotFound()
-                
-                self.SendResponse(connectionSocket, response)
-                connectionSocket.close()
+            thread = threading.Thread(target=self.ManageConnection, args=(connectionSocket, addr))
+            thread.start()
+            print(f"[ACTIVE CONNECTIONS] {threading.activeCount()-1}")
 
     def Bootstrap(self, server_port:int, server_ip: str|None = None) -> None:
         self.SERVER_PORT = server_port
@@ -67,6 +46,36 @@ class MyServer:
         self.SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.SERVER.bind(ADRR)
 
+    def ManageConnection(self, connSocket: socket.socket, addrSocket):
+        print(f"[NEW CONNECTION] {addrSocket} connected.")
+        connected = True
+        while connected:
+            try:
+                rawMessage = connSocket.recv(self.BUFFER_SIZE)
+
+                if not len(rawMessage):
+                    connSocket.close()
+                    continue
+
+                parsedMessage = rawMessage.decode(self.FORMAT)
+
+                request = Request(parsedMessage)
+
+                if request.HEADERS['METHOD'] == 'GET':
+                    response = self.HandleGetMethod(request)
+                elif request.HEADERS['METHOD'] == 'POST':
+                    response = self.HandlePostMethod(request)
+
+                self.SendResponse(connSocket, response)
+                connected = False
+                connSocket.close()
+            except IOError:
+                response = Response().NotFound()
+
+                self.SendResponse(connSocket, response)
+                connected = False
+                connSocket.close()
+    
     def SendResponse(self, connectionSocket: socket.socket, response: Response) -> None:
         result: str = response.HEADERS['PROTOCOL'] + ' ' + response.HEADERS['STATUS_CODE'] + ' ' + response.HEADERS['STATUS_MESSAGE'] + '\r\n'
         
