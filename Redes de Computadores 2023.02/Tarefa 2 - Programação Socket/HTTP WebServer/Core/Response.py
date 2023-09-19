@@ -1,8 +1,10 @@
 from typing import Self
+import datetime
 
 class Response:
     HEADERS: dict = {}
     BODY: str|None = None
+    COOKIES: dict = {}
 
     def __init__(self) -> None:
         self.HEADERS['PROTOCOL'] = 'HTTP/1.1'
@@ -61,6 +63,17 @@ class Response:
             self.HEADERS['Content-Type'] = 'image/jpg; charset=' + format
         
         self.BODY = body
+
+        return self
+    
+    def SetCookie(self, key:str, value:str, ttl:int = 0) -> Self:
+        timestamp = datetime.datetime.now() + datetime.timedelta(minutes=ttl)
+
+        self.COOKIES[key] = {
+            'key': key,
+            'value': value,
+            'ttl': str(timestamp.timestamp())
+        }
 
         return self
     

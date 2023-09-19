@@ -3,6 +3,7 @@ import math
 import re
 import os
 import threading
+import uuid
 from Core.Request import Request
 from Core.Response import Response
 from Controllers.LoginController import LoginController
@@ -66,6 +67,12 @@ class MyServer:
                 elif request.HEADERS['METHOD'] == 'POST':
                     response = self.HandlePostMethod(request)
 
+                if request.COOKIES.get('__session') == None:
+                    sessionId = uuid.uuid4()
+                    file = open(os.path.join('sessions', str(sessionId)), 'x')
+                    file.close()
+                    response.SetCookie('__session', str(sessionId), 60 * 2)
+
                 self.SendResponse(connSocket, response)
                 connected = False
                 connSocket.close()
@@ -85,6 +92,16 @@ class MyServer:
 
             result += header + ': ' + value + '\r\n'
         
+        for _, cookie in response.COOKIES.items():
+            result += 'Set-cookie: ' + cookie['key'] + '=' + cookie['value'] + '; '
+            result += 'Domain=' + self.SERVER_IP + '; '
+            result += 'Path=/; '
+
+            if cookie['ttl'] is not None and cookie['ttl'] != '':
+                result += 'Expires=' + cookie['ttl'] + '; '
+            
+            result += '\r\n'
+
         result += '\r\n'
 
         connectionSocket.send(result.encode(self.FORMAT))
@@ -125,6 +142,13 @@ class MyServer:
                 return Response().NotFound()
         
         filePath = os.path.join(self.SERVER_PATH, self.PUBLIC_PATH, *paths)
+
+        if request.HEADERS['PATH'] == '/privado.html':
+            isLogged = request.GetSessionKey('loggedin', False)
+            if isLogged == True:
+                return Response().Succesfull().Content(filePath, extension, self.FORMAT)
+            else:
+                return Response().Redirect(to='/')    
         
         if os.path.exists(filePath):
             return Response().Succesfull().Content(filePath, extension, self.FORMAT)

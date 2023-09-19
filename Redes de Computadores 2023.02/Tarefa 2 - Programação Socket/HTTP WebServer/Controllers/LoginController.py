@@ -7,6 +7,7 @@ class LoginController:
 
     def Submit(self, request: Request) -> Response:
         if request.BODY['nome'] == 'Diego' and request.BODY['senha'] == '123456':
+            request.SetSessionValue('loggedin', True)
             return Response().Redirect(to='privado.html')
         else:
             return Response().Unauthorized()
