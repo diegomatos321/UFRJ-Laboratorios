@@ -22,6 +22,11 @@ class Request:
 
                 for content in contents:
                     KEY, VALUE = content.split('=')
+
+                    if KEY == '__method':
+                        self.HEADERS['METHOD'] = VALUE
+                        continue
+
                     self.BODY[KEY] = VALUE
 
     def getRequestHeaders(self, lines: list[str]) -> int:
@@ -46,12 +51,12 @@ class Request:
 
             self.HEADERS[HEADER] = VALUE
             contador += 1
-        
+
         return contador
 
     def GetSessionKey(self, key: str, default = None):
         if self.COOKIES.get('__session') is None:
-            return None
+            return default
 
         sessionFile = open(os.path.join('sessions', self.COOKIES['__session']), encoding='UTF-8').read()
         
