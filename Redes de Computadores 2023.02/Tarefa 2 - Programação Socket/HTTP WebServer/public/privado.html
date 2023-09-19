@@ -12,9 +12,10 @@
             <div class="flex flex-wrap justify-between gap-2">
                 <h1 class="text-3xl"><strong>Olá Usuário!</strong></h1>
 
-                <a href="/">
+                <form action="/logout" method="POST">
+                    <input type="hidden" name="__method" value="DELETE">
                     <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-400">Sair</button>  
-                </a>
+                </form>
             </div>
 
             <img style="height: 350px;" src="/images/thats-all-folks.jpg" class="rounded-lg mx-auto" alt="thats-all-folks">

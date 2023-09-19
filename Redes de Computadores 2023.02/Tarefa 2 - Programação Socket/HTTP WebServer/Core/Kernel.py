@@ -66,6 +66,8 @@ class MyServer:
                     response = self.HandleGetMethod(request)
                 elif request.HEADERS['METHOD'] == 'POST':
                     response = self.HandlePostMethod(request)
+                elif request.HEADERS['METHOD'] == 'DELETE':
+                    response = self.HandleDeleteMethod(request)
 
                 if request.COOKIES.get('__session') == None:
                     sessionId = uuid.uuid4()
@@ -166,4 +168,9 @@ class MyServer:
     def HandlePostMethod(self, request: Request) -> Response:
         if request.HEADERS['PATH'] == '/submit':
             return LoginController().Submit(request)
+        
+    def HandleDeleteMethod(self, request: Request) -> Response:
+        if request.HEADERS['PATH'] == '/logout':
+            request.SetSessionValue('loggedin', False)
+            return Response().Redirect(to='/')
             
