@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     
     srand(time(NULL));
     
-    const float MIN_VALUE = -10000.0, MAX_VALUE = 10000.0;
+    static const float MIN_VALUE = -10000.0, MAX_VALUE = 10000.0;
     float soma = 0.0;
     for (int i = 0; i < TAM_VETOR; i++)
     {
