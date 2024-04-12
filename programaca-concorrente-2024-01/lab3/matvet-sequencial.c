@@ -4,10 +4,19 @@
 #include <wchar.h>
 #include "timer.h"
 
-void ReadDimensions(FILE *file, int *rows, int *cols)
+FILE* ReadDimensions(const char* fileName, int *rows, int *cols)
 {
+   FILE *file = fopen(fileName, "rb");
+   if (file == NULL)
+   {
+      wprintf(L"Erro de abertura do arquivo de entrada.\n");
+      exit(EXIT_FAILURE);
+   }
+
    fread(rows, sizeof(int), 1, file);
    fread(cols, sizeof(int), 1, file);
+
+   return file;
 }
 
 void ReadMatrix(FILE *file, float *matrix, int tam)
@@ -15,16 +24,19 @@ void ReadMatrix(FILE *file, float *matrix, int tam)
    fread(matrix, sizeof(float), tam, file);
 }
 
-void MultiplyMatrices(float *A, float *B, int rowsA, int colsA, int colsB, float *result)
+void MultiplyMatrices(float *A, float *B, int rowsA, int colsA, int colsB, float *C)
 {
-   for (int i = 0; i < rowsA; ++i)
+   const int rowsC = rowsA;
+   const int colsC = colsB;
+
+   for (int i = 0; i < rowsC; ++i)
    {
-      for (int j = 0; j < colsB; j++)
+      for (int j = 0; j < colsC; j++)
       {
-         result[i * colsB + j] = 0;
+         C[i * colsC + j] = 0;
          for (int k = 0; k < colsA; k++)
          {
-            result[i * colsB + j] += A[i * colsA + k] * B[k * colsB + j];
+            C[i * colsC + j] += A[i * colsA + k] * B[k * colsB + j];
          }
       }
    }
@@ -52,21 +64,14 @@ int main(int argc, char *argv[])
 
    GET_TIME(start);
 
-   if (argc < 3)
+   if (argc < 4)
    {
-      wprintf(L"Argumentos obrigatórios: <arquivo entrada> <arquivo saída>.\n");
+      wprintf(L"Argumentos obrigatórios: <matriz_a> <matriz_b> <arquivo saída>.\n");
       return EXIT_FAILURE;
    }
 
-   FILE *arquivoEntrada = fopen(argv[1], "rb");
-   if (arquivoEntrada == NULL)
-   {
-      wprintf(L"Erro de abertura do arquivo de entrada.\n");
-      return EXIT_FAILURE;
-   }
-
-   ReadDimensions(arquivoEntrada, &rowsA, &colsA);
-   ReadDimensions(arquivoEntrada, &rowsB, &colsB);
+   FILE *fileA = ReadDimensions(argv[1], &rowsA, &colsA);
+   FILE *fileB = ReadDimensions(argv[2], &rowsB, &colsB);
 
    // Verificar dimensões das matrizes
    if (colsA != rowsB)
@@ -88,10 +93,11 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
    }
 
-   ReadMatrix(arquivoEntrada, A, TAM_VETOR_A);
-   ReadMatrix(arquivoEntrada, B, TAM_VETOR_B);
+   ReadMatrix(fileA, A, TAM_VETOR_A);
+   ReadMatrix(fileB, B, TAM_VETOR_B);
 
-   fclose(arquivoEntrada);
+   fclose(fileA);
+   fclose(fileB);
 
    GET_TIME(end);
    delta = end - start;
