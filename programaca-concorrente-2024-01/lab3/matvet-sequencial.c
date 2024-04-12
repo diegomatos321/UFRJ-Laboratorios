@@ -4,6 +4,8 @@
 #include <wchar.h>
 #include "timer.h"
 
+// #define TEXTO 
+
 FILE* ReadDimensions(const char* fileName, int *rows, int *cols)
 {
    FILE *file = fopen(fileName, "rb");
@@ -52,6 +54,18 @@ void PrintMatrix(float *matrix, int rows, int cols)
       }
       printf("\n");
    }
+}
+
+void WriteToFile(char* fileName, const int nLinhas, const int nColunas, const int TAM_VETOR, float *matriz) {
+      FILE * arquivoSaida = fopen(fileName, "wb");
+      if(arquivoSaida == NULL) {
+         wprintf(L"Erro de abertura do arquivo de saída.\n");
+         exit(EXIT_FAILURE);
+      }
+   
+      fwrite(&nLinhas, sizeof(int), 1, arquivoSaida);
+      fwrite(&nColunas, sizeof(int), 1, arquivoSaida);
+      fwrite(matriz, sizeof(float), TAM_VETOR, arquivoSaida);
 }
 
 int main(int argc, char *argv[])
@@ -111,7 +125,11 @@ int main(int argc, char *argv[])
    delta = end - start;
    wprintf(L"Tempo multiplicação das matrizes: %lf\n", delta);
 
+   #ifdef TEXTO
    PrintMatrix(C, rowsA, colsB);
+   #endif
+   
+   WriteToFile(argv[3], rowsA, colsB, TAM_VETOR_C, C);
 
    // liberacao da memoria
    GET_TIME(start);
