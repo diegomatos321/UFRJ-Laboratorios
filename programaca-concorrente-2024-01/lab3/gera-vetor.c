@@ -51,8 +51,6 @@ void ReadArguments(char* argv[], int* nLinhas, int* nColunas) {
 
 void GenerateRandMatrix(const int TAM_VETOR, float *A)
 {
-    wprintf(L"Gerando matriz:\n");
-
     srand(time(NULL));
     static const float MIN_VALUE = -1000.0, MAX_VALUE = 1000.0;
     for (int i = 0; i < TAM_VETOR; i++)
@@ -60,11 +58,8 @@ void GenerateRandMatrix(const int TAM_VETOR, float *A)
         const float scale = rand() / (float)RAND_MAX;
         const float randNumber = MIN_VALUE + scale * (MAX_VALUE - MIN_VALUE);
 
-        printf("%f ", randNumber);
         A[i] = randNumber;
     }
-    
-    printf("\n");
 }
 
 void WriteToFile(const int nLinhas, const int nColunas, const int TAM_VETOR, float *A, char* fileName) {
