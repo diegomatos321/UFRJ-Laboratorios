@@ -9,10 +9,21 @@
 int rowsA, colsA, rowsB, colsB, nThreads;
 float *A, *B, *C;
 
-void ReadDimensions(FILE *file, int *rows, int *cols)
+// #define TEXTO 
+
+FILE* ReadDimensions(const char* fileName, int *rows, int *cols)
 {
+   FILE *file = fopen(fileName, "rb");
+   if (file == NULL)
+   {
+      wprintf(L"Erro de abertura do arquivo de entrada.\n");
+      exit(EXIT_FAILURE);
+   }
+
    fread(rows, sizeof(int), 1, file);
    fread(cols, sizeof(int), 1, file);
+
+   return file;
 }
 
 void ReadMatrix(FILE *file, float *matrix, int tam)
@@ -20,19 +31,21 @@ void ReadMatrix(FILE *file, float *matrix, int tam)
    fread(matrix, sizeof(float), tam, file);
 }
 
-void MultiplyMatrices(void *arg)
+void* MultiplyMatrices(void *arg)
 {
-   int startIndex = (int)arg;
+   long long int startIndex = (long long int)arg;
+   const int rowsC = rowsA;
+   const int colsC = colsB;
 
    // TODO: Verificar se o tamanho do passo não excede o tamanho do vetor
-   for (int i = startIndex; i < rowsA; i += nThreads)
+   for (int i = startIndex; i < rowsC; i += nThreads)
    {
-      for (int j = 0; j < colsB; j++)
+      for (int j = 0; j < colsC; j++)
       {
-         C[i * colsB + j] = 0;
+         C[i * colsC + j] = 0;
          for (int k = 0; k < colsA; k++)
          {
-            C[i * colsB + j] += A[i * colsA + k] * B[k * colsB + j];
+            C[i * colsC + j] += A[i * colsA + k] * B[k * colsB + j];
          }
       }
    }
@@ -53,6 +66,18 @@ void PrintMatrix(float *matrix, int rows, int cols)
    }
 }
 
+void WriteToFile(char* fileName, const int nLinhas, const int nColunas, const int TAM_VETOR, float *matriz) {
+      FILE * arquivoSaida = fopen(fileName, "wb");
+      if(arquivoSaida == NULL) {
+         wprintf(L"Erro de abertura do arquivo de saída.\n");
+         exit(EXIT_FAILURE);
+      }
+   
+      fwrite(&nLinhas, sizeof(int), 1, arquivoSaida);
+      fwrite(&nColunas, sizeof(int), 1, arquivoSaida);
+      fwrite(matriz, sizeof(float), TAM_VETOR, arquivoSaida);
+}
+
 int main(int argc, char *argv[])
 {
    setlocale(LC_ALL, "");
@@ -61,21 +86,14 @@ int main(int argc, char *argv[])
 
    GET_TIME(start);
 
-   if (argc < 4)
+   if (argc < 5)
    {
-      wprintf(L"Argumentos obrigatórios: <arquivo entrada> <arquivo saída> <número de threads>.\n");
+      wprintf(L"Argumentos obrigatórios: <matriz_a> <matriz_b> <arquivo saída> <nThreads>.\n");
       return EXIT_FAILURE;
    }
 
-   FILE *arquivoEntrada = fopen(argv[1], "rb");
-   if (arquivoEntrada == NULL)
-   {
-      wprintf(L"Erro de abertura do arquivo de entrada.\n");
-      return EXIT_FAILURE;
-   }
-
-   ReadDimensions(arquivoEntrada, &rowsA, &colsA);
-   ReadDimensions(arquivoEntrada, &rowsB, &colsB);
+   FILE *fileA = ReadDimensions(argv[1], &rowsA, &colsA);
+   FILE *fileB = ReadDimensions(argv[2], &rowsB, &colsB);
 
    // Verificar dimensões das matrizes
    if (colsA != rowsB)
@@ -97,10 +115,11 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
    }
 
-   ReadMatrix(arquivoEntrada, A, TAM_VETOR_A);
-   ReadMatrix(arquivoEntrada, B, TAM_VETOR_B);
+   ReadMatrix(fileA, A, TAM_VETOR_A);
+   ReadMatrix(fileB, B, TAM_VETOR_B);
 
-   fclose(arquivoEntrada);
+   fclose(fileA);
+   fclose(fileB);
 
    GET_TIME(end);
    delta = end - start;
@@ -108,18 +127,27 @@ int main(int argc, char *argv[])
 
    GET_TIME(start);
 
-   nThreads = atoi(argv[3]);
+   nThreads = atoi(argv[4]);
    pthread_t *tid = (pthread_t *)malloc(sizeof(pthread_t) * nThreads);
-   for (int i = 0; i < nThreads; i++)
+   for (long long int i = 0; i < nThreads; i++)
    {
       pthread_create(tid + i, NULL, MultiplyMatrices, (void *)i);
+   }
+
+   for (int i = 0; i < nThreads; i++)
+   {
+      pthread_join(tid[i], NULL);
    }
 
    GET_TIME(end)
    delta = end - start;
    wprintf(L"Tempo multiplicação das matrizes: %lf\n", delta);
 
+   #ifdef TEXTO
    PrintMatrix(C, rowsA, colsB);
+   #endif
+
+   WriteToFile(argv[3], rowsA, colsB, TAM_VETOR_C, C);
 
    // liberacao da memoria
    GET_TIME(start);
