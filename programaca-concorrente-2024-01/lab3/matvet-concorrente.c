@@ -10,6 +10,7 @@ int rowsA, colsA, rowsB, colsB, nThreads;
 float *A, *B, *C;
 
 // #define TEXTO 
+#define TO_CSV
 
 FILE* ReadDimensions(const char* fileName, int *rows, int *cols)
 {
@@ -123,7 +124,9 @@ int main(int argc, char *argv[])
 
    GET_TIME(end);
    delta = end - start;
+   #if !defined(TO_CSV)
    wprintf(L"Tempo inicializacao: %lf\n", delta);
+   #endif
 
    GET_TIME(start);
 
@@ -141,7 +144,11 @@ int main(int argc, char *argv[])
 
    GET_TIME(end)
    delta = end - start;
+   #ifdef TO_CSV
+   printf("\"%lf\",%d,%dx%d\n", delta, nThreads, rowsA, colsB);
+   #else
    wprintf(L"Tempo multiplicação das matrizes: %lf\n", delta);
+   #endif
 
    #ifdef TEXTO
    PrintMatrix(C, rowsA, colsB);
@@ -157,7 +164,9 @@ int main(int argc, char *argv[])
    free(tid);
    GET_TIME(end)
    delta = end - start;
+   #if !defined(TO_CSV)
    printf("Tempo finalizacao: %lf\n", delta);
+   #endif
 
    return EXIT_SUCCESS;
 }
