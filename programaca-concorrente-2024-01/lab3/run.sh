@@ -25,7 +25,7 @@ for nThread in 1 2 4 8; do
     # echo "Gerando resultados para Matriz com $nThread threads..."
 
     for i in {1..3}; do
-        ./build/matvet-concorrente "${argumentsA[1]}" "${argumentsA[1]}" "${item[3]}" "$nThread"
+        ./build/matvet-concorrente "${argumentsA[1]}" "${argumentsA[1]}" "${argumentsA[3]}" "$nThread"
     done
 done
 
@@ -38,7 +38,7 @@ for nThread in 1 2 4 8; do
     # echo "Gerando resultados para Matriz com $nThread threads..."
 
     for i in {1..3}; do
-        ./build/matvet-concorrente "${argumentsB[1]}" "${argumentsB[1]}" "${item[3]}" "$nThread"
+        ./build/matvet-concorrente "${argumentsB[1]}" "${argumentsB[1]}" "${argumentsB[3]}" "$nThread"
     done
 done
 
@@ -51,6 +51,6 @@ for nThread in 1 2 4 8; do
     # echo "Gerando resultados para Matriz com $nThread threads..."
 
     for i in {1..3}; do
-        ./build/matvet-concorrente "${argumentsC[1]}" "${argumentsC[1]}" "${item[3]}" "$nThread"
+        ./build/matvet-concorrente "${argumentsC[1]}" "${argumentsC[1]}" "${argumentsC[3]}" "$nThread"
     done
 done
