@@ -85,6 +85,12 @@ Os resultados de tempo de execução para os programas sequencial e concorrente 
 4. Com a média calculada foi feito o cálculo da aceleração e eficiência.
 5. Ao final foi gerado dois gráficos de aceleração e eficiencia com a tabela final obtida (os gráficos também foram gerados dentro do Libre Office Calc).
 
+Já ara o ambiente máquina Linux:
+1. Executar run.sh como descrito na sessão anterior.
+2. Através de uma planilha, usando Libre Office Calc, foi feito a média das amostras conforme solicitado pelo exercício.
+3. Com a média calculada foi feito o cálculo da aceleração e eficiência.
+4. Ao final foi gerado dois gráficos de aceleração e eficiencia com a tabela final obtida (os gráficos também foram gerados dentro do Libre Office Calc).
+
 Os relatórios foram feitos nas seguintes máquinas:
 
 Máquina Desktop:
@@ -94,17 +100,29 @@ Máquina Desktop:
 - Executado em Disco SSD
 - Windows 10 Pro 64 bits
 
-Máquina Notebook (Relatório incompleto):
+Máquina Notebook:
 - Processador: Quad Core Intel Atom x5-Z8350
 - RAM: 4 GB
 - GPU: Integrado
 - Executado em Disco eMMC
 - Debian 12 64 bits XFCE
 
-![Gráfico de Aceleração](./relatorio/grafico-aceleracao.png)
+![Gráfico de Aceleração](./relatorio/grafico-aceleracao-windows.png "Gráfico Aceleração Windows")
+
+*Gráfico Aceleração Windows*
+
+![Gráfico de Aceleração](./relatorio/grafico-aceleracao-windows.png "Gráfico Aceleração Linux")
+
+*Gráfico Aceleração Linux*
 
 O gráfico de aceleração mostra que quanto maior o número de threads a aceleração do programa concorrente aumenta.
 
-![Gráfico de Eficiência](./relatorio/grafico-eficiencia.png)
+![Gráfico de Eficiência](./relatorio/grafico-eficiencia-windows.png "Gráfico Eficiência Windows")
+
+*Gráfico Aceleração Windows*
+
+![Gráfico de Eficiência](./relatorio/grafico-eficiencia-windows.png "Gráfico Eficiência Linux")
+
+*Gráfico Aceleração Linux*
 
 O gráfico de eficiência nos indica que o programa concorrente perde Eficiência para threads maior que 4 para as configurações dadas.
