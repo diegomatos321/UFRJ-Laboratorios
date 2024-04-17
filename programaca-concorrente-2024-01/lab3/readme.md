@@ -4,6 +4,10 @@ Dre: 120098723
 
 Professora: Silvana Rossetto
 
+## Pre requisitos
+
+Compilador gcc esteja instalado no sistema.
+
 ## Enunciado
 Projetar e implementar uma solução concorrente para o problema de multiplicação
 de matrizes, coletar informações sobre o seu tempo de execução, e calcular o ganho de
@@ -78,7 +82,7 @@ Os resultados de tempo de execução para os programas sequencial e concorrente 
 1. Compilado os programas e gerado as matrizes de entrada.
 2. Executado comando run.bat como descrito acima.
 3. Através de uma planilha, usando Libre Office Calc, foi feito a média das amostras conforme solicitado pelo exercício.
-4. Com a média calculado foi feito o cálculo da aceleração e eficiência.
+4. Com a média calculada foi feito o cálculo da aceleração e eficiência.
 5. Ao final foi gerado dois gráficos de aceleração e eficiencia com a tabela final obtida (os gráficos também foram gerados dentro do Libre Office Calc).
 
 Os relatórios foram feitos nas seguintes máquinas:
@@ -97,6 +101,10 @@ Máquina Notebook (Relatório incompleto):
 - Executado em Disco eMMC
 - Debian 12 64 bits XFCE
 
-![Gráfico de Aceleração](/grafico-aceleracao.png)
+![Gráfico de Aceleração](./relatorio/grafico-aceleracao.png)
 
-![Gráfico de Aceleração](/grafico-eficiencia.png)
+O gráfico de aceleração mostra que quanto maior o número de threads a aceleração do programa concorrente aumenta.
+
+![Gráfico de Eficiência](./relatorio/grafico-eficiencia.png)
+
+O gráfico de eficiência nos indica que o programa concorrente perde Eficiência para threads maior que 4 para as configurações dadas.
