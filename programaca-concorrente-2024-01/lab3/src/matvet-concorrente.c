@@ -19,9 +19,9 @@ void* MultiplyMatrices(void *arg)
 {
    if (A->cols != B->rows)
    {
-      int *ERROR_CODE = malloc(sizeof(int));
-      pthread_exit(ERROR_CODE);
-      return ERROR_CODE;
+      wprintf(L"ERRO: Dimensões não batem.");
+      pthread_exit(NULL);
+      return NULL;
    }  
 
    long long int startIndex = (long long int)arg;
@@ -76,15 +76,7 @@ int main(int argc, char *argv[])
 
    for (int i = 0; i < nThreads; i++)
    {
-      int *result;
-      pthread_join(tid[i], (void*) &result);
-
-      if (*result == EXIT_FAILURE)
-      {
-         wprintf(L"ERRO: Ao realizar o produto matricial na thread %d.", i);
-      }
-
-      free(result);
+      pthread_join(tid[i], NULL);
    }
 
    GET_TIME(end)
