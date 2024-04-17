@@ -3,75 +3,65 @@
  * 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <wchar.h>
-#include <time.h>
-#include <locale.h>
-
-#include "headers/gera-vetor.h"
+#include "gera-matriz.h"
 
 int main(int argc, char* argv[]) {
     setlocale(LC_ALL, "");
 
     if (argc < 4)
     {
-        wprintf(L"É obrigatórios os argumentos de <linhas>, <colunas> e <nome do arquivo de saída>.\n");
+        wprintf(L"É obrigatórios os argumentos de <número_linhas>, <número_colunas> e <nome_do_arquivo_de_saída>.\n");
         return EXIT_FAILURE;
     }
     
-    int nLinhas, nColunas;
-    ReadArguments(argv, &nLinhas, &nColunas);
+    int rows, cols;
+    ReadArguments(argv, &rows, &cols);
 
-    const int TAM_VETOR = nLinhas * nColunas;
-    float* A = (float*) malloc(sizeof(float) * TAM_VETOR);
-    if (A == NULL)
-    {
-        wprintf(L"Erro ao alocar memória para matriz.\n");
-        return EXIT_FAILURE;
-    }
-    
-    GenerateRandMatrix(TAM_VETOR, A);
-    WriteToFile(nLinhas, nColunas, TAM_VETOR, A, argv[3]);
+    Matriz *A = GenerateRandMatrix(rows, cols);
+    WriteMatrixToBinary(A, argv[3]);
 
-    free(A);
+    FreeMatrix(A);
 
     return EXIT_SUCCESS;
 }
 
-void ReadArguments(char* argv[], int* nLinhas, int* nColunas) {
-    *nLinhas = atoi(argv[1]);
-    *nColunas = atoi(argv[2]);
-    if (*nLinhas < 1 || *nColunas < 1)
+void ReadArguments(char *argv[], int *rows, int *cols) {
+    *rows = atoi(argv[1]);
+    *cols = atoi(argv[2]);
+    if (*rows < 1 || *cols < 1)
     {
         wprintf(L"As dimensões do vetor devem ser pelo menos 1.\n");
         exit(EXIT_FAILURE);
     }
 }
 
-void GenerateRandMatrix(const int TAM_VETOR, float *A)
+Matriz* GenerateRandMatrix(const int rows, const int cols)
 {
+    Matriz *A = CreateMatrix(rows, cols);
+
     srand(time(NULL));
     static const float MIN_VALUE = -1000.0, MAX_VALUE = 1000.0;
-    for (int i = 0; i < TAM_VETOR; i++)
+    for (int i = 0; i < A->rows * A->cols; i++)
     {
         const float scale = rand() / (float)RAND_MAX;
         const float randNumber = MIN_VALUE + scale * (MAX_VALUE - MIN_VALUE);
 
-        A[i] = randNumber;
-    }
-}
-
-void WriteToFile(const int nLinhas, const int nColunas, const int TAM_VETOR, float *A, char* fileName) {
-    FILE * arquivoSaida = fopen(fileName, "wb");
-    if(arquivoSaida == NULL) {
-        wprintf(L"Erro de abertura do arquivo de saída.\n");
-        exit(EXIT_FAILURE);
+        A->elements[i] = randNumber;
     }
 
-    fwrite(&nLinhas, sizeof(int), 1, arquivoSaida);
-    fwrite(&nColunas, sizeof(int), 1, arquivoSaida);
-    fwrite(A, sizeof(float), TAM_VETOR, arquivoSaida);
-
-    fclose(arquivoSaida);
+    return A;
 }
+
+// void WriteToFile(const int nLinhas, const int nColunas, const int TAM_VETOR, float *A, char* fileName) {
+//     FILE * arquivoSaida = fopen(fileName, "wb");
+//     if(arquivoSaida == NULL) {
+//         wprintf(L"Erro de abertura do arquivo de saída.\n");
+//         exit(EXIT_FAILURE);
+//     }
+
+//     fwrite(&nLinhas, sizeof(int), 1, arquivoSaida);
+//     fwrite(&nColunas, sizeof(int), 1, arquivoSaida);
+//     fwrite(A, sizeof(float), TAM_VETOR, arquivoSaida);
+
+//     fclose(arquivoSaida);
+// }
