@@ -4,16 +4,27 @@
 int nThreads;
 Matriz *A, *B, *C;
 
+// Desconmente para imprimir a matriz.
 // #define TEXTO 
+
+// Comente para não imprimir o tempo de produto matricial em formato 
+// csv: tempo, threads, tamanho.
 #define TO_CSV
 
+/* Função concorrente que será executado por cada thread, responsável por realizar o produto
+ * matricial de forma alternada entre as threads e salva o resultado na variável C.
+ * 
+*/
 void* MultiplyMatrices(void *arg)
 {
-   // TODO: Verificar dimensões da matriz.
+   if (A->cols != B->rows)
+   {
+      int *ERROR_CODE = malloc(sizeof(int));
+      pthread_exit(ERROR_CODE);
+      return ERROR_CODE;
+   }  
 
    long long int startIndex = (long long int)arg;
-
-   // TODO: Verificar se o tamanho do passo não excede o tamanho do vetor
    for (int i = startIndex; i < C->rows; i += nThreads)
    {
       for (int j = 0; j < C->cols; j++)
@@ -65,7 +76,15 @@ int main(int argc, char *argv[])
 
    for (int i = 0; i < nThreads; i++)
    {
-      pthread_join(tid[i], NULL);
+      int *result;
+      pthread_join(tid[i], (void*) &result);
+
+      if (*result == EXIT_FAILURE)
+      {
+         wprintf(L"ERRO: Ao realizar o produto matricial na thread %d.", i);
+      }
+
+      free(result);
    }
 
    GET_TIME(end)

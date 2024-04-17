@@ -2,7 +2,12 @@
 #include "commons/Matriz.h"
 #include "timer.h"
 
+// Descomente para imprimir a matriz
 // #define TEXTO 
+
+// Comente para não imprimir o resultado do produto matricial
+// em formato csv: tempo, threads, tamanho. (threads ficará em branco
+// programa sequencial)
 #define TO_CSV
 
 Matriz *MultiplyMatrices(Matriz *A, Matriz *B)
