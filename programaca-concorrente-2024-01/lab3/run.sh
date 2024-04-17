@@ -1,8 +1,56 @@
-gcc -c src/commons/Matriz.c -I src/commons/ -o build/Matriz.o
-gcc src/gera-matriz.c build/Matriz.o -I . -o build/gera-matriz
-gcc src/matvet-sequencial.c build/Matriz.o -I . -o build/matvet-sequencial
-gcc src/matvet-concorrente.c build/Matriz.o -I . -o build/matvet-concorrente
+#!/bin/bash
 
-./build/gera-matriz 500 500 data/matriz-500-500.bin
-./build/matvet-sequencial data/matriz-500-500.bin data/matriz-500-500.bin data/resultados/resultado-matvet-sequencial-500-500.bin
-./build/matvet-concorrente data/matriz-500-500.bin data/matriz-500-500.bin data/resultados/resultado-matvet-concorrente-500-500.bin 4
+# Compilando os programas
+gcc src/gera-matriz.c src/commons/Matriz.c -I src/commons/ -o build/gera-matriz
+gcc src/matvet-sequencial.c src/commons/Matriz.c -I src/commons/ -o build/matvet-sequencial
+gcc src/matvet-concorrente.c src/commons/Matriz.c -I src/commons/ -o build/matvet-concorrente
+
+# Argumentos que o script irá usar
+argumentsA=(500 "data/matriz-500-500.bin" "data/resultados/resultado-matvet-sequencial-500-500.bin" "data/resultados/resultado-matvet-concorrente-500-500.bin")
+argumentsB=(1000 "data/matriz-1000-1000.bin" "data/resultados/resultado-matvet-sequencial-1000-1000.bin" "data/resultados/resultado-matvet-concorrente-1000-1000.bin")
+argumentsC=(2000 "data/matriz-2000-2000.bin" "data/resultados/resultado-matvet-sequencial-2000-2000.bin" "data/resultados/resultado-matvet-concorrente-2000-2000.bin")
+
+./build/gera-matriz "${argumentsA[0]}" "${argumentsA[0]}" "${argumentsA[1]}"
+./build/gera-matriz "${argumentsB[0]}" "${argumentsB[0]}" "${argumentsB[1]}"
+./build/gera-matriz "${argumentsC[0]}" "${argumentsC[0]}" "${argumentsC[1]}"
+
+echo "tempo,threads,tamanho"
+
+for i in {1..3}; do
+    ./build/matvet-sequencial "${argumentsA[1]}" "${argumentsA[1]}" "${argumentsA[2]}"
+done
+
+# Iterando sobre os diferentes números de threads
+for nThread in 1 2 4 8; do
+    # echo "Gerando resultados para Matriz com $nThread threads..."
+
+    for i in {1..3}; do
+        ./build/matvet-concorrente "${argumentsA[1]}" "${argumentsA[1]}" "${item[3]}" "$nThread"
+    done
+done
+
+for i in {1..3}; do
+    ./build/matvet-sequencial "${argumentsB[1]}" "${argumentsB[1]}" "${argumentsB[2]}"
+done
+
+# Iterando sobre os diferentes números de threads
+for nThread in 1 2 4 8; do
+    # echo "Gerando resultados para Matriz com $nThread threads..."
+
+    for i in {1..3}; do
+        ./build/matvet-concorrente "${argumentsB[1]}" "${argumentsB[1]}" "${item[3]}" "$nThread"
+    done
+done
+
+for i in {1..3}; do
+    ./build/matvet-sequencial "${argumentsC[1]}" "${argumentsC[1]}" "${argumentsC[2]}"
+done
+
+# Iterando sobre os diferentes números de threads
+for nThread in 1 2 4 8; do
+    # echo "Gerando resultados para Matriz com $nThread threads..."
+
+    for i in {1..3}; do
+        ./build/matvet-concorrente "${argumentsC[1]}" "${argumentsC[1]}" "${item[3]}" "$nThread"
+    done
+done
