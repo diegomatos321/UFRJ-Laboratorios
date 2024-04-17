@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Compilando os programas
-gcc src/gera-matriz.c src/commons/Matriz.c -I src/commons/ -o build/gera-matriz
-gcc src/matvet-sequencial.c src/commons/Matriz.c -I src/commons/ -o build/matvet-sequencial
-gcc src/matvet-concorrente.c src/commons/Matriz.c -I src/commons/ -o build/matvet-concorrente
+gcc src/gera-matriz.c src/commons/Matriz.c -I src/commons/ -o build/gera-matriz -Wall
+gcc src/matvet-sequencial.c src/commons/Matriz.c -I src/commons/ -o build/matvet-sequencial -Wall
+gcc src/matvet-concorrente.c src/commons/Matriz.c -I src/commons/ -o build/matvet-concorrente -Wall -lpthread
 
 # Argumentos que o script irá usar
 argumentsA=(500 "data/matriz-500-500.bin" "data/resultados/resultado-matvet-sequencial-500-500.bin" "data/resultados/resultado-matvet-concorrente-500-500.bin")
