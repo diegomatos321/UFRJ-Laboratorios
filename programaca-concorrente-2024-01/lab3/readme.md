@@ -60,26 +60,42 @@ Durante a compilação do programa o usuário pode comentar (ou não) a variáve
 
 
 ### Programa 4: Script Gera Relatório
-Este script em .bat é responsável por executar os programas sequencial e concorrente por, pelo menos, 3 vezes para cada parametro diferente solicitado pelo exercício e feito a média arimética entre os tempos de execução.
+Este script em .sh ou .bat (incompleto) é responsável por executar os programas sequencial e concorrente por, pelo menos, 3 vezes para cada parametro diferente solicitado pelo exercício.
 
-A princípio são gerados 3 grupos de matrizes 500x500, 1000x1000 e 2000x2000. O programa sequencial é executado 3x para cada matriz diferente, e o concorrente é executado 3x para cada grupo de threads diferentes: 1, 2, 4 e 8. Os programas sempre usando as mesma matrizes de entrada de seu grupo correspondente.
+A princípio são gerados 3 grupos de matrizes: 500x500, 1000x1000 e 2000x2000. O programa sequencial é executado 3x para cada matriz diferente, e o concorrente é executado 3x para cada grupo de threads diferentes: 1, 2, 4 e 8. Os programas sempre usam as mesma matrizes de entrada de seu grupo correspondente.
 
-Para obter o resultado esperado do relatório, é necessário que os programas estejam com "TO_CSV" habilitados e a saída o script .bat seja redirecionado para um arquivo .csv, como "gera-relatorio.csv", ex:
+Para obter o resultado esperado do relatório, é necessário que os programas estejam com "TO_CSV" habilitados e a saída o shell seja redirecionado para um arquivo .csv, como "relatorio/amostras-linux.csv", ex:
 
-```bash
-    gera-relatorio.bat > gera-relatorio.csv
+```cmd
+    run.sh > relatorio/amostras-linux.csv
 ```
 
+OBS: No ambiente Linux é necessário que o .sh tenha permissão para ser executado.
+
 ## Relatório
-Os resultados de tempo de execução para os programas sequencial e concorrente foram obtidos seguindo os passos abaixo
+Os resultados de tempo de execução para os programas sequencial e concorrente foram **inicialmente** obtidos usando a máquina Windows (como detalhada mais adiante) seguindo os passos abaixo:
 
-Com as configurações da máquina abaixo:
+1. Compilado os programas e gerado as matrizes de entrada.
+2. Executado comando run.bat como descrito acima.
+3. Através de uma planilha, usando Libre Office Calc, foi feito a média das amostras conforme solicitado pelo exercício.
+4. Com a média calculado foi feito o cálculo da aceleração e eficiência.
+5. Ao final foi gerado dois gráficos de aceleração e eficiencia com a tabela final obtida (os gráficos também foram gerados dentro do Libre Office Calc).
 
+Os relatórios foram feitos nas seguintes máquinas:
+
+Máquina Desktop:
 - Processador: AMD Ryzen 5 1600X Six-Core 
-- RAM: 16,0 GB
+- RAM: 16 GB
 - GPU: GTX 1660 6GB
 - Executado em Disco SSD
 - Windows 10 Pro 64 bits
+
+Máquina Notebook (Relatório incompleto):
+- Processador: Quad Core Intel Atom x5-Z8350
+- RAM: 4 GB
+- GPU: Integrado
+- Executado em Disco eMMC
+- Debian 12 64 bits XFCE
 
 ![Gráfico de Aceleração](/grafico-aceleracao.png)
 
