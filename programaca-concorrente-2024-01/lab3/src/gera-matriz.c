@@ -51,17 +51,3 @@ Matriz* GenerateRandMatrix(const int rows, const int cols)
 
     return A;
 }
-
-// void WriteToFile(const int nLinhas, const int nColunas, const int TAM_VETOR, float *A, char* fileName) {
-//     FILE * arquivoSaida = fopen(fileName, "wb");
-//     if(arquivoSaida == NULL) {
-//         wprintf(L"Erro de abertura do arquivo de saída.\n");
-//         exit(EXIT_FAILURE);
-//     }
-
-//     fwrite(&nLinhas, sizeof(int), 1, arquivoSaida);
-//     fwrite(&nColunas, sizeof(int), 1, arquivoSaida);
-//     fwrite(A, sizeof(float), TAM_VETOR, arquivoSaida);
-
-//     fclose(arquivoSaida);
-// }
