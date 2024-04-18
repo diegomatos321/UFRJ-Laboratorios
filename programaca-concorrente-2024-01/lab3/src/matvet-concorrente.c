@@ -71,12 +71,22 @@ int main(int argc, char *argv[])
    pthread_t *tid = (pthread_t *)malloc(sizeof(pthread_t) * nThreads);
    for (long long int i = 0; i < nThreads; i++)
    {
-      pthread_create(tid + i, NULL, MultiplyMatrices, (void *)i);
+      int creationStatusCode = pthread_create(tid + i, NULL, MultiplyMatrices, (void *)i);
+
+      if (creationStatusCode != 0) {
+         wprintf(L"ERRO: Criação da Thread %d falhou.");
+      }
    }
 
    for (int i = 0; i < nThreads; i++)
    {
-      pthread_join(tid[i], NULL);
+      int joinStatusCode = pthread_join(tid[i], NULL);
+
+      if (joinStatusCode != 0)
+      {
+         wprintf(L"ERRO: pthread_join falhou para Thread %d.", i);
+      }
+      
    }
 
    GET_TIME(end)
