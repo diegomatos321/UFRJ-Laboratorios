@@ -1,5 +1,8 @@
 #include "main.h"
 
+// Imprime resultados no formato válido csv: valor_n, numero_threads, tempo_execucao, contagem_primos
+#define TO_CSV
+
 long long int N = 0, i_global = 0;
 pthread_mutex_t mutex;
 
@@ -43,7 +46,7 @@ int main(int argc, char *argv[])
     {
         long long int *retorno;
         int joinStatusCode = pthread_join(tid[i], (void*)&retorno);
-        wprintf(L"Thread %d retornou %lld\n", i, *retorno);
+        // wprintf(L"Thread %d retornou %lld\n", i, *retorno);
 
         if (joinStatusCode != 0)
         {
@@ -56,9 +59,13 @@ int main(int argc, char *argv[])
 
     GET_TIME(end);   
     delta = end - start;
-    wprintf(L"Tempo para contar os primos: %lf\n", delta);
     
+    #ifdef TO_CSV
+    printf("%lld,%d,\"%lf\",%lld\n", N, nThreads, delta, total);
+    #else
+    wprintf(L"Tempo para contar os primos: %lf\n", delta);
     wprintf(L"Total de primos: %lld\n", total);
+    #endif
 
     pthread_mutex_destroy(&mutex);
     free(tid);
@@ -101,7 +108,7 @@ int ehPrimo(long long int n)
         return 1;
     if (n % 2 == 0)
         return 0;
-    for (i = 3; i < sqrt(n) + 1; i += 2)
+    for (i = 3; i < sqrt((double) n) + 1; i += 2)
         if (n % i == 0)
             return 0;
     return 1;
