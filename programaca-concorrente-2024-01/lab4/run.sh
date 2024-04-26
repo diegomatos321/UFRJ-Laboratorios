@@ -1,4 +1,4 @@
-gcc main.c -o main -Wall -lpthread -lm
+gcc src/main.c -o build/main -Wall -lpthread -lm
 
 valores_N=(1000 1000000 10000000)
 
