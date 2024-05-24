@@ -1,1 +1,1 @@
-gcc src/gera-numero.c -o build/gera-numero -Wall
+gcc src/gera-numero.c -o bin/gera-numero -Wall
