@@ -2,78 +2,179 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include "./include/ehprimo.h"
+#include "./include/concat.h"
 
-#define CONSUMIDORES 10
+#define CONSUMIDORES 2
 
 void* produtor(void* arg);
 void* consumidor(void* arg);
 
 int* buffer;
-unsigned int BUFFER_SIZE = 0, INPUT_SIZE = 0;
+unsigned int BUFFER_SIZE = 0, quantidadePrimos = 0, INPUT_SIZE = 0;
 FILE* input_file;
-sem_t slotVazio, mutextProdutor;
+sem_t slotVazio, slotCheio, mutexProdutor, mutexConsumidor;
 
 int main(int argc, char* argv[]) {
     if (argc < 4)
     {
-        printf("Usage: ./consumidor-produtor <input_filename> <tamanho_buffer> <output_filename>\n");
+        printf("Usage: ./consumidor-produtor <input_filename> <tamanho_buffer> <output_filename (sem extensao)>\n");
         return EXIT_SUCCESS;
     }
     
     // Ler argumentos de entrada
-    const char* input_filename = argv[1];
+    char* input_filename = argv[1];
     BUFFER_SIZE = atoi(argv[2]);
-    const char* output_filename = argv[3];
+    char* output_filename = argv[3];
 
     // Alocar buffer
     buffer = (int*) malloc(BUFFER_SIZE * sizeof(int));
-
-    pthread_t tid[CONSUMIDORES + 1]; // +1 para a thread produtora
+    if (buffer == NULL)
+    {
+        printf("ERRO: Ao alocar memória para o buffer\n");
+        return EXIT_FAILURE;
+    }
     
-    // Ler tamanho da lista de numeros aleatorios de entrada
+    // Inicia thread e semaforos
+    pthread_t tid[CONSUMIDORES + 1]; // +1 para a thread produtora
+    sem_init(&slotVazio, 0, BUFFER_SIZE); // Existem BUFFER_SIZE slots vazios
+    sem_init(&slotCheio, 0, 0); // Inicialmente não há slots cheios
+    sem_init(&mutexProdutor, 0, 1); // binário para exclusão mútua
+    sem_init(&mutexConsumidor, 0, 1); // binário para exclusão mútua
+    
+    // Ler o tamanho da lista de números aleátorios de entrada
     input_file = fopen(input_filename, "rb");
+    if (input_file == NULL)
+    {
+        printf("ERRO: Ao abrir arquivo de entrada\n");
+        return EXIT_FAILURE;
+    }
+    
     fread(&INPUT_SIZE, sizeof(unsigned int), 1, input_file);
+    printf("Tamanho do arquivo de entrada: %d\n", INPUT_SIZE);
 
     // Disparar thread produtora que irá ler byte a byte os números
     // do arquivo de entrada e colocar no buffer
     int created = pthread_create(&tid[0], NULL, produtor, NULL);
     if (created != 0)
     {
-        printf("Erro ao criar thread produtora\n");
+        printf("ERRO: Ao criar thread produtora\n");
         return EXIT_FAILURE;
     }
     
     // Disparar as threads consumidoras
-    for (int i = 1; i < CONSUMIDORES; i++)
+    for (size_t i = 1; i <= CONSUMIDORES; i++)
     {
         int created = pthread_create(&tid[i], NULL, consumidor, NULL);
         if (created != 0)
         {
-            printf("Erro ao criar thread consumidora\n");
+            printf("ERRO: Ao criar thread consumidora\n");
             return EXIT_FAILURE;
         }
     }
 
+    for (size_t i = 0; i < CONSUMIDORES + 1; i++)
+    {
+        int status = pthread_join(tid[i], NULL);
+        if (status != 0)
+        {
+            printf("ERRO: pthread_join() retornou %d\n", status);
+        }
+    }
+    printf("Threads terminaram.");
+
+    char* outputFilename = concat(output_filename, ".txt");
+    FILE* outputFile = fopen(outputFilename, "w");
+    if (outputFile == NULL)
+    {
+        printf("Erro ao abrir arquivo de saída\n");
+        return EXIT_FAILURE;
+    }
+    fprintf(outputFile, "%d\n", quantidadePrimos);
+    fclose(outputFile);
+
     // Liberar memória alocada
+    sem_destroy(&slotVazio);
+    sem_destroy(&slotCheio);
+    sem_destroy(&mutexConsumidor);
+    sem_destroy(&mutexProdutor);
+
     fclose(input_file);
     free(input_filename);
     free(output_filename);
+    free(outputFilename);
     free(buffer);
+
+    return EXIT_SUCCESS;
 }
 
 void* produtor(void* arg) {
-    static int current_i = 0;
-    for (current_i = 0; current_i < INPUT_SIZE - 1; current_i++)
+    static unsigned int current_i = 0;
+    while (current_i < INPUT_SIZE)
     {
-        fread(buffer[current_i % BUFFER_SIZE], sizeof(int), 1, input_file);
+        sem_wait(&slotVazio);
+        sem_wait(&mutexProdutor);
+
+        int data = 0;
+        size_t items_read = fread(&data, sizeof(int), 1, input_file);
+        if (items_read != 1)
+        {
+            printf("ERRO: fread retornou valor diferente de 1\n");
+            sem_post(&mutexProdutor);
+            sem_post(&slotVazio);
+            break;
+        }
+
+        printf("Produtor leu %d\n", data);
+        buffer[current_i % BUFFER_SIZE] = data;
+        current_i++;
+
+        sem_post(&mutexProdutor);
+        sem_post(&slotCheio);
     }
 
+    printf("Produtor terminou\n");
     free(arg);
     pthread_exit(NULL);
     return NULL;
 }
 
 void* consumidor(void* arg) {
+    static unsigned int current_i = 0;
+
+    while (current_i < INPUT_SIZE)
+    {
+        sem_wait(&slotCheio);
+        sem_wait(&mutexConsumidor);
+
+        if (current_i == INPUT_SIZE)
+        {
+            sem_post(&mutexConsumidor);
+            sem_post(&slotCheio);
+            break;
+        }
+        
+        int data = buffer[current_i % BUFFER_SIZE];
+        printf("Consumidor leu %d\n", data);
+        int isPrimo = ehPrimo(data);
+        if (isPrimo)
+        {
+            quantidadePrimos++;
+        }
+        
+        current_i++;
+
+        if (current_i == INPUT_SIZE)
+        {
+            sem_post(&slotCheio);
+        }
+
+        sem_post(&mutexConsumidor);
+        sem_post(&slotVazio);
+    }
+    
+    
+    printf("Consumidor terminou\n");
     free(arg);
     pthread_exit(NULL);
     return NULL;

@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    const int N = atoi(argv[1]);
+    const unsigned int N = atoi(argv[1]);
     const char* inputFilename = argv[2];
 
     int* buffer = (int*) malloc(sizeof(int) * N);
@@ -17,15 +17,17 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    srand(time(NULL));
+    time_t t;
+    srand((unsigned) time(&t));
     static const int MIN_VALUE = -1000, MAX_VALUE = 1000;
     unsigned int quantidade_primos = 0;
     for (int i = 0; i < N; i++)
     {
-        const int scale = rand() / RAND_MAX;
-        const int randNumber = MIN_VALUE + scale * (MAX_VALUE - MIN_VALUE);
+        const double scale = rand() / (double) RAND_MAX;
+        int randNumber = MIN_VALUE + scale * (MAX_VALUE - MIN_VALUE);
 
         buffer[i] = randNumber;
+        printf("%d, ", randNumber);
 
         if (ehPrimo(randNumber))
             quantidade_primos++;
@@ -39,26 +41,23 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    fwrite(&N, sizeof(int), 1, arquivoSaida);
+    fwrite(&N, sizeof(unsigned int), 1, arquivoSaida);
     fwrite(buffer, sizeof(int), N, arquivoSaida);
     fclose(arquivoSaida);
-    free(arquivoSaida);
+    free(fileName);
 
-    char* testFilename = concat(inputFilename, "_test.bin");
-    FILE *arquivoTest = fopen(testFilename, "wb");
+    char* testFilename = concat(inputFilename, "_test.txt");
+    FILE *arquivoTest = fopen(testFilename, "w");
     if (arquivoTest == NULL)
     {
         printf("Erro de abertura do arquivo de teste.\n");
         exit(EXIT_FAILURE);
     }
 
-    fwrite(&quantidade_primos, sizeof(unsigned int), 1, arquivoTest);
+    fprintf(arquivoTest, "%d\n", quantidade_primos);
     fclose(arquivoTest);
-    free(arquivoTest);
-
-    free(inputFilename);
     free(testFilename);
-    free(fileName);
+
     free(buffer);
 
     return EXIT_SUCCESS;
