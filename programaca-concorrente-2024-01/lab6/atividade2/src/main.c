@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include "./include/ehprimo.h"
-#include "./include/concat.h"
-
-#define CONSUMIDORES 2
-
-void* produtor(void* arg);
-void* consumidor(void* arg);
+#include "main.h"
 
 int* buffer;
 unsigned int BUFFER_SIZE = 0, quantidadePrimos = 0, INPUT_SIZE = 0;
@@ -125,7 +115,7 @@ void* produtor(void* arg) {
             break;
         }
 
-        printf("Produtor leu %d\n", data);
+        // printf("Produtor leu %d\n", data);
         buffer[current_i % BUFFER_SIZE] = data;
         current_i++;
 
@@ -155,7 +145,7 @@ void* consumidor(void* arg) {
         }
         
         int data = buffer[current_i % BUFFER_SIZE];
-        printf("Consumidor leu %d\n", data);
+        // printf("Consumidor leu %d\n", data);
         int isPrimo = ehPrimo(data);
         if (isPrimo)
         {

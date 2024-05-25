@@ -19,20 +19,22 @@ int main(int argc, char* argv[]) {
 
     time_t t;
     srand((unsigned) time(&t));
-    static const int MIN_VALUE = -1000, MAX_VALUE = 1000;
+    const int MIN_VALUE = -1000, MAX_VALUE = 1000;
     unsigned int quantidade_primos = 0;
-    for (int i = 0; i < N; i++)
+    // Gera um número inteiro aleatório entre min e max
+    for (unsigned int i = 0; i < N; i++)
     {
         const double scale = rand() / (double) RAND_MAX;
         int randNumber = MIN_VALUE + scale * (MAX_VALUE - MIN_VALUE);
 
         buffer[i] = randNumber;
-        printf("%d, ", randNumber);
+        // printf("%d, ", randNumber);
 
         if (ehPrimo(randNumber))
             quantidade_primos++;
     }
 
+    // Salva lista de inteiros em arquivo binário
     char* fileName = concat(inputFilename, ".bin");
     FILE *arquivoSaida = fopen(fileName, "wb");
     if (arquivoSaida == NULL)
@@ -46,6 +48,7 @@ int main(int argc, char* argv[]) {
     fclose(arquivoSaida);
     free(fileName);
 
+    // Salva em um arquivo de texto a quantidade de números primos
     char* testFilename = concat(inputFilename, "_test.txt");
     FILE *arquivoTest = fopen(testFilename, "w");
     if (arquivoTest == NULL)
