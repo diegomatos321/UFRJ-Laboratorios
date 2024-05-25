@@ -127,8 +127,15 @@ void* consumidor(void* arg) {
         sem_wait(&slotCheio);
         sem_wait(&mutexConsumidor);
 
+        // Caso a thread passe pela sincronização condicional acima
+        // pode ser que a thread anterior tenha terminado de consumir
+        // todos os elementos do buffer, então é necessário verificar
+        // se a thread atual ainda tem elementos para consumir
         if (current_i == INPUT_SIZE)
         {
+            // Caso sim, liberar o slotCheio e mutexConsumidor
+            // Para uma possível outra thread consumidora que esteja
+            // esperando para consumir
             sem_post(&mutexConsumidor);
             sem_post(&slotCheio);
             break;
@@ -144,6 +151,10 @@ void* consumidor(void* arg) {
         
         current_i++;
 
+        // Caso a thread tenha chegada ao final do buffer
+        // e consumido todos os elementos, liberar 1 slotCheio
+        // para não travar outras threads consumidoras que estejam
+        // esperando para consumir
         if (current_i == INPUT_SIZE)
         {
             sem_post(&slotCheio);
