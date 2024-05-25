@@ -5,7 +5,7 @@
 #include "./include/ehprimo.h"
 #include "./include/concat.h"
 
-#define CONSUMIDORES 2
+// #define CONSUMIDORES 2
 
 void* produtor(void* arg);
 void* consumidor(void* arg);

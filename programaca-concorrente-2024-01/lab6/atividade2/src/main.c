@@ -8,14 +8,14 @@ sem_t slotVazio, slotCheio, mutexProdutor, mutexConsumidor;
 int main(int argc, char* argv[]) {
     if (argc < 4)
     {
-        printf("Usage: ./consumidor-produtor <input_filename> <tamanho_buffer> <output_filename (sem extensao)>\n");
+        printf("Usage: ./consumidor-produtor <n_consumidoras> <tamanho_buffer> <input_filename>\n");
         return EXIT_SUCCESS;
     }
     
     // Ler argumentos de entrada
-    char* input_filename = argv[1];
+    unsigned int CONSUMIDORES = atoi(argv[1]);
     BUFFER_SIZE = atoi(argv[2]);
-    char* output_filename = argv[3];
+    char* input_filename = argv[3];
 
     // Alocar buffer
     buffer = (int*) malloc(BUFFER_SIZE * sizeof(int));
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     }
     
     // Inicia thread e semaforos
-    pthread_t tid[CONSUMIDORES + 1]; // +1 para a thread produtora
+    pthread_t* tid = (pthread_t*) malloc(sizeof(pthread_t) * (CONSUMIDORES + 1)); // +1 para a thread produtora
     sem_init(&slotVazio, 0, BUFFER_SIZE); // Existem BUFFER_SIZE slots vazios
     sem_init(&slotCheio, 0, 0); // Inicialmente não há slots cheios
     sem_init(&mutexProdutor, 0, 1); // binário para exclusão mútua
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     fread(&INPUT_SIZE, sizeof(unsigned int), 1, input_file);
     printf("Tamanho do arquivo de entrada: %d\n", INPUT_SIZE);
 
-    // Disparar thread produtora que irá ler byte a byte os números
+    // Disparar thread produtora que irá ler inteiro por inteiro
     // do arquivo de entrada e colocar no buffer
     int created = pthread_create(&tid[0], NULL, produtor, NULL);
     if (created != 0)
@@ -71,17 +71,9 @@ int main(int argc, char* argv[]) {
             printf("ERRO: pthread_join() retornou %d\n", status);
         }
     }
-    printf("Threads terminaram.");
+    printf("Threads terminaram.\n");
 
-    char* outputFilename = concat(output_filename, ".txt");
-    FILE* outputFile = fopen(outputFilename, "w");
-    if (outputFile == NULL)
-    {
-        printf("Erro ao abrir arquivo de saída\n");
-        return EXIT_FAILURE;
-    }
-    fprintf(outputFile, "%d\n", quantidadePrimos);
-    fclose(outputFile);
+    printf("Quantidade de primos: %d\n", quantidadePrimos);
 
     // Liberar memória alocada
     sem_destroy(&slotVazio);
@@ -91,8 +83,6 @@ int main(int argc, char* argv[]) {
 
     fclose(input_file);
     free(input_filename);
-    free(output_filename);
-    free(outputFilename);
     free(buffer);
 
     return EXIT_SUCCESS;
