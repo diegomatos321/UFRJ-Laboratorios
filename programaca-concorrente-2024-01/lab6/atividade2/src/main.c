@@ -82,8 +82,9 @@ int main(int argc, char* argv[]) {
     sem_destroy(&mutexProdutor);
 
     fclose(input_file);
-    free(input_filename);
+    // free(input_filename);
     free(buffer);
+    free(tid);
 
     return EXIT_SUCCESS;
 }
