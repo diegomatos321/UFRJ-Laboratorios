@@ -2,9 +2,18 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include <QApplication>
+#include "MainWindow.cpp"
 
-int main()
+int main(int argc, char** argv)
 {
+    QApplication app(argc, argv);
+
+    MainWindow mainWindow;
+    mainWindow.show();
+
+    return app.exec();
+
     std::string image_path = "./assets/letreiro-sistemas-digitais.jpg";
     cv::Mat originalImg = cv::imread(image_path, cv::IMREAD_COLOR);
 
