@@ -6,76 +6,165 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1002</width>
+    <height>666</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Segmentação de Imagem pelo Método Limite</string>
+   <string>Segmentação de Imagem por Thresholding</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="Icons/icons.qrc">
+    <normaloff>:/Icons/help.png</normaloff>:/Icons/help.png</iconset>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>22</width>
+    <height>22</height>
+   </size>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>60</y>
-      <width>61</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Olá Mundo</string>
-    </property>
-   </widget>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBoxGraph">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Views</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="1">
+        <widget class="QLabel" name="ImageOutput">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="ImageInput">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="convertButton">
+      <property name="text">
+       <string>Converter</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="convertButtonC">
+      <property name="text">
+       <string>Converter com Concorrencia</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPlainTextEdit" name="plainTextOutput"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1002</width>
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuArquivo">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Arquivo</string>
+     <string>File</string>
     </property>
-    <addaction name="actionAbrir"/>
-    <addaction name="actionSobre"/>
+    <addaction name="actionOpenFile"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrint"/>
+    <addaction name="actionHelp"/>
+    <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuModo">
-    <property name="title">
-     <string>Modo</string>
-    </property>
-    <addaction name="actionSequencial"/>
-    <addaction name="actionConcorrente"/>
-   </widget>
-   <addaction name="menuArquivo"/>
-   <addaction name="menuModo"/>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionAbrir">
+  <widget class="QToolBar" name="toolBar">
+   <property name="orientation">
+    <enum>Qt::Orientation::Horizontal</enum>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>22</width>
+     <height>22</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenFile"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionPrint"/>
+   <addaction name="actionHelp"/>
+  </widget>
+  <action name="actionOpenFile">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Icons/icons.qrc">
+     <normaloff>:/Icons/fileopen.png</normaloff>:/Icons/fileopen.png</iconset>
+   </property>
    <property name="text">
-    <string>Abrir</string>
+    <string>Open File...</string>
    </property>
   </action>
-  <action name="actionSobre">
+  <action name="actionExit">
    <property name="text">
-    <string>Sobre</string>
+    <string>Exit</string>
    </property>
   </action>
-  <action name="actionSequencial">
+  <action name="actionPrint">
+   <property name="icon">
+    <iconset resource="Icons/icons.qrc">
+     <normaloff>:/Icons/print.png</normaloff>:/Icons/print.png</iconset>
+   </property>
    <property name="text">
-    <string>Sequencial</string>
+    <string>Print</string>
    </property>
   </action>
-  <action name="actionConcorrente">
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="Icons/icons.qrc">
+     <normaloff>:/Icons/help.png</normaloff>:/Icons/help.png</iconset>
+   </property>
    <property name="text">
-    <string>Concorrente</string>
+    <string>Help</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="Icons/icons.qrc">
+     <normaloff>:/Icons/filesave.png</normaloff>:/Icons/filesave.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="Icons/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

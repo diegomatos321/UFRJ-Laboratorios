@@ -3,7 +3,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <QApplication>
-#include "MainWindow.cpp"
+#include "MainWindow.h"
 
 int main(int argc, char** argv)
 {
