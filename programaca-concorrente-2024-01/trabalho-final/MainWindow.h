@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
   // Constructor/Destructor
-  MainWindow();
+  MainWindow(QWidget *parent = nullptr);
   ~MainWindow() override;
 
 public slots:
@@ -39,6 +39,7 @@ private:
 
   cv::Mat originalImage;
   cv::Mat grayScaleImage;
+  cv::Mat histogramImage;
   cv::Mat binaryImage;
   cv::Mat resultImage;
 };

@@ -1,7 +1,3 @@
-#include <iostream>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
 #include <QApplication>
 #include "MainWindow.h"
 
@@ -14,7 +10,7 @@ int main(int argc, char** argv)
 
     return app.exec();
 
-    std::string image_path = "./assets/letreiro-sistemas-digitais.jpg";
+    /* std::string image_path = "./assets/letreiro-sistemas-digitais.jpg";
     cv::Mat originalImg = cv::imread(image_path, cv::IMREAD_COLOR);
 
     cv::Mat imgGray;
@@ -50,7 +46,7 @@ int main(int argc, char** argv)
     cv::threshold(imgGray, binaryImg, 100, 255, cv::THRESH_BINARY);
 
     cv::imshow("Window", binaryImg);
-    cv::waitKey(0);
+    cv::waitKey(0); */
 
     return 0;
 }
