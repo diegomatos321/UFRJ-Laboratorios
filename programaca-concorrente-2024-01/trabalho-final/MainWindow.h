@@ -4,7 +4,6 @@
 #include "ui_MainWindow.h"
 
 #include <QMainWindow>
-#include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -38,7 +37,10 @@ protected slots:
 private:
   Ui_MainWindow* ui;
 
-  cv::Mat currentImage;
+  cv::Mat originalImage;
+  cv::Mat grayScaleImage;
+  cv::Mat binaryImage;
+  cv::Mat resultImage;
 };
 
 #endif
