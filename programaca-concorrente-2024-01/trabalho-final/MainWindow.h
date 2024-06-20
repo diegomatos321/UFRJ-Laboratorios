@@ -3,9 +3,11 @@
 
 #include "ui_MainWindow.h"
 
+//#include <QApplication>
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
@@ -26,8 +28,7 @@ public slots:
   void slotOpenFile(); //abrir a imagem
   // void slotExit(); // fechar o programa
   void slotRun(); //converter para bw
-  // void slotConvertToBWParts(); //converter para bw em partes
-  // void processConvertToBW(); // processa a imagem separado
+  void slotOpenReport();
   // void printThreadOutput(const QString &text);
 
 protected:

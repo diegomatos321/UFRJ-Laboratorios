@@ -5,8 +5,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui_MainWind
 {
     this->ui->setupUi(this);
 
+    // connects da classe
     QObject::connect(this->ui->actionOpenFile, &QAction::triggered, this, &MainWindow::slotOpenFile);
     QObject::connect(this->ui->actionRun, &QAction::triggered, this, &MainWindow::slotRun);
+    QObject::connect(this->ui->actionHelp, &QAction::triggered, this, &MainWindow::slotOpenReport);
 }
 
 MainWindow::~MainWindow()
@@ -56,6 +58,12 @@ void MainWindow::slotRun() {
     this->DisplayOpenCvImage(this->ui->Histogram, this->histogramImage, QImage::Format::Format_RGB888);
     this->DisplayOpenCvImage(this->ui->BinaryImage, this->binaryImage, QImage::Format::Format_Grayscale8);
     this->DisplayOpenCvImage(this->ui->ResultImage, this->resultImage, QImage::Format::Format_RGB888);
+}
+
+void MainWindow::slotOpenReport() {
+    QString appDir = QApplication::applicationDirPath();
+    QUrl reportPath = QUrl::fromLocalFile(appDir.append("/Relatorio_Trabalho_Programacao_Concorrente_2024_01.pdf"));
+    QDesktopServices::openUrl(reportPath);
 }
 
 cv::Mat MainWindow::BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage) {
