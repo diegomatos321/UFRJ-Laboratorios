@@ -1,5 +1,4 @@
 #include "MainWindow.h"
-#include "iostream"
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui_MainWindow) 
 {
@@ -41,23 +40,59 @@ void MainWindow::slotRun() {
         return;
     }
 
-    // Converte a imagem para escala de cinza (BGR2GRAY)
-    cv::cvtColor(this->originalImage, this->grayScaleImage, cv::COLOR_BGR2GRAY);
+    if (this->IsConcurrent)
+    {
+        int numThreads = QThreadPool::globalInstance()->maxThreadCount();
 
-    this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
+        // calcula a altura de cada parte
+        std::vector<cv::Mat> imageParts;
+        int partHeight = this->originalImage.rows / numThreads;
 
-    // Imagem binária
-    const float k = 100.0;
-    cv::threshold(this->grayScaleImage, this->binaryImage, k, 255, cv::THRESH_BINARY_INV);
+        // Divide a imagem em partes com opencv
+        // https://docs.opencv.org/3.4/js_basic_ops_roi.html
+        for (int i = 0; i < numThreads; ++i)
+        {
+            int startY = i * partHeight;
+            int endY = (i == numThreads - 1) ? this->originalImage.rows : startY + partHeight; // Handle the last part's height
+            cv::Rect roi(0, startY, this->originalImage.cols, endY - startY);
+            imageParts.push_back(this->originalImage(roi).clone());
+        }
 
-    // Aplica máscara
-    cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
+        QtConcurrent::blockingMap(imageParts, [](cv::Mat &imagePart) {   
+            cv::cvtColor(imagePart, imagePart, cv::COLOR_BGR2GRAY);
+        });
 
-    // Exibe imagem em escala de cinza
+        cv::vconcat(imageParts, this->grayScaleImage);
+
+        this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
+
+        // Imagem binária
+        const float k = 100.0;
+        cv::threshold(this->grayScaleImage, this->binaryImage, k, 255, cv::THRESH_BINARY_INV);
+
+        // Aplica máscara
+        cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
+
+    } else {
+        // Converte a imagem para escala de cinza (BGR2GRAY)
+        cv::cvtColor(this->originalImage, this->grayScaleImage, cv::COLOR_BGR2GRAY);
+
+        this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
+
+        // Imagem binária
+        const float k = 100.0;
+        cv::threshold(this->grayScaleImage, this->binaryImage, k, 255, cv::THRESH_BINARY_INV);
+
+        // Aplica máscara
+        cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
+    }
+
+    // Exibe imagens
     this->DisplayOpenCvImage(this->ui->GrayScaleImage, this->grayScaleImage, QImage::Format::Format_Grayscale8);
     this->DisplayOpenCvImage(this->ui->Histogram, this->histogramImage, QImage::Format::Format_RGB888);
     this->DisplayOpenCvImage(this->ui->BinaryImage, this->binaryImage, QImage::Format::Format_Grayscale8);
     this->DisplayOpenCvImage(this->ui->ResultImage, this->resultImage, QImage::Format::Format_RGB888);
+
 }
 
 void MainWindow::slotOpenReport() {
@@ -68,8 +103,8 @@ void MainWindow::slotOpenReport() {
 
 cv::Mat MainWindow::BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage) {
     cv::Mat histogram;
-    int histSize = 256;
-    float range[] = {0.0, 256.0};
+    int histSize = 255;
+    float range[] = {0.0, 255.0};
     const float *histRange[] = {range};
     cv::calcHist(&grayScaledImage, 1, 0, cv::Mat(), histogram, 1, &histSize, histRange);
 
@@ -83,8 +118,7 @@ cv::Mat MainWindow::BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledIm
     {
         cv::line(
             result, 
-            cv::Point(bin_w * (i - 1), 
-            hist_h - cvRound(histogram.at<float>(i - 1))),
+            cv::Point(bin_w * (i - 1), hist_h - cvRound(histogram.at<float>(i - 1))),
             cv::Point(bin_w * (i), hist_h - cvRound(histogram.at<float>(i))),
             cv::Scalar(255, 0, 0), 2, 8, 0
         );

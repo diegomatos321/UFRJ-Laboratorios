@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 
 # Find the required packages
 find_package(OpenCV REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Concurrent)
 
 # Standard Qt setup function (only in recent Qt6 versions, ensure you have it)
 qt_standard_project_setup()
@@ -31,6 +31,7 @@ target_link_libraries(ImageSegmentationByThresholding PRIVATE
     Qt6::Core
     Qt6::Widgets 
     Qt6::Gui
+    Qt6::Concurrent
 )
 
 # Set properties for the target executable

@@ -2,12 +2,17 @@
 #define MainWindow_H
 
 #include "ui_MainWindow.h"
+#include <vector>
+#include <iostream>
 
 //#include <QApplication>
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QtConcurrent>
+#include <QList>
+#include <QDebug>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
@@ -39,6 +44,8 @@ protected:
   cv::Mat histogramImage;
   cv::Mat binaryImage;
   cv::Mat resultImage;
+
+  bool IsConcurrent = true;
 
   cv::Mat BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage);
   void DisplayOpenCvImage(QLabel *container, const cv::Mat image, const QImage::Format type);
