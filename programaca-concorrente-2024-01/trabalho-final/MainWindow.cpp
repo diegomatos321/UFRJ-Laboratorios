@@ -46,6 +46,7 @@ void MainWindow::slotRun() {
         return;
     }
 
+    size_t startTime = cv::getTickCount();
     if (this->IsConcurrent)
     {
         std::cout << "Running on Concurrent mode." << std::endl;
@@ -66,7 +67,7 @@ void MainWindow::slotRun() {
         }
 
         QtConcurrent::blockingMap(imageParts, [](cv::Mat &imagePart) {   
-            qDebug() << "Thread ID:" << QThread::currentThreadId(); // Imprime o número da thread
+            // qDebug() << "Thread ID:" << QThread::currentThreadId(); // Imprime o número da thread
             cv::cvtColor(imagePart, imagePart, cv::COLOR_BGR2GRAY);
         });
         cv::vconcat(imageParts, this->grayScaleImage);
@@ -96,6 +97,10 @@ void MainWindow::slotRun() {
         // Aplica máscara
         cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
     }
+
+    size_t endTime = cv::getTickCount();
+    double elapsedTime = (endTime - startTime) / cv::getTickFrequency();
+    std::cout << "Elapsed time: " << elapsedTime << std::endl;
 
     // Exibe imagens
     this->DisplayOpenCvImage(this->ui->GrayScaleImage, this->grayScaleImage, QImage::Format::Format_Grayscale8);
