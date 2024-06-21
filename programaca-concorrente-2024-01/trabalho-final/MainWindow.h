@@ -48,6 +48,7 @@ protected:
   cv::Mat resultImage;
 
   bool IsConcurrent = false;
+  float k = 100.0;
 
   cv::Mat BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage);
   void DisplayOpenCvImage(QLabel *container, const cv::Mat image, const QImage::Format type);
