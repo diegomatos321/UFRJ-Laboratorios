@@ -4,10 +4,16 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui_MainWind
 {
     this->ui->setupUi(this);
 
+    QActionGroup *executionMode = new QActionGroup(this);
+    executionMode->addAction(this->ui->actionSequencial);
+    executionMode->addAction(this->ui->actionConcorrente);
+
     // connects da classe
     QObject::connect(this->ui->actionOpenFile, &QAction::triggered, this, &MainWindow::slotOpenFile);
     QObject::connect(this->ui->actionRun, &QAction::triggered, this, &MainWindow::slotRun);
     QObject::connect(this->ui->actionHelp, &QAction::triggered, this, &MainWindow::slotOpenReport);
+    QObject::connect(this->ui->actionSequencial, &QAction::triggered, this, &MainWindow::slotSetSequencialAlgorithm);
+    QObject::connect(this->ui->actionConcorrente, &QAction::triggered, this, &MainWindow::slotSetConcorrentAlgorithm);
 }
 
 MainWindow::~MainWindow()
@@ -42,6 +48,7 @@ void MainWindow::slotRun() {
 
     if (this->IsConcurrent)
     {
+        std::cout << "Running on Concurrent mode." << std::endl;
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
 
         // calcula a altura de cada parte
@@ -81,6 +88,8 @@ void MainWindow::slotRun() {
         cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
 
     } else {
+        std::cout << "Running on Sequencial mode." << std::endl;
+
         // Converte a imagem para escala de cinza (BGR2GRAY)
         cv::cvtColor(this->originalImage, this->grayScaleImage, cv::COLOR_BGR2GRAY);
 
@@ -152,4 +161,12 @@ void MainWindow::DisplayOpenCvImage(QLabel *container, const cv::Mat image, QIma
         Qt::KeepAspectRatio)
     );
     container->setPixmap(pixmap);
+}
+
+void MainWindow::slotSetSequencialAlgorithm() {
+    this->IsConcurrent = false;
+}
+
+void MainWindow::slotSetConcorrentAlgorithm() {
+    this->IsConcurrent = true;
 }

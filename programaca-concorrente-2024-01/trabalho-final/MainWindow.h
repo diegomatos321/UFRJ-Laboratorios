@@ -13,6 +13,7 @@
 #include <QtConcurrent>
 #include <QList>
 #include <QDebug>
+#include <QActionGroup>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
@@ -34,7 +35,8 @@ public slots:
   // void slotExit(); // fechar o programa
   void slotRun(); //converter para bw
   void slotOpenReport();
-  // void printThreadOutput(const QString &text);
+  void slotSetSequencialAlgorithm();
+  void slotSetConcorrentAlgorithm();
 
 protected:
   Ui_MainWindow* ui;
@@ -45,7 +47,7 @@ protected:
   cv::Mat binaryImage;
   cv::Mat resultImage;
 
-  bool IsConcurrent = true;
+  bool IsConcurrent = false;
 
   cv::Mat BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage);
   void DisplayOpenCvImage(QLabel *container, const cv::Mat image, const QImage::Format type);
