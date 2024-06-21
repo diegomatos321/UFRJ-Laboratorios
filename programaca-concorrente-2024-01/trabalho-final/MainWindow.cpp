@@ -48,6 +48,9 @@ void MainWindow::slotRun() {
         std::vector<cv::Mat> imageParts;
         int partHeight = this->originalImage.rows / numThreads;
 
+        std::cout << "numParts" << numThreads << std::endl; 
+        std::cout << "partHeight" << partHeight << std::endl;
+
         // Divide a imagem em partes com opencv
         // https://docs.opencv.org/3.4/js_basic_ops_roi.html
         for (int i = 0; i < numThreads; ++i)
@@ -59,6 +62,7 @@ void MainWindow::slotRun() {
         }
 
         QtConcurrent::blockingMap(imageParts, [](cv::Mat &imagePart) {   
+            qDebug() << "Thread ID:" << QThread::currentThreadId(); // Imprime o número da thread
             cv::cvtColor(imagePart, imagePart, cv::COLOR_BGR2GRAY);
         });
 
@@ -66,9 +70,12 @@ void MainWindow::slotRun() {
 
         this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
 
-        // Imagem binária
         const float k = 100.0;
-        cv::threshold(this->grayScaleImage, this->binaryImage, k, 255, cv::THRESH_BINARY_INV);
+        QtConcurrent::blockingMap(imageParts, [k](cv::Mat &imagePart) {   
+            cv::threshold(imagePart, imagePart, k, 255, cv::THRESH_BINARY_INV);
+        });
+
+        cv::vconcat(imageParts, this->binaryImage);
 
         // Aplica máscara
         cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
@@ -92,7 +99,6 @@ void MainWindow::slotRun() {
     this->DisplayOpenCvImage(this->ui->Histogram, this->histogramImage, QImage::Format::Format_RGB888);
     this->DisplayOpenCvImage(this->ui->BinaryImage, this->binaryImage, QImage::Format::Format_Grayscale8);
     this->DisplayOpenCvImage(this->ui->ResultImage, this->resultImage, QImage::Format::Format_RGB888);
-
 }
 
 void MainWindow::slotOpenReport() {
