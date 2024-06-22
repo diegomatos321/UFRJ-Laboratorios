@@ -53,7 +53,8 @@ void MainWindow::slotRun() {
     size_t startTime = cv::getTickCount();
     if (this->IsConcurrent)
     {
-        std::cout << "Running on Concurrent mode." << std::endl;
+        // std::cout << "Running on Concurrent mode." << std::endl;
+        this->ui->statusbar->showMessage("Running on Concurrent mode.");
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
 
         // calcula a altura de cada parte
@@ -87,7 +88,8 @@ void MainWindow::slotRun() {
         cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
 
     } else {
-        std::cout << "Running on Sequencial mode." << std::endl;
+        // std::cout << "Running on Sequencial mode." << std::endl;
+        this->ui->statusbar->showMessage("Running on Sequencial mode.");
         int numThreads = QThreadPool::globalInstance()->maxThreadCount();
         
         // calcula a altura de cada parte
@@ -126,7 +128,10 @@ void MainWindow::slotRun() {
 
     size_t endTime = cv::getTickCount();
     double elapsedTime = (endTime - startTime) / cv::getTickFrequency();
-    std::cout << "Elapsed time: " << elapsedTime << std::endl;
+    // std::cout << "Elapsed time: " << elapsedTime << std::endl;
+    QString message = "Elapsed time: ";
+    message.append(std::to_string(elapsedTime));
+    this->ui->statusbar->showMessage(message);
 
     // Exibe imagens
     this->DisplayOpenCvImage(this->ui->GrayScaleImage, this->grayScaleImage, QImage::Format::Format_Grayscale8);
