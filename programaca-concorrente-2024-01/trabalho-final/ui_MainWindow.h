@@ -19,6 +19,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
@@ -44,7 +45,9 @@ public:
     QLabel *ResultImage;
     QHBoxLayout *horizontalLayout_2;
     QLabel *GrayScaleImage;
+    QVBoxLayout *verticalLayout_2;
     QLabel *Histogram;
+    QSlider *thresholdingInput;
     QLabel *BinaryImage;
     QMenuBar *menubar;
     QMenu *menuFile;
@@ -117,10 +120,26 @@ public:
 
         horizontalLayout_2->addWidget(GrayScaleImage);
 
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setObjectName("verticalLayout_2");
         Histogram = new QLabel(centralwidget);
         Histogram->setObjectName("Histogram");
 
-        horizontalLayout_2->addWidget(Histogram);
+        verticalLayout_2->addWidget(Histogram);
+
+        thresholdingInput = new QSlider(centralwidget);
+        thresholdingInput->setObjectName("thresholdingInput");
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(thresholdingInput->sizePolicy().hasHeightForWidth());
+        thresholdingInput->setSizePolicy(sizePolicy);
+        thresholdingInput->setOrientation(Qt::Orientation::Horizontal);
+
+        verticalLayout_2->addWidget(thresholdingInput);
+
+
+        horizontalLayout_2->addLayout(verticalLayout_2);
 
         BinaryImage = new QLabel(centralwidget);
         BinaryImage->setObjectName("BinaryImage");

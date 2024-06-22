@@ -4,6 +4,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui_MainWind
 {
     this->ui->setupUi(this);
 
+    this->ui->thresholdingInput->setMaximum(255);
+    this->ui->thresholdingInput->setValue(this->thresholding);
+
     QActionGroup *executionMode = new QActionGroup(this);
     executionMode->addAction(this->ui->actionSequencial);
     executionMode->addAction(this->ui->actionConcorrente);
@@ -14,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui_MainWind
     QObject::connect(this->ui->actionHelp, &QAction::triggered, this, &MainWindow::slotOpenReport);
     QObject::connect(this->ui->actionSequencial, &QAction::triggered, this, &MainWindow::slotSetSequencialAlgorithm);
     QObject::connect(this->ui->actionConcorrente, &QAction::triggered, this, &MainWindow::slotSetConcorrentAlgorithm);
+    QObject::connect(this->ui->thresholdingInput, &QSlider::valueChanged, this, &MainWindow::slotSetThresholding);
 }
 
 MainWindow::~MainWindow()
@@ -75,7 +79,7 @@ void MainWindow::slotRun() {
         this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
 
         QtConcurrent::blockingMap(imageParts, [&](cv::Mat &imagePart) {   
-            cv::threshold(imagePart, imagePart, this->k, 255, cv::THRESH_BINARY_INV);
+            cv::threshold(imagePart, imagePart, this->thresholding, 255, cv::THRESH_BINARY_INV);
         });
         cv::vconcat(imageParts, this->binaryImage);
 
@@ -112,7 +116,7 @@ void MainWindow::slotRun() {
         // Imagem binária
         for (size_t i = 0; i < imageParts.size(); i++)
         {
-            cv::threshold(imageParts[i], imageParts[i], this->k, 255, cv::THRESH_BINARY_INV);
+            cv::threshold(imageParts[i], imageParts[i], this->thresholding, 255, cv::THRESH_BINARY_INV);
         }
         cv::vconcat(imageParts, this->binaryImage);
 
@@ -190,4 +194,8 @@ void MainWindow::slotSetSequencialAlgorithm() {
 
 void MainWindow::slotSetConcorrentAlgorithm() {
     this->IsConcurrent = true;
+}
+
+void MainWindow::slotSetThresholding(int value) {
+    this->thresholding = value;
 }

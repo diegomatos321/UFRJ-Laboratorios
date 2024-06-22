@@ -37,6 +37,7 @@ public slots:
   void slotOpenReport();
   void slotSetSequencialAlgorithm();
   void slotSetConcorrentAlgorithm();
+  void slotSetThresholding(int value);
 
 protected:
   Ui_MainWindow* ui;
@@ -48,7 +49,7 @@ protected:
   cv::Mat resultImage;
 
   bool IsConcurrent = false;
-  float k = 100.0;
+  int thresholding = 100;
 
   cv::Mat BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage);
   void DisplayOpenCvImage(QLabel *container, const cv::Mat image, const QImage::Format type);
