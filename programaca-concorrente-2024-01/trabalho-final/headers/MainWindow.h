@@ -1,7 +1,7 @@
 #ifndef MainWindow_H
 #define MainWindow_H
 
-#include "ui_MainWindow.h"
+#include "../forms/ui_MainWindow.h"
 #include <vector>
 #include <iostream>
 

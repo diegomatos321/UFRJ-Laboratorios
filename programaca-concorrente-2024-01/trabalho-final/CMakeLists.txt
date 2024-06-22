@@ -13,17 +13,21 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Concurrent)
 # Standard Qt setup function (only in recent Qt6 versions, ensure you have it)
 qt_standard_project_setup()
 
-# Include OpenCV headers
+# Adicionar o diretório de origem
+set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(HEADERS_DIR "${CMAKE_SOURCE_DIR}/headers")
+set(ICONS_DIR "${CMAKE_SOURCE_DIR}/Icons")
+
+# Adicionar arquivos fonte e cabeçalhos
+file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
+file(GLOB_RECURSE HEADERS "${HEADERS_DIR}/*.h")
+file(GLOB_RECURSE ICONS "${ICONS_DIR}/*")
+
 include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${HEADERS_DIR})
 
 # Add executable and list all necessary sources
-qt_add_executable(ImageSegmentationByThresholding 
-    main.cpp
-    MainWindow.cpp
-    MainWindow.h
-    ui_MainWindow.h
-    Icons/icons.qrc
-)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${ICONS})
 
 # Link the necessary libraries
 target_link_libraries(ImageSegmentationByThresholding PRIVATE 

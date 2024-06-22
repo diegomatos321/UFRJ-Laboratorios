@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "MainWindow.h"
+#include "../headers/MainWindow.h"
 
 int main(int argc, char** argv)
 {
@@ -9,6 +9,4 @@ int main(int argc, char** argv)
     mainWindow.show();
 
     return app.exec();
-
-    return 0;
 }
