@@ -6,14 +6,13 @@
 #include <iostream>
 
 //#include <QApplication>
-#include <QMainWindow>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDesktopServices>
+#include <QtGui/QActionGroup>
+#include <QtGui/QDesktopServices>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 #include <QtConcurrent>
-#include <QList>
 #include <QDebug>
-#include <QActionGroup>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>

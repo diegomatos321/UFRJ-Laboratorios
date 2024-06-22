@@ -102,11 +102,14 @@ public:
         horizontalLayout->setObjectName("horizontalLayout");
         OriginalImage = new QLabel(centralwidget);
         OriginalImage->setObjectName("OriginalImage");
+        OriginalImage->setStyleSheet(QString::fromUtf8("border: 1px solid rgb(0, 0, 0);"));
+        OriginalImage->setFrameShadow(QFrame::Shadow::Raised);
 
         horizontalLayout->addWidget(OriginalImage);
 
         ResultImage = new QLabel(centralwidget);
         ResultImage->setObjectName("ResultImage");
+        ResultImage->setStyleSheet(QString::fromUtf8("border: 1px solid black;"));
 
         horizontalLayout->addWidget(ResultImage);
 
@@ -117,6 +120,7 @@ public:
         horizontalLayout_2->setObjectName("horizontalLayout_2");
         GrayScaleImage = new QLabel(centralwidget);
         GrayScaleImage->setObjectName("GrayScaleImage");
+        GrayScaleImage->setStyleSheet(QString::fromUtf8("border: 1px solid black;"));
 
         horizontalLayout_2->addWidget(GrayScaleImage);
 
@@ -124,6 +128,7 @@ public:
         verticalLayout_2->setObjectName("verticalLayout_2");
         Histogram = new QLabel(centralwidget);
         Histogram->setObjectName("Histogram");
+        Histogram->setStyleSheet(QString::fromUtf8("border: 1px solid black;"));
 
         verticalLayout_2->addWidget(Histogram);
 
@@ -143,6 +148,7 @@ public:
 
         BinaryImage = new QLabel(centralwidget);
         BinaryImage->setObjectName("BinaryImage");
+        BinaryImage->setStyleSheet(QString::fromUtf8("border: 1px solid black;"));
 
         horizontalLayout_2->addWidget(BinaryImage);
 
@@ -203,11 +209,11 @@ public:
 #endif // QT_CONFIG(tooltip)
         actionSequencial->setText(QCoreApplication::translate("MainWindow", "Sequencial", nullptr));
         actionConcorrente->setText(QCoreApplication::translate("MainWindow", "Concorrente", nullptr));
-        OriginalImage->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
-        ResultImage->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
-        GrayScaleImage->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
-        Histogram->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
-        BinaryImage->setText(QCoreApplication::translate("MainWindow", "TextLabel", nullptr));
+        OriginalImage->setText(QString());
+        ResultImage->setText(QString());
+        GrayScaleImage->setText(QString());
+        Histogram->setText(QString());
+        BinaryImage->setText(QString());
         menuFile->setTitle(QCoreApplication::translate("MainWindow", "File", nullptr));
         menuModo->setTitle(QCoreApplication::translate("MainWindow", "Modo", nullptr));
     } // retranslateUi

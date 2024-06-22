@@ -31,15 +31,24 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="OriginalImage">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid rgb(0, 0, 0);</string>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="ResultImage">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid black;</string>
+          </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -49,8 +58,11 @@
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="GrayScaleImage">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid black;</string>
+          </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -58,8 +70,11 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QLabel" name="Histogram">
+            <property name="styleSheet">
+             <string notr="true">border: 1px solid black;</string>
+            </property>
             <property name="text">
-             <string>TextLabel</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -80,8 +95,11 @@
         </item>
         <item>
          <widget class="QLabel" name="BinaryImage">
+          <property name="styleSheet">
+           <string notr="true">border: 1px solid black;</string>
+          </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
