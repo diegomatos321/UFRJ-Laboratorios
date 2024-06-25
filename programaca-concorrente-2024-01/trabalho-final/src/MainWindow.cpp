@@ -73,16 +73,16 @@ void MainWindow::slotRun() {
 
         QtConcurrent::blockingMap(imageParts, [](cv::Mat &imagePart) {   
             // qDebug() << "Thread ID:" << QThread::currentThreadId(); // Imprime o número da thread
-            cv::cvtColor(imagePart, imagePart, cv::COLOR_BGR2GRAY);
+            cv::cvtColor(imagePart, imagePart, cv::COLOR_BGR2GRAY); // converte imagem para escala de cinza
         });
-        cv::vconcat(imageParts, this->grayScaleImage);
+        cv::vconcat(imageParts, this->grayScaleImage); // Junta as regiões numa única imagem.
 
         this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
 
         QtConcurrent::blockingMap(imageParts, [&](cv::Mat &imagePart) {   
-            cv::threshold(imagePart, imagePart, this->thresholding, 255, cv::THRESH_BINARY_INV);
+            cv::threshold(imagePart, imagePart, this->thresholding, 255, cv::THRESH_BINARY_INV); // aplica metodo limite para gerar imagem binaria
         });
-        cv::vconcat(imageParts, this->binaryImage);
+        cv::vconcat(imageParts, this->binaryImage); // Junta as regiões numa única imagem.
 
         // Aplica máscara
         cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
@@ -109,18 +109,18 @@ void MainWindow::slotRun() {
         // Converte a imagem para escala de cinza (BGR2GRAY)
         for (size_t i = 0; i < imageParts.size(); i++)
         {
-            cv::cvtColor(imageParts[i], imageParts[i], cv::COLOR_BGR2GRAY);
+            cv::cvtColor(imageParts[i], imageParts[i], cv::COLOR_BGR2GRAY); // converte imagem para escala de cinza
         }
-        cv::vconcat(imageParts, this->grayScaleImage);
+        cv::vconcat(imageParts, this->grayScaleImage); // Junta as regiões numa única imagem.
 
         this->histogramImage = this->BuildHistogramFromGrayScaledImage(this->grayScaleImage);
 
         // Imagem binária
         for (size_t i = 0; i < imageParts.size(); i++)
         {
-            cv::threshold(imageParts[i], imageParts[i], this->thresholding, 255, cv::THRESH_BINARY_INV);
+            cv::threshold(imageParts[i], imageParts[i], this->thresholding, 255, cv::THRESH_BINARY_INV); // aplica metodo limite para gerar imagem binaria
         }
-        cv::vconcat(imageParts, this->binaryImage);
+        cv::vconcat(imageParts, this->binaryImage); // Junta as regiões numa única imagem.
 
         // Aplica máscara
         cv::bitwise_and(this->originalImage, this->originalImage, this->resultImage, this->binaryImage);
@@ -146,6 +146,7 @@ void MainWindow::slotOpenReport() {
     QDesktopServices::openUrl(reportPath);
 }
 
+// https://docs.opencv.org/3.4/d8/dbc/tutorial_histogram_calculation.html
 cv::Mat MainWindow::BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage) {
     cv::Mat histogram;
     int histSize = 255;
@@ -172,7 +173,7 @@ cv::Mat MainWindow::BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledIm
     return result;
 }
 
-void MainWindow::DisplayOpenCvImage(QLabel *container, const cv::Mat image, QImage::Format type) {
+void MainWindow::DisplayOpenCvImage(QLabel *container, cv::Mat image, QImage::Format type) {
     QImage qImage(
         image.data, 
         static_cast<int>(image.cols), 
@@ -187,8 +188,7 @@ void MainWindow::DisplayOpenCvImage(QLabel *container, const cv::Mat image, QIma
     
     // Redimensiona a imagem para se adequar ao QLabel imageInput
     QPixmap pixmap = QPixmap::fromImage(
-        qImage.scaled(container->size(), 
-        Qt::KeepAspectRatio)
+        qImage.scaled(container->size(), Qt::KeepAspectRatio)
     );
     container->setPixmap(pixmap);
 }
