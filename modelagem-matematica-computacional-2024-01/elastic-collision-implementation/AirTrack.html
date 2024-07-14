@@ -31,7 +31,7 @@
         <button 
             x-data
             class="flex md:hidden flex-col items-center align-middle" 
-            x-on:click="console.log('Disparando evento'); $dispatch('teste')"
+            x-on:click="$dispatch('showMenu')"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -44,7 +44,7 @@
     <!-- Mobile menu -->
     <aside 
         x-data="{ show: false }"
-        x-on:teste.window="show = true" 
+        x-on:showMenu.window="show = true" 
         x-show="show"
         x-cloak
         x-transition:enter="transition ease-out duration-300"
@@ -56,7 +56,7 @@
         class="fixed top-0 left-0 w-screen h-screen z-10"
     >
         <nav 
-            class="relative w-1/2 h-full p-4 bg-white  shadow" 
+            class="relative w-10/12 h-full p-4 bg-white shadow" 
             x-on:click.outside="show = false"
         >
             <!-- Close Button -->
@@ -83,17 +83,25 @@
                 <p>Reprodução da demonstração de AirTrack do professor Walter Lewin.</p>
             </div>
 
-            <iframe width="560" height="315" class="mb-4 mx-auto" src="https://www.youtube.com/embed/aIhScO3_I50?si=WTqKeADF6U-xJC2Y&amp;start=1967" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe style="height: 315px;" class="w-full md:w-[560px] mb-4 mx-auto" src="https://www.youtube.com/embed/aIhScO3_I50?si=WTqKeADF6U-xJC2Y&amp;start=1967" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-            <div id="vtk" style="margin: auto; width: 80%;"></div>
+            <div x-data="{ isPlaying: false }" id="vtk" style="margin: auto; width: 80%;" class="relative">
+                <div class="absolute top-2 left-2 bg-white p-4 rounded">
+                    <button x-on:click="isPlaying = !isPlaying; $dispatch('toggleAnimation', { isPlaying })" class="px-4 py-2 shadow hover:bg-gray-200">
+                        <template x-if="!isPlaying"><span>Start Animation</span></template>
+                        <template x-if="isPlaying"><span>Stop Animation</span></template>
+                    </button>
+                </div>
+            </div>
         </section>
     </main>
 
     <script type="module">
         import AirTrackScene from "./AirTrackScene.js";
 
-        const Scene = new AirTrackScene()
-        Scene.Start()
+        const Scene = new AirTrackS()
+        window.addEventListener("DOMContentLoaded", () => Scene.Start())
+        window.addEventListener("toggleAnimation", (e) => Scene.isPlaying = e.detail.isPlaying)
     </script>
 </body>
 </html>

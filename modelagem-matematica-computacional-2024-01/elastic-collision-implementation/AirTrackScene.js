@@ -43,16 +43,18 @@ export default class AirTrackScene {
         },
         vtkActorRef: null
     }
+
     fullScreenRenderer = null
     previousTimestamp = 0
+    isPlaying = false
 
     constructor() { }
 
     Start() {
         this.vtkSetup()
         this.vtkPipeline()
-        
-        window.requestAnimationFrame(this.Anim)
+
+        this.Anim()
     }
 
     vtkSetup() {
@@ -119,15 +121,22 @@ export default class AirTrackScene {
     }
 
     Anim = (timeStamp) => {
+        // Por algum motivo na primeira iteração o argumento vem nulo/undefined
         if (timeStamp === undefined) {
             timeStamp = 0
         }
+
         const dt = (timeStamp - this.previousTimestamp) / 1000 // Proximo passo da animação em segundos
         this.previousTimestamp = timeStamp
 
-        this.Update(dt)
-        this.Render()
+        // Quando pausar eu só não atualizo a fisica, mas renderizo o último
+        // estado na tela
 
+        if (this.isPlaying) {
+            this.Update(dt)
+        }
+
+        this.Render()
         window.requestAnimationFrame(this.Anim)
     }
 
