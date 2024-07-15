@@ -44,7 +44,7 @@
     <!-- Mobile menu -->
     <aside 
         x-data="{ show: false }"
-        x-on:showMenu.window="show = true" 
+        x-on:show-menu.camel.window="show = true" 
         x-show="show"
         x-cloak
         x-transition:enter="transition ease-out duration-300"
