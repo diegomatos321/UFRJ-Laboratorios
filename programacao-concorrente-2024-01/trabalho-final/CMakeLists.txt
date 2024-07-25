@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Find the required packages
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.10 REQUIRED COMPONENTS imgcodecs imgproc highgui)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Concurrent)
 
 # Standard Qt setup function (only in recent Qt6 versions, ensure you have it)
