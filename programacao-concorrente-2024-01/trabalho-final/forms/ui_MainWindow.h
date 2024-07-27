@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'Application.ui'
+** Form generated from reading UI file 'MainWindow.ui'
 **
 ** Created by: Qt User Interface Compiler version 6.7.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_APPLICATION_H
-#define UI_APPLICATION_H
+#ifndef UI_MAINWINDOW_H
+#define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -20,7 +20,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_Application
+class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
@@ -29,12 +29,12 @@ public:
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
-    void setupUi(QMainWindow *Application)
+    void setupUi(QMainWindow *MainWindow)
     {
-        if (Application->objectName().isEmpty())
-            Application->setObjectName("Application");
-        Application->resize(800, 600);
-        centralwidget = new QWidget(Application);
+        if (MainWindow->objectName().isEmpty())
+            MainWindow->setObjectName("MainWindow");
+        MainWindow->resize(800, 600);
+        centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         verticalLayout = new QVBoxLayout(centralwidget);
         verticalLayout->setObjectName("verticalLayout");
@@ -43,31 +43,31 @@ public:
 
         verticalLayout->addWidget(stackedWidget);
 
-        Application->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(Application);
+        MainWindow->setCentralWidget(centralwidget);
+        menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
         menubar->setGeometry(QRect(0, 0, 800, 22));
-        Application->setMenuBar(menubar);
-        statusbar = new QStatusBar(Application);
+        MainWindow->setMenuBar(menubar);
+        statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
-        Application->setStatusBar(statusbar);
+        MainWindow->setStatusBar(statusbar);
 
-        retranslateUi(Application);
+        retranslateUi(MainWindow);
 
-        QMetaObject::connectSlotsByName(Application);
+        QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
-    void retranslateUi(QMainWindow *Application)
+    void retranslateUi(QMainWindow *MainWindow)
     {
-        Application->setWindowTitle(QCoreApplication::translate("Application", "Image Segmentation Tool", nullptr));
+        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "Image Segmentation Tool", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class Application: public Ui_Application {};
+    class MainWindow: public Ui_MainWindow {};
 } // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_APPLICATION_H
+#endif // UI_MAINWINDOW_H
