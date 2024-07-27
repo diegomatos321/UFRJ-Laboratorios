@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SolverPage</class>
+ <widget class="QWidget" name="SolverPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>725</width>
+    <height>631</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+        <widget class="QLabel" name="OriginalImage">
+        <property name="styleSheet">
+          <string notr="true">border: 1px solid rgb(0, 0, 0);</string>
+        </property>
+        <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <property name="text">
+          <string/>
+        </property>
+        </widget>
+      </item>
+      <item>
+        <widget class="QLabel" name="ResultImage">
+        <property name="styleSheet">
+          <string notr="true">border: 1px solid black;</string>
+        </property>
+        <property name="text">
+          <string/>
+        </property>
+        </widget>
+      </item>
+      </layout>
+    </item>
+    <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+        <widget class="QLabel" name="GrayScaleImage">
+        <property name="styleSheet">
+          <string notr="true">border: 1px solid black;</string>
+        </property>
+        <property name="text">
+          <string/>
+        </property>
+        </widget>
+      </item>
+      <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+          <widget class="QLabel" name="Histogram">
+          <property name="styleSheet">
+            <string notr="true">border: 1px solid black;</string>
+          </property>
+          <property name="text">
+            <string/>
+          </property>
+          </widget>
+        </item>
+        <item>
+          <widget class="QSlider" name="thresholdingInput">
+          <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+            </sizepolicy>
+          </property>
+          <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          </widget>
+        </item>
+        </layout>
+      </item>
+      <item>
+        <widget class="QLabel" name="BinaryImage">
+        <property name="styleSheet">
+          <string notr="true">border: 1px solid black;</string>
+        </property>
+        <property name="text">
+          <string/>
+        </property>
+        </widget>
+      </item>
+      </layout>
+    </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../Icons/icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
