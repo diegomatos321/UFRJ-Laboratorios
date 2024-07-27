@@ -11,8 +11,13 @@ public:
     WelcomePage(QWidget *parent = nullptr);
     ~WelcomePage() override;
 
+signals:
+    void StartNewProject();
+
 protected:
     Ui::WelcomePage* ui;
+
+    void HandleNewProjectBtnClicked();
 };
 
 #endif

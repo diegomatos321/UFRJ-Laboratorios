@@ -34,7 +34,7 @@ public:
     QLabel *label_7;
     QLabel *label;
     QLabel *label_10;
-    QPushButton *pushButton;
+    QPushButton *newProjectBtn;
     QFrame *line;
     QWidget *widget;
     QVBoxLayout *verticalLayout_4;
@@ -50,7 +50,6 @@ public:
         if (WelcomePage->objectName().isEmpty())
             WelcomePage->setObjectName("WelcomePage");
         WelcomePage->resize(620, 550);
-        WelcomePage->setMinimumSize(QSize(620, 550));
         verticalLayout = new QVBoxLayout(WelcomePage);
         verticalLayout->setObjectName("verticalLayout");
         PageHeader = new QWidget(WelcomePage);
@@ -125,10 +124,10 @@ public:
 
         verticalLayout_3->addWidget(label_10);
 
-        pushButton = new QPushButton(PageContent);
-        pushButton->setObjectName("pushButton");
+        newProjectBtn = new QPushButton(PageContent);
+        newProjectBtn->setObjectName("newProjectBtn");
 
-        verticalLayout_3->addWidget(pushButton);
+        verticalLayout_3->addWidget(newProjectBtn);
 
 
         verticalLayout->addWidget(PageContent);
@@ -196,7 +195,7 @@ public:
         label_7->setText(QCoreApplication::translate("WelcomePage", "Project Summary", nullptr));
         label->setText(QCoreApplication::translate("WelcomePage", "<html><head/><body><p>Thresholding is a type of image segmentation, where we change the pixels of an image to make the image easier to analyze and can chain it to some other method, as a preprocessor, to improve its results. In thresholding, we convert an image from colour or grayscale into a binary image, i.e., one that is simply black and white, and use the binary image for something else. </p></body></html>", nullptr));
         label_10->setText(QCoreApplication::translate("WelcomePage", "In this application we apply the binary image as a mask to the original image pottencially removing unwanted elements in the image.", nullptr));
-        pushButton->setText(QCoreApplication::translate("WelcomePage", "Start new Project", nullptr));
+        newProjectBtn->setText(QCoreApplication::translate("WelcomePage", "Start new Project", nullptr));
         label_11->setText(QCoreApplication::translate("WelcomePage", "<html><head/><body><p>This is a educative project developed for Concurrency Programming Major at UFRJ, it's main feature is to apply concurrency at the Thresholding method.</p></body></html>", nullptr));
         label_2->setText(QCoreApplication::translate("WelcomePage", "Created by: Diego V. S. de Matos", nullptr));
         label_5->setText(QCoreApplication::translate("WelcomePage", "<html><head/><body><p>Github: <a href=\"https://github.com/diegomatos321\"><span style=\" text-decoration: underline; color:#0078d7;\">https://github.com/diegomatos321</span></a></p></body></html>", nullptr));

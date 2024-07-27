@@ -4,9 +4,17 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     this->ui->setupUi(this);
 
     this->welcomePage = new WelcomePage();
+    this->solverPage = new SolverPage();
 
-    int index = this->ui->stackedWidget->addWidget(this->welcomePage);
-    this->ui->stackedWidget->setCurrentIndex(1);
+    this->ui->stackedWidget->addWidget(this->welcomePage);
+    this->ui->stackedWidget->addWidget(this->solverPage);
+    this->ui->stackedWidget->setCurrentWidget(this->welcomePage);
+
+    QObject::connect(this->welcomePage, &WelcomePage::StartNewProject, this, &MainWindow::OnStartNewProjectSignal);
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() { }
+
+void MainWindow::OnStartNewProjectSignal() {
+    this->ui->stackedWidget->setCurrentWidget(this->solverPage);
+}
