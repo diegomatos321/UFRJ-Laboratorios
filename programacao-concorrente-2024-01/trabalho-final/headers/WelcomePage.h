@@ -16,8 +16,6 @@ signals:
 
 protected:
     Ui::WelcomePage* ui;
-
-    void HandleNewProjectBtnClicked();
 };
 
 #endif
