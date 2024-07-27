@@ -18,8 +18,6 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
-class Ui_MainWindow;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,7 +37,7 @@ public slots:
   void slotSetThresholding(int value);
 
 protected:
-  Ui_MainWindow* ui;
+  Ui::MainWindow* ui;
 
   cv::Mat originalImage;
   cv::Mat grayScaleImage;
