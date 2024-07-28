@@ -4,7 +4,6 @@ SolverPage::SolverPage(QWidget *parent): QWidget(parent), ui(new Ui::SolverPage)
 {
     this->ui->setupUi(this);
 
-    this->ui->thresholdingInput->setMaximum(255);
     this->ui->thresholdingInput->setValue(this->thresholding);
 
     // QActionGroup *executionMode = new QActionGroup(this);
@@ -12,12 +11,12 @@ SolverPage::SolverPage(QWidget *parent): QWidget(parent), ui(new Ui::SolverPage)
     // executionMode->addAction(this->ui->actionConcorrente);
 
     // connects da classe
-    // QObject::connect(this->ui->actionOpenFile, &QAction::triggered, this, &SolverPage::slotOpenFile);
-    // QObject::connect(this->ui->actionRun, &QAction::triggered, this, &SolverPage::slotRun);
+    QObject::connect(this->ui->openFileBtn, &QPushButton::clicked, this, &SolverPage::slotOpenFile);
+    QObject::connect(this->ui->runBtn, &QPushButton::clicked, this, &SolverPage::slotRun);
     // QObject::connect(this->ui->actionHelp, &QAction::triggered, this, &SolverPage::slotOpenReport);
     // QObject::connect(this->ui->actionSequencial, &QAction::triggered, this, &SolverPage::slotSetSequencialAlgorithm);
     // QObject::connect(this->ui->actionConcorrente, &QAction::triggered, this, &SolverPage::slotSetConcorrentAlgorithm);
-    // QObject::connect(this->ui->thresholdingInput, &QSlider::valueChanged, this, &SolverPage::slotSetThresholding);
+    QObject::connect(this->ui->thresholdingInput, &QSlider::valueChanged, this, &SolverPage::slotSetThresholding);
 }
 
 SolverPage::~SolverPage()
