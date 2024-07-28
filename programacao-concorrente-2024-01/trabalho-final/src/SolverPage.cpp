@@ -6,16 +6,10 @@ SolverPage::SolverPage(QWidget *parent): QWidget(parent), ui(new Ui::SolverPage)
 
     this->ui->thresholdingInput->setValue(this->thresholding);
 
-    // QActionGroup *executionMode = new QActionGroup(this);
-    // executionMode->addAction(this->ui->actionSequencial);
-    // executionMode->addAction(this->ui->actionConcorrente);
-
     // connects da classe
     QObject::connect(this->ui->openFileBtn, &QPushButton::clicked, this, &SolverPage::slotOpenFile);
     QObject::connect(this->ui->runBtn, &QPushButton::clicked, this, &SolverPage::slotRun);
-    // QObject::connect(this->ui->actionHelp, &QAction::triggered, this, &SolverPage::slotOpenReport);
-    // QObject::connect(this->ui->actionSequencial, &QAction::triggered, this, &SolverPage::slotSetSequencialAlgorithm);
-    // QObject::connect(this->ui->actionConcorrente, &QAction::triggered, this, &SolverPage::slotSetConcorrentAlgorithm);
+    QObject::connect(this->ui->saveFileBtn, &QPushButton::clicked, this, &SolverPage::slotSaveResultImage);
     QObject::connect(this->ui->thresholdingInput, &QSlider::valueChanged, this, &SolverPage::slotSetThresholding);
 }
 
@@ -202,4 +196,19 @@ void SolverPage::slotSetConcorrentAlgorithm() {
 
 void SolverPage::slotSetThresholding(int value) {
     this->thresholding = value;
+}
+
+void SolverPage::slotSaveResultImage() {
+    if (this->resultImage.empty())
+    {
+        QMessageBox::warning(this, "Warning", "No image loaded");
+        return;
+    }
+
+    QString filename = QFileDialog::getSaveFileName(this, "Save File", "", "Images (*.png *.xpm *.jpg)");
+
+    if (filename.isEmpty())
+        return;
+
+    cv::imwrite(filename.toStdString(), this->resultImage);
 }

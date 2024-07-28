@@ -35,6 +35,7 @@ public slots:
   void slotSetSequencialAlgorithm();
   void slotSetConcorrentAlgorithm();
   void slotSetThresholding(int value);
+  void slotSaveResultImage();
 
 protected:
   Ui::SolverPage* ui;

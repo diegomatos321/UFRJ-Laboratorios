@@ -21,6 +21,7 @@ protected:
 
 protected slots:
     void OnStartNewProjectSignal();
+    void OnWelcomePageSignal();
 };
 
 #endif

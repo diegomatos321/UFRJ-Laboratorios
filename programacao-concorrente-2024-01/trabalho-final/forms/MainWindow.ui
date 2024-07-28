@@ -29,8 +29,85 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionRun"/>
+    <addaction name="actionNewProject"/>
+    <addaction name="actionSelectFile"/>
+    <addaction name="actionSaveResult"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>Mode</string>
+    </property>
+    <addaction name="actionSequentialMode"/>
+    <addaction name="actionConcurrentMode"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionWelcomePage"/>
+    <addaction name="actionReadReport"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuMode"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionRun">
+   <property name="text">
+    <string>Run</string>
+   </property>
+  </action>
+  <action name="actionNewProject">
+   <property name="text">
+    <string>New project</string>
+   </property>
+  </action>
+  <action name="actionSelectFile">
+   <property name="text">
+    <string>Select File</string>
+   </property>
+  </action>
+  <action name="actionSaveResult">
+   <property name="text">
+    <string>Save result</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionSequentialMode">
+   <property name="text">
+    <string>Sequential</string>
+   </property>
+  </action>
+  <action name="actionConcurrentMode">
+   <property name="text">
+    <string>Concurrent</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionWelcomePage">
+   <property name="text">
+    <string>Welcome Page</string>
+   </property>
+  </action>
+  <action name="actionReadReport">
+   <property name="text">
+    <string>Read report</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
