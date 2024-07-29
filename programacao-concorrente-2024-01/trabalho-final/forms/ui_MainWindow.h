@@ -9,6 +9,7 @@
 #ifndef UI_MAINWINDOW_H
 #define UI_MAINWINDOW_H
 
+#include <QtCore/QLocale>
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
@@ -48,7 +49,10 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        MainWindow->resize(700, 600);
+        MainWindow->setMinimumSize(QSize(700, 600));
+        MainWindow->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
+        MainWindow->setTabShape(QTabWidget::TabShape::Rounded);
         actionRun = new QAction(MainWindow);
         actionRun->setObjectName("actionRun");
         actionNewProject = new QAction(MainWindow);
@@ -81,7 +85,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 22));
+        menubar->setGeometry(QRect(0, 0, 700, 22));
         menuFile = new QMenu(menubar);
         menuFile->setObjectName("menuFile");
         menuMode = new QMenu(menubar);
