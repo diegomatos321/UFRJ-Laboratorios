@@ -31,7 +31,7 @@ void SolverPage::slotOpenFile() {
             return;
         }
 
-        this->DisplayOpenCvImage(this->ui->OriginalImage, this->originalImage, QImage::Format_RGB888);
+        this->DisplayOpenCvImage(this->ui->OriginalImage, this->originalImage);
     }
 }
 
@@ -127,10 +127,10 @@ void SolverPage::slotRun() {
     // this->ui->statusbar->showMessage(message);
 
     // Exibe imagens
-    this->DisplayOpenCvImage(this->ui->GrayScaleImage, this->grayScaleImage, QImage::Format::Format_Grayscale8);
-    this->DisplayOpenCvImage(this->ui->Histogram, this->histogramImage, QImage::Format::Format_RGB888);
-    this->DisplayOpenCvImage(this->ui->BinaryImage, this->binaryImage, QImage::Format::Format_Grayscale8);
-    this->DisplayOpenCvImage(this->ui->ResultImage, this->resultImage, QImage::Format::Format_RGB888);
+    this->DisplayOpenCvImage(this->ui->GrayScaleImage, this->grayScaleImage);
+    this->DisplayOpenCvImage(this->ui->Histogram, this->histogramImage);
+    this->DisplayOpenCvImage(this->ui->BinaryImage, this->binaryImage);
+    this->DisplayOpenCvImage(this->ui->ResultImage, this->resultImage);
 }
 
 void SolverPage::slotOpenReport() {
@@ -166,24 +166,43 @@ cv::Mat SolverPage::BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledIm
     return result;
 }
 
-void SolverPage::DisplayOpenCvImage(QLabel *container, cv::Mat image, QImage::Format type) {
-    QImage qImage(
-        image.data, 
-        static_cast<int>(image.cols), 
-        static_cast<int>(image.rows), 
-        static_cast<int>(image.step), 
-        type
-    );
-    if (type == QImage::Format::Format_RGB888)
-    {
-        qImage = qImage.rgbSwapped(); // Inverte a ordem dos canais BGR para RGB
-    }
-    
-    // Redimensiona a imagem para se adequar ao QLabel imageInput
-    QPixmap pixmap = QPixmap::fromImage(
-        qImage.scaled(container->size(), Qt::KeepAspectRatio)
-    );
+void SolverPage::DisplayOpenCvImage(QLabel *container, const cv::Mat &image) {
+    QImage qimage = this->MatToQImage(image);
+    QPixmap pixmap = QPixmap::fromImage(qimage).scaled(container->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     container->setPixmap(pixmap);
+    container->repaint();
+}
+
+
+// Convert cv::Mat to QImage
+QImage SolverPage::MatToQImage(const cv::Mat& mat) {
+    switch (mat.type()) {
+        // 8-bit, 4 channel
+        case CV_8UC4: {
+            QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
+            return image;
+        }
+        // 8-bit, 3 channel
+        case CV_8UC3: {
+            QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+            return image.rgbSwapped();
+        }
+        // 8-bit, 1 channel
+        case CV_8UC1: {
+            static QVector<QRgb>  colorTable;
+            if (colorTable.isEmpty()) {
+                for (int i = 0; i < 256; ++i)
+                    colorTable.push_back(qRgb(i, i, i));
+            }
+            QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8);
+            image.setColorTable(colorTable);
+            return image;
+        }
+        default: {
+            qWarning() << "Unsupported cv::Mat type";
+            return QImage();
+        }
+    }
 }
 
 void SolverPage::slotSetSequencialAlgorithm() {

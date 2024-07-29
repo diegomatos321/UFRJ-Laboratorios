@@ -50,7 +50,8 @@ protected:
   int thresholding = 100;
 
   cv::Mat BuildHistogramFromGrayScaledImage(const cv::Mat grayScaledImage);
-  void DisplayOpenCvImage(QLabel *container, const cv::Mat image, const QImage::Format type);
+  void DisplayOpenCvImage(QLabel *container, const cv::Mat &image);
+  QImage MatToQImage(const cv::Mat& mat);
 
 protected slots:
 
