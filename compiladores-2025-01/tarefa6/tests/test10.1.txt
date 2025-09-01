@@ -1,0 +1,11 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Arrays
+]]
+
+xs = {}
+xs[1] = 10
+xs[2] = 20
+print(xs[1] + xs[2])

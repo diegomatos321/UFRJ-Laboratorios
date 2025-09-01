@@ -1,0 +1,30 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Tabelas
+]]
+
+local pessoa = {
+    nome = "João",
+    idade = 30,
+    cidade = "São Paulo"
+}
+
+print("Nome: " .. pessoa.nome)
+print("Idade: " .. pessoa["idade"])
+
+pessoa.profissao = "Engenheiro"
+print("Profissão: " .. pessoa.profissao)
+
+local frutas = {"maçã", "banana", "laranja"}
+print("Primeira fruta: " .. frutas[1])
+print("Número de frutas: " .. #frutas)
+
+for i = 1, #frutas do
+    print("Fruta " .. i .. ": " .. frutas[i])
+end
+
+local mensagem = "Olá mundo Lua!"
+print("Tamanho da mensagem: " .. #mensagem)
+print("Substring: " .. string.sub(mensagem, 5, 9))

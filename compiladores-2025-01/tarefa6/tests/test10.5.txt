@@ -1,0 +1,11 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+    
+    Testando campos mistos
+]]
+
+xs = {}
+xs["a"] = 100
+xs[1] = 200
+print(xs["a"] + xs[1])  -- Esperado: 300

@@ -1,0 +1,22 @@
+-- test_logical_operators.lua
+local a = true
+local b = false
+local c = 10
+local d = 20
+
+if (a and not b) or (c < d) then
+    print("Condição 1 satisfeita")
+    if c == 10 then
+        print("C é 10")
+    else
+        print("C não é 10")
+    end
+else
+    print("Condição 1 não satisfeita")
+end
+
+if (b or (c > d)) and a then
+    print("Condição 2 satisfeita")
+else
+    print("Condição 2 não satisfeita")
+end

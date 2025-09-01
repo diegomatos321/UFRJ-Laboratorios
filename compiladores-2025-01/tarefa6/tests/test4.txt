@@ -1,0 +1,18 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Funções de usuário
+]]
+
+a = 20
+
+function teste()
+    b = 10
+end
+
+print(a)
+print(b)
+teste()
+print(a)
+print(b)

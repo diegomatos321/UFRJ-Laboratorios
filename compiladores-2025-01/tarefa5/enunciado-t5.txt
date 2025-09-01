@@ -1,0 +1,300 @@
+TRABALHO 5 - Máquina Virtual
+========================================
+
+Formato de entrega
+------------------
+
+NOVA REGRA: O arquivo ZIP deve ter o seu nome.
+NOVA REGRA: O seu programa deve ler da entrada padrão.
+
+Data de entrega: 23/06 23:55
+Entregue um arquivo .zip ou tar.gz
+Inclua um README explicando como rodar o programa
+Em cada arquivo, inclua um comentário com o seu nome.
+
+NÃO DISPONIBILIZE O SEU TRABALHO PUBLICAMENTE NA INTERNET.
+SE USAR O GITHUB, USE UM REPOSITÓRIO PRIVADO.
+
+
+Tarefa
+------
+
+Refatore o "eval" do seu interpretador para usar uma máquina virtual. Agora
+você deve ter dois arquivos, um que compila Lua para bytecode, e um que
+interpreta o bytecode.
+
+    lua compila.lua < prog.lua > prog.byte
+    lua vm.lua prog.byte < in.txt > out.txt
+
+O compila.lua roda o lexer, o parser, e imprime linguagem de montagem.
+O vm.lua monta e executa o programa.
+
+Precisa implementar:
+    - Números, Booleanos, Strings, Tabelas, Nil
+    - Funções externas (pelo menos print e math.sqrt)
+    - Variáveis globais
+    - Comandos de if, while, atribuição.
+    - Chamada de função somente para funções externas
+
+Não precisa implementar ainda:
+    - Variáveis locais
+    - Funções definidas pelo usuário
+
+SE O PROGRAMA DO USUÁRIO USAR UMA FUNCIONALIDADE NÃO IMPLEMENTADA, COMO POR
+EXEMPLO "function" E "local", VOCÊ DEVE INTERROMPER A COMPILAÇÃO COM UM ERRO
+DE "ainda não está implementado". ASSIM NINGUÉM TEM QUE ADIVINHAR SE AQUELA
+PARTE DO COMPILADOR QUE NÃO FUNCIONA É DE PROPÓSITO OU NÃO.
+
+
+Formato do arquivo de bytecode
+------------------------------
+
+O arquivo de bytecode é um arquivo texto, estilo linguagem de montagem.
+A sua VM deve ler esse arquivo e "montá-lo" antes de executar.
+
+O programa consiste de uma série de linhas.
+Ignore todos os espaços no início da linha.
+O resto da linha pode ser uma dessas opções:
+
+    - Linha vazia
+    - Label para goto (nome:)
+    - Instrução da máquina (OPERACAO argumento)
+
+Argumentos podem ser:
+    - Nome   (identificador, sem aspas, começa com letra ou underscore)
+    - Número (começa com dígito)
+    - String (sempre com aspas duplas, escapes \\, \n, \r, \t)
+    (Não há argumento do tipo bool)
+
+
+Exemplo de programa:
+--------------------
+
+Programa Lua:
+
+    if 10 < 20 then
+        x = "menor"
+    else
+        x = "maior ou igual"
+    end
+    print(x)
+
+Programa compilado:
+
+    PUSH_NUMBER 10
+    PUSH_NUMBER 20
+    LT
+    JUMP_FALSE L1
+    PUSH_STRING "menor"
+    SET_GLOBAL x
+    JUMP L2
+L1:
+    PUSH_STRING "maior ou igual"
+    SETGLOBAL x
+L2:
+    GETGLOBAL "print"
+    GETGLOBAL x
+    CALL 1
+    POP 1
+    EXIT
+
+Observações:
+    - O seu compilador pode usar outros nomes para os labels
+    - Não é obrigatório indentar o código compilado, mas fica mais fácil de ler.
+    - Nos trabalhos que implementam retorno múltiplo, o CALL precisará de um
+      segundo argumento para o número de valores que devem ser retornados.
+
+
+Instruções da Máquina virtual
+-----------------------------
+
+A notação (a b c -- d) significa que desempilha "a b c" e empilha "d".
+O topo da pilha é pra direita ("c" estava no topo).
+
+SE VOCÊ CRIAR OU MODIFICAR ALGUMA INSTRUÇÃO DA VM, DOCUMENTE NO README.
+
+
+Literais simples:
+
+    PUSH_NIL          ( -- nil)
+    PUSH_TRUE         ( -- true)
+    PUSH_FALSE        ( -- false)
+    PUSH_NUMBER $num  ( -- $num)
+    PUSH_STRING $str  ( -- $str)
+
+Operações com tabela:
+
+    NEW_TABLE  (     -- {} ), cria uma tabela vazia
+    GET_TABLE  ( t k -- v  ), empilha t[k]
+    SET_TABLE  ( t k v --  ), executa t[k]=v
+
+Variáveis globais:
+
+    GET_GLOBAL $nome ( -- v ), empilha globals[$nome]
+    SET_GLOBAL $nome ( v -- ), executa globals[$nome]=v
+
+Operadores unários:
+
+    NEG  ( a -- v )
+    LEN  ( a -- v )
+    NOT  ( a -- v )
+
+Operadores binários:
+
+    ADD    ( a b -- v )
+    SUB    ( a b -- v )
+    MUL    ( a b -- v )
+    DIV    ( a b -- v )
+    MOD    ( a b -- v )
+
+    CONCAT ( a b -- v )
+
+    EQ   ( a b -- v )
+    NEQ  ( a b -- v )
+    LT   ( a b -- v )
+    LEQ  ( a b -- v )
+    GT   ( a b -- v )
+    GEQ  ( a b -- v )
+
+Desvios:
+
+    JUMP $label        (   -- ), executa pc=$label
+    JUMP_TRUE  $label  ( b -- ), executa pc=$label, se b é true
+    JUMP_FALSE $label  ( b -- ), executa pc=$label, se b é false
+
+Chamadas de função:
+
+    -- Desempilha $nargs argumentos e empilha 1 valor de retorno.
+    CALL $nargs  ( x1..xn -- r )
+
+Outros:
+
+    POP $num  ( x1..xn -- ), desempilha $num valores da pilha
+    EXIT      ( -- ), interrompe a execução do programa
+
+
+Autocompilação
+--------------
+
+Para o último trabalho, será bem legal se conseguir fazer o seu sistema
+compilar e rodar o próprio "compila.lua":
+
+    lua compila.lua < compila.lua > compila.byte
+    lua vm.lua compila.byte < compila.lua > compila2.byte
+    diff compila.byte compila2.byte  #se der certo, os dois são iguais!
+
+Para isso funcionar, o compila.lua só pode usar o subconjunto de Lua
+que você implementou no seu compilador. Já no vm.lua vale tudo!
+
+
+Gramática
+---------
+
+    Programa -> Bloco
+
+    Bloco -> Comando*
+
+    Comando ->
+        | ExpSufixada           // obs: chamada de função
+        | ExpSufixada '=' Exp   // obs: atribuição
+        | 'if' Exp 'then' Bloco Elses
+        | 'while' Exp 'do' Bloco 'end'
+        | 'local' NOME = exp Bloco  //obs: os comandos subsequentes são filhos
+        | 'function' NOME '(' Params ')' Bloco 'end'
+        | 'return' exp
+
+    Elses ->
+        | 'end'
+        | 'else' Bloco 'end'
+        | 'elseif' Exp 'then' Bloco Elses
+
+    Exp ->
+        | ExpSimples
+        | Unop Exp
+        | Exp Binop Exp
+
+    ExpSimples ->
+        | ExpSufixada
+        | nil
+        | true
+        | false
+        | INT
+        | STRING
+        | {}
+        | 'function' '(' Params ')' Bloco 'end'
+
+    ExpSufixada ->
+        | ExpPrimaria
+        | ExpSufixada '(' Args ')'
+        | ExpSufixada '[' Exp ']'
+
+    ExpPrimaria ->
+        | '(' Exp ')'
+        | NOME
+
+    Unop -> not | -
+
+    Binop ->
+        | + | - | * | / |  % | ..
+        | < | > | <= | >= | ~= | ==
+
+    Args   -> lista de Exp, separada por vírgula
+    Params -> lista de NOME, separada por vírgula
+
+
+Precedência e associatividade
+-----------------------------
+
+Siga as precedências e associatividades de Lua.
+
+    TABELA DE PRECEDÊNCIA
+    1   or
+    2   and
+    3   < > <= >= ~= ==
+    4   ..
+    5   + -
+    6   * / %
+    7   unários (not # - )
+    8   sufixos (chamada de função)
+
+Árvore Sintática
+----------------
+
+Construa uma árvore abstrata, com os seguintes construtores/tags
+abaixo. Não crie tags para expressão entre parênteses, nem para
+simples/sifixada/primária.
+
+    ExpNil()
+    ExpBool(b)
+    ExpInt(n)
+    ExpStr(s)
+    ExpTabela()
+    ExpNome(nome)
+    ExpUnop(op, exp)
+    ExpBinop(op, exp1, exp2)
+    ExpLuaFunc(params, body)
+    ExpChamada(expf, args)
+
+    CmdSetVar(nome, exp)
+    CmdSetTbl(exp_lhs, exp_i, exp_rhs)
+    CmdPrint(exp)
+    CmdIf(exp, bloco_true, bloco_false)
+    CmdWhile(exp, bloco)
+    CmdLocal(nome, exp, bloco)
+    CmdReturn(exp)
+
+
+Valores Em Tempo de Execução
+----------------------------
+
+Crie uma tagged union para representar os valores produzidos pelo avaliador.
+Também modifique a função de avaliação para verificar os tipos em tempo de
+execução, e produzir erros se necessário.
+
+    ValNil()
+    ValBool(b)
+    ValInt(n)
+    ValStr(s)
+    ValTbl(t)
+    ValLuaFunc(env, params, body)
+    ValLibFunc(func)

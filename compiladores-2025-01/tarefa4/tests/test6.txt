@@ -1,0 +1,18 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+]]
+
+function makeCounter()
+  local i = 0
+  function count()
+    i = i + 1
+    print(i)
+  end
+
+  return count
+end
+
+local counter = makeCounter()
+counter()
+counter()

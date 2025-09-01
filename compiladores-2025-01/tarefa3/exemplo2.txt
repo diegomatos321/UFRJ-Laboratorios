@@ -1,0 +1,7 @@
+x = 10
+y = 20
+if x <= 50 then
+    print(x+y)
+else
+    y = 5
+end

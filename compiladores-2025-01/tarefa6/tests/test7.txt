@@ -1,0 +1,17 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Testando funções anonimas
+]]
+
+function f(n, callback) 
+  local result = n * 2
+  callback(result)
+end
+
+local i = 0
+while i < 20 do
+  f(i, function(n) print(n) end)
+  i = i + 1
+end

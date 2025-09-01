@@ -1,0 +1,11 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Condicional 3
+]]
+
+L3 = 42+30
+if L3 < 100 then
+    print("oi")
+end

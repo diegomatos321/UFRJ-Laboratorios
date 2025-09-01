@@ -1,0 +1,144 @@
+TRABALHO 2 - PARSER
+===================
+
+Formato de entrega
+------------------
+
+NOVA REGRA: O arquivo ZIP deve ter o seu nome.
+NOVA REGRA: O seu programa deve ler da entrada padrão.
+
+Data de entrega: 30/04 23:55
+Entregue um arquivo .zip ou tar.gz
+Inclua um README explicando como rodar o programa
+Em cada arquivo, inclua um comentário com o seu nome.
+
+NÃO DISPONIBILIZE O SEU TRABALHO PUBLICAMENTE NA INTERNET.
+SE USAR O GITHUB, USE UM REPOSITÓRIO PRIVADO.
+
+
+Tarefa
+------
+
+Você deve produzir um analisador sintático e um avaliador de expressões
+aritméticas. O seu programa deve receber uma expressão aritimética da entrada
+padrão, parseá-la, e em seguida imprimir tanto a árvore sintática quanto o
+valor da expressão. (Pode usar a biblioteca "inspect" para imprimir a árvore).
+As expressões podem se referir a valores e funções da biblioteca math.
+Por exemplo:
+
+    30 - 7 - 1  ---> 22
+    sin(pi/2)   ---> 1.0
+
+
+Gramática das expressões
+------------------------
+
+Esta gramática, e os nomes dos não-terminais foram baseados no parser do
+interpretador oficial de Lua.
+
+    Exp ->
+        | ExpSimples
+        | Unop Exp
+        | Exp Binop Exp
+
+    ExpSimples ->
+        | ExpSufixada
+        | nil
+        | true
+        | false
+        | INT
+
+    ExpSufixada ->
+        | ExpPrimaria
+        | ExpSufixada '(' Exp ')'
+
+    ExpPrimaria ->
+        | '(' Exp ')'
+        | NOME
+
+    Unop -> not | -
+
+    Binop ->
+        | + | - | * | / |  %
+        | < | > | <= | >= | ~= | ==
+
+Precedência e associatividade
+-----------------------------
+
+Siga as precedências e associatividades de Lua.
+
+    TABELA DE PRECEDÊNCIA
+    1   < > <= >= ~= ==
+    2   + -
+    3   * / %
+    4   unários
+    5   sufixos (chamada de função)
+
+No futuro também implementaremos outros operadores: "and", "or", "..", e "^".
+Caso queira implementá-los agora, use a precedência e associatividade de Lua.
+
+Árvore Sintática
+----------------
+
+Construa uma árvore abstrata, com os seguintes construtores/tags abaixo.
+Não crie tags para expressão entre parênteses, nem para simples/sifixada/primária.
+
+    ExpNil
+    ExpBool(valor)
+    ExpInt(valor)
+    ExpNome(nome)
+    ExpUnop(op, exp)
+    ExpBinop(op, exp1, exp2)
+    ExpChamada(expf, args)
+
+
+Organização do código
+---------------------
+
+Mantenha as seguintes variáveis como estado do parser:
+
+    - prox_token
+
+Sugiro criar as seguintes funções auxiliares:
+
+    - init_parser
+    - avanca(): consome um token incondicionalmente
+    - come(tag): consome o prox_token se for a tag certa, ou dá syntax error
+    - parseExp(), parseExpSimples(), etc.
+    - syntax_error(msg)
+
+Funcionalidades Opcionais
+-------------------------
+
+    Coisas úteis
+    - Chamada de função com string (e.x: require "inspect" )
+    - Chamada de função com tabela (e.x: f {x=1} )
+    - Operadores ".." e "^", com associatividade à direita
+    - Números floating point
+
+    Se extiver a fim:
+    - Operadores bitwise (<<, >>, &, |, ~)
+    - Operador de divisão inteira (//)
+    - Chamada de função com 0 ou mais argumentos
+
+Dicas
+-----
+
+Preste atenção com o "else" dos seus if-else-if. Na maioria dos casos, o "else"
+deve ser um syntax error.
+
+Cada nível de precedência dos operadores binários vira uma função separada.
+
+Recursão a esquerda vira while.
+
+Imprimindo a árvore
+-------------------
+
+Use a biblioteca "inspect", que pode instalar via Luarocks.
+
+
+Executando a árvore
+-------------------
+
+Crie uma função recursiva que recebe uma árvore sintática e calcula o seu
+valor.

@@ -1,0 +1,14 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Condicional 1
+]]
+
+x = 10
+y = 20
+if x <= 50 then
+    print(x+y)
+else
+    y = 5
+end

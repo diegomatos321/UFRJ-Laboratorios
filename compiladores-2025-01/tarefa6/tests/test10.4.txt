@@ -1,0 +1,10 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+    
+    Atualizando campo da lista
+]]
+
+xs = {5, 10, 15}
+xs[2] = xs[2] * 3
+print(xs[2])  -- Esperado: 30

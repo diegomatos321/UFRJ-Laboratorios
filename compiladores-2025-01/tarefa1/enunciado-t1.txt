@@ -1,0 +1,145 @@
+Trabalho do Lexer
+-----------------
+
+Você deve implementar um analisador léxico para um fragmento de Lua.
+
+
+Formato de entrega
+------------------
+
+Data de entrega: 09/04 às 22:00
+
+Em cada arquivo, inclua um comentário com o seu nome e DRE.
+Entregue um arquivo ZIP ou TAR.GZ contendo:
+    - README, explicando como rodar o programa
+    - compilador.lua (o único arquivo Lua)
+
+(!) NÃO DISPONIBILIZE O SEU TRABALHO PUBLICAMENTE NA INTERNET. (!)
+(!) SE USAR O GITHUB, USE UM REPOSITÓRIO PRIVADO.              (!)
+
+
+Especificação da tarefa
+-----------------------
+
+A entrada é um programa Lua, lido pela entrada padrão. A saída é pela saída padrão. 
+Imprima uma linha por token, contendo os seguintes elementos separados por TAB:
+
+    - Número de linha
+    - Número de coluna
+    - Tag do token
+    - Valor semântico do token (caso houver)
+
+O seu programa deve reconhecer pelo menos os tokens descritos abaixo.
+
+    # Fim de arquivo
+    Categoria:  EOF
+    Valor:      n/a
+    Observação: Retorne este token especial quando chegar no fim de arquivo
+    
+    # Números inteiros
+    Categoria:  NUMBER
+    Valor:      Um inteiro
+    Observação: Pode ser decimal ou hexa. Não precisa aceitar float.
+                Não tem sinal. Leia o "-" como um token separado.
+
+    # Sequências de caracteres
+    Categoria:  STRING
+    Valor:      Uma string
+    Observação: Pode ser aspas simples ou aspas dupla.
+                Implemente pelo menos esses escapes: \\, \", \', \n, \r, \t)
+    
+    # Nomes de variável
+    Categoria:  NOME
+    Valor:      Uma string
+    Observação: O valor semântico não inclui as aspas e
+                já deve converter as sequências de escape.
+    
+    # Palavras reservadas
+    Categoria:  (use a própria palavra reservada)
+    Valor:      n/a
+    Observação: O manual de Lua tem a lista completa de palavras reservadas
+    
+    # Operadores
+    Categoria:  (pode usar os próprios caracteres do operador)
+    Valor:      n/a
+    Observação: É melhor que o tipo do operador seja a categoria/tag do token.
+                Algumas pessoas tem vontade de criar uma tag guarda chuva "SÍMBOLO"
+                que usa o valor semântico para dizer que operador é. Não faça isso.
+                O valor semântico só deve ser usado para coisas irrelevantes ao parser.
+    
+    # Espaços em branco
+    Categoria:  (não tem; não crie token)
+    Observação: Implemente pelo menos " ", \t, \n, \r
+    
+    # Comentários
+    Categoria:  (não tem; não crie token)
+    Observação: Implemente pelo menos os de linha (--)
+    
+    
+Valores semânticos
+------------------
+
+O valor semântico deve ser o valor de verdade. Não deve ser apenas a string.
+Por exemplo, o valor de 0x1f deve ser o número 31, não a string "0x1f".
+Similarmente, o valor semântico de "a\nb" é uma string que não contém contrabarra.
+
+Mensagens de erro
+-----------------
+
+O seu lexer deve reconhecer alguns casos de erro.
+Imprima uma mensagem de erro com o número de linha e de coluna.
+Depois pode interromper a execução do programa com os.exit(1).
+
+    - O lexer encontrou um caractere que não deu para reconhecer (ex.: $)
+    - String faltando fecha aspas. (Quebra de linha ou fim de arquivo dentro da string).
+    - Caractere de escape inválido dentro da string (por exemplo, \w)
+    
+Coisas opcionais
+----------------
+
+    - Caracteres de espaço incomuns (\f, \v)
+    - Números hexa com X maiúsculo (0XFF)
+    - Strings e comentários longos [[ e [=[
+    - Escapes de string incomuns (\a, \b, \f, \v)
+    - Escapes de string avançados (decimal \32, hexa \x0A, unicode \u{230}, \z)
+    - Números de ponto flutuante (0.0, 1.6e+12, etc)
+
+Regra do token mais longo
+-------------------------
+
+Lembre-se que sempre que houver uma disputa entre dois tokens possíveis, vence
+o token mais comprido. Preste atenção se o caractere pode ser o início de mais
+de um token. Por exemplo, "-" pode ser o operador de subtração ou pode ser o
+começo de um comentário "--".
+
+Para ler palavras reservadas, recomendo ler como se fosse um nome de variável
+e depois checar se esse nome estava no conjunto de palavras reservadas.
+Uma maneira boa de checar é usar uma hash table em que a chave é a palavra reservada.
+
+Casos de teste
+--------------
+
+O próprio compilador.lua é um bom caso de teste, mas não deve ser o único!
+
+
+Organização do programa
+-----------------------
+
+Essas sugestões são para deixar mais fácil que seu compilador compile a si mesmo.
+
+Se restrinja ao subconjunto mais simples possível de Lua.
+Evite classes e orientação e objeto.
+Pode usar variáveis globais.
+
+No toplevel (nível de indentação zero), escreva apenas definições de função.
+A única exceção é na última linha, pra chamar a função main(). 
+Inicialize suas variáveis globais dentro de uma função de inicialização.
+
+Use o Luacheck para encontrar erros! 
+
+
+Referências
+-----------
+
+https://www.lua.org/manual/5.4/manual.html
+https://craftinginterpreters.com/

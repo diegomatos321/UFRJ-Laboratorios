@@ -1,0 +1,4 @@
+L3 = 42+30
+if L3 < 100 then
+    print(math.sqrt(L3))
+end

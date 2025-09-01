@@ -1,0 +1,39 @@
+Funções da biblioteca padrão
+-------------------------------------------------
+
+Na última aula, surgiu a dúvida de como expor funções da biblioteca Lua para o nosso interpretador, já que há uma incompatibilidade entre os valores Lua "crus" e os valores "como tag" usados pelo nosso interpretador.
+
+No fim das contas, acho que as funções externas só podem trabalhar com valores simples (strings, números, booleanos, nil) e não temos como passar valores complexos (tabelas, funções, userdata).
+
+Abaixo, fiz uma lista de funções da biblioteca padrão que obedecem a esse critério. Se você quiser fazer um compilador capaz de compilar a si próprio, acho que só pode usar funções dessa lista.
+
+
+select
+tostring
+type
+tonumber
+assert
+print
+error
+
+string.char
+string.sub
+string.format
+string.rep
+string.find
+string.upper
+string.byte
+string.gsub
+string.match
+string.reverse
+string.lower
+string.len
+
+io.close
+io.input
+io.write
+io.read
+io.flush
+io.output
+
+os.exit

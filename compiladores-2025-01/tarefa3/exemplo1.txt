@@ -1,0 +1,6 @@
+xs = {}
+i = 1
+while i <= 10 do
+    xs[i] = i * 2
+    i = i + 1
+end

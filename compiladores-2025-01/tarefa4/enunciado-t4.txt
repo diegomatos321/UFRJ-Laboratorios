@@ -1,0 +1,195 @@
+TRABALHO 4 - Variáveis locais e funções
+========================================
+
+Formato de entrega
+------------------
+
+NOVA REGRA: O arquivo ZIP deve ter o seu nome.
+NOVA REGRA: O seu programa deve ler da entrada padrão.
+
+Data de entrega: 06/06 23:55
+Entregue um arquivo .zip ou tar.gz
+Inclua um README explicando como rodar o programa
+Em cada arquivo, inclua um comentário com o seu nome.
+
+NÃO DISPONIBILIZE O SEU TRABALHO PUBLICAMENTE NA INTERNET.
+SE USAR O GITHUB, USE UM REPOSITÓRIO PRIVADO.
+
+
+Tarefa
+------
+
+Implemente variáveis locais e funções.
+
+- comando local: local x = exp
+- expressão funções anônimas: function(x,y,z) .... end
+- expressão de chamada com mais de um argumento: f(1,2,3)
+- comando de função: function f(x,y,x) .... end
+- comando return: return exp
+- funções da biblioteca padrão: (pelo menos a print, e outras que você usar)
+
+
+Dicas
+-----
+
+O comando de função é açúcar sintático para
+
+    f = function(x,y,z) .... end
+
+Na árvore sintática, o comando 'local' é pai dos comandos que vem depois
+dele, em vez de ser irmão. Isso simplifica o tratamento do env na evalCmd.
+
+Crie dois tipos diferentes para valores de função. Um para funções definidas
+pelo usuário, e um para funções da biblioteca padrão. Inicialize a tabela de
+variáveis globais com funções da biblioteca padrão de Lua.
+
+A função evalExp agora precisa de uma forma de devolver o valor produzido
+pelo return. Sugestão: retornar esse valor.
+
+Crie uma estrutura de dados para implementar o escopo de variáveis locais. Deve
+ser uma lista encadeada em que cada célula contém o nome da variável e seu
+valor. Os valores são mutáveis porém a espinha da lista deve ser imutável.
+Crie uma função que recebe um ambiente e retorna um novo ambiente com uma
+célula a mais no começo.
+
+    // construtores
+    EnvEmpty()
+    EnvCons(nome, val, env)
+
+    // métodos
+    getEnv(env, nome)
+    setEnv(env, nome, val)
+
+Este escopo só contém as variáveis locais. Mantenha uma tabela separada para
+as variáveis globais.
+
+
+Gramática
+---------
+
+Obs.: talvez você precise remover recursão à esquerda e tratar ambiguidades
+oriundas de associatividade e precedência.
+
+    Programa -> Bloco
+
+    Bloco -> Comando*
+
+    Comando ->
+        | ExpSufixada           // obs: chamada de função
+        | ExpSufixada '=' Exp   // obs: atribuição
+        | 'if' Exp 'then' Bloco Elses
+        | 'while' Exp 'do' Bloco 'end'
+        | 'local' NOME = exp Bloco  //obs: os comandos subsequentes são filhos
+        | 'function' NOME '(' Params ')' Bloco 'end'
+        | 'return' exp
+
+    Elses ->
+        | 'end'
+        | 'else' Bloco 'end'
+        | 'elseif' Exp 'then' Bloco Elses
+
+    Exp ->
+        | ExpSimples
+        | Unop Exp
+        | Exp Binop Exp
+
+    ExpSimples ->
+        | ExpSufixada
+        | true
+        | false
+        | INT
+        | {}
+        | 'function' '(' Params ')' Bloco 'end'
+
+    ExpSufixada ->
+        | ExpPrimaria
+        | ExpSufixada '(' Args ')'
+        | ExpSufixada '[' Exp ']'
+
+    ExpPrimaria ->
+        | '(' Exp ')'
+        | NOME
+
+    Unop -> not | -
+
+    Binop ->
+        | + | - | * | / |  %
+        | < | > | <= | >= | ~= | ==
+
+    Args   -> lista de Exp, separada por vírgula
+    Params -> lista de NOME, separada por vírgula
+
+Precedência e associatividade
+-----------------------------
+
+Siga as precedências e associatividades de Lua.
+
+    TABELA DE PRECEDÊNCIA
+    1   or
+    2   and
+    3   < > <= >= ~= ==
+    4   + -
+    5   * / %
+    6   unários
+    7   sufixos (chamada de função)
+
+Árvore Sintática
+----------------
+
+Construa uma árvore abstrata, com os seguintes construtores/tags
+abaixo. Não crie tags para expressão entre parênteses, nem para
+simples/sifixada/primária.
+
+    ExpNil()
+    ExpBool(valor)
+    ExpInt(valor)
+    ExpTabela()
+    ExpNome(nome)
+    ExpUnop(op, exp)
+    ExpBinop(op, exp1, exp2)
+    ExpLuaFunc(params, body) // NOVO
+    ExpChamada(expf, args)
+
+
+    CmdSetVar(nome, exp)
+    CmdSetTbl(exp_lhs, exp_i, exp_rhs)
+    CmdPrint(exp)
+    CmdIf(exp, bloco_true, bloco_false)
+    CmdWhile(exp, bloco)
+    CmdLocal(nome, exp, bloco) // NOVO
+    CmdReturn(exp)
+
+
+Valores Em Tempo de Execução
+----------------------------
+
+Crie uma tagged union para representar os valores produzidos pelo avaliador.
+Também modifique a função de avaliação para verificar os tipos em tempo de
+execução, e produzir erros se necessário.
+
+    ValNil()
+    ValBool(b)
+    ValInt(n)
+    ValTbl(t)
+    ValLuaFunc(env, params, body) // NOVO
+    ValLibFunc(func)              // NOVO
+
+Avaliador
+---------
+
+Agora além da função para avaliar uma expressão aritmética, também temos
+funções para avaliar comandos e listas de comandos (blocos).
+
+    function evalExp(exp)
+    function evalCmd(cmd)
+    function evalBloco(cmds)
+
+Funcionalidades Opcionais
+-------------------------
+
+    - Strings, e funções da biblioteca de string
+    - açúcar de função em tabela: function m.f() end
+    - açúcar de função método: function m:f() end
+    - açúcar de chamada de método: obj:f()
+    - retorno múltiplo: return a, b, c
+    - varargs: function (...) end

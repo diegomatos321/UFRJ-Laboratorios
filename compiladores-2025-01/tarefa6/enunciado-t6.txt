@@ -1,0 +1,313 @@
+TRABALHO 6 - Máquina Virtual + Closures
+========================================
+
+Formato de entrega
+------------------
+
+Data de entrega: 16/06 23:55
+Entregue um arquivo .zip ou tar.gz
+Inclua um README explicando como rodar o programa
+Em cada arquivo, inclua um comentário com o seu nome.
+
+NÃO DISPONIBILIZE O SEU TRABALHO PUBLICAMENTE NA INTERNET.
+SE USAR O GITHUB, USE UM REPOSITÓRIO PRIVADO.
+
+Tarefa
+------
+
+Complete o seu interpretador, a ponto de conseguir compilar a si mesmo!
+
+    lua compila.lua < compila.lua > compila.byte
+    lua vm.lua compila.byte < compila.lua > compila.byte2
+    diff compila.byte compila.byte2
+
+As principais coisas que faltam são:
+
+    - Variáveis locais
+    - Funções definidas pelo usuário
+    - Funções aninhadas (se seu compilador usar isso)
+
+
+Formato do arquivo de bytecode
+------------------------------
+
+O arquivo de bytecode é um arquivo texto, estilo linguagem de montagem.
+A sua VM deve ler esse arquivo e "montá-lo" antes de executar.
+
+Ignore linhas vazias ou que só contém comentários.
+
+O programa consiste de uma série de definições de função.
+Cada função começa com uma declaração "FUNCTION func_id nparams"
+O corpo da função é uma série de comandos, um por linha:
+    - Label para goto (nome:)
+    - Instrução da máquina (OPERACAO argumento)
+
+Argumentos podem ser:
+    - Nome   (identificador, sem aspas, começa com letra ou underscore)
+    - Número (começa com dígito)
+    - String (sempre com aspas duplas, escapes \\, \n, \r, \t)
+    (Não há argumento do tipo bool)
+
+
+Exemplo de programa:
+--------------------
+
+Programa Lua:
+
+    function fat(n)
+        if n == 0 then
+            return 1
+        else
+            return n * fat(n-1)
+        end
+    end
+
+    print(fat(5))
+
+Programa compilado:
+
+    FUNCTION main 0
+        CLOSURE f1
+        SET_GLOBAL fat
+        GET_GLOBAL print
+        GET_GLOBAL fat
+        PUSH_NUMBER 5
+        CALL 1
+        CALL 1
+        PUSH_NIL
+        RETURN
+
+    FUNCTION fat 1
+        GET_LOCAL 1
+        PUSH_NUMBER 0
+        EQ
+        JUMP_FALSE L1
+        PUSH_NUMBER 1
+        RETURN
+    L1:
+        GET_LOCAL 1
+        GET_GLOBAL fat
+        GET_LOCAL 1
+        PUSH_NUMBER 1
+        SUB
+        CALL 1
+        MUL
+        RETURN
+
+Observações:
+    - O seu compilador pode usar outros nomes para os labels
+    - Não é obrigatório indentar o código compilado, mas fica mais fácil de ler.
+    - Nos trabalhos que implementam retorno múltiplo, o CALL precisará de um
+      segundo argumento para o número de valores que devem ser retornados.
+
+
+Instruções da Máquina virtual
+-----------------------------
+
+A notação (a b c -- d) significa que desempilha "a b c" e empilha "d".
+O topo da pilha é pra direita ("c" estava no topo).
+
+SE VOCÊ CRIAR OU MODIFICAR ALGUMA INSTRUÇÃO DA VM, DOCUMENTE NO README.
+
+
+Literais simples:
+
+    PUSH_NIL          ( -- nil)
+    PUSH_TRUE         ( -- true)
+    PUSH_FALSE        ( -- false)
+    PUSH_NUMBER $num  ( -- $num)
+    PUSH_STRING $str  ( -- $str)
+
+Operações com tabela:
+
+    NEW_TABLE  (     -- {} ), cria uma tabela vazia
+    GET_TABLE  ( t k -- v  ), empilha t[k]
+    SET_TABLE  ( t k v --  ), executa t[k]=v
+
+Variáveis globais:
+
+    GET_GLOBAL $nome ( -- v ), empilha globals[$nome]
+    SET_GLOBAL $nome ( v -- ), executa globals[$nome]=v
+
+Operadores unários:
+
+    NEG  ( a -- v )
+    LEN  ( a -- v )
+    NOT  ( a -- v )
+
+Operadores binários:
+
+    ADD    ( a b -- v )
+    SUB    ( a b -- v )
+    MUL    ( a b -- v )
+    DIV    ( a b -- v )
+    MOD    ( a b -- v )
+
+    CONCAT ( a b -- v )
+
+    EQ   ( a b -- v )
+    NEQ  ( a b -- v )
+    LT   ( a b -- v )
+    LEQ  ( a b -- v )
+    GT   ( a b -- v )
+    GEQ  ( a b -- v )
+
+Desvios:
+
+    JUMP $label        (   -- ), executa pc=$label
+    JUMP_TRUE  $label  ( b -- ), executa pc=$label, se b é true
+    JUMP_FALSE $label  ( b -- ), executa pc=$label, se b é false
+
+Operações com funções:
+
+    -- Cria uma closure (valor de função) cuja lista de instruções é $fid e
+    -- cujo ambiente de variáveis é o ambiente atual.
+    CLOSURE $fid    ( -- f)
+
+    -- Transfere o controle de volta para a função que chamou esta. Espera
+    -- receber um valor, que é o valor a ser retornado, e o deixa no topo.
+    RETURN
+
+    -- Desempilha $nargs argumentos e empilha 1 valor de retorno.
+    -- Cria um novo ambiente de variáveis para a função filha e inicializa
+    -- as variáveis locais correspondentes aos argumentos da função.
+    -- Atualiza a call stack para a função chamada saber para onde deve
+    -- voltar após o seu retorno.
+    -- Espera-se que a função filha deixe um valor de retorno na pilha.
+    -- Para retorno múltiplo, a CALL teria
+    CALL $nargs  ( x1..xn -- r )
+
+Outros:
+
+    POP $num  ( x1..xn -- ), desempilha $num valores da pilha
+    EXIT      ( -- ), interrompe a execução do programa
+
+Retorno múltiplo
+----------------
+
+Se você quiser implementar retorno múltiplo (ou retorno de zero), o comando
+CALL deve informar quantos valores são esperados e o comando RETURN deve
+ajustar a pilha para deixar a quantidade solicitada.
+
+Implementar atribuição múltipla é difícil no caso mais geral, em que o lado
+esquerdo pode ter vetores:
+
+    x[1], x[2] = f()
+
+Acho perfeitamente razoável se limitar a atribuições múltiplas em que o lado
+esquerdo são só variáveis (locais ou globais):
+
+    x, y = f()
+
+
+Gramática
+---------
+
+    Programa -> Bloco
+
+    Bloco -> Comando*
+
+    Comando ->
+        | ExpSufixada           // obs: chamada de função
+        | ExpSufixada '=' Exp   // obs: atribuição
+        | 'if' Exp 'then' Bloco Elses
+        | 'while' Exp 'do' Bloco 'end'
+        | 'local' NOME = exp Bloco  //obs: os comandos subsequentes são filhos
+        | 'function' NOME '(' Params ')' Bloco 'end'
+        | 'return' exp
+
+    Elses ->
+        | 'end'
+        | 'else' Bloco 'end'
+        | 'elseif' Exp 'then' Bloco Elses
+
+    Exp ->
+        | ExpSimples
+        | Unop Exp
+        | Exp Binop Exp
+
+    ExpSimples ->
+        | ExpSufixada
+        | nil
+        | true
+        | false
+        | INT
+        | STRING
+        | {}
+        | 'function' '(' Params ')' Bloco 'end'
+
+    ExpSufixada ->
+        | ExpPrimaria
+        | ExpSufixada '(' Args ')'
+        | ExpSufixada '[' Exp ']'
+
+    ExpPrimaria ->
+        | '(' Exp ')'
+        | NOME
+
+    Unop -> not | -
+
+    Binop ->
+        | + | - | * | / |  % | ..
+        | < | > | <= | >= | ~= | ==
+
+    Args   -> lista de Exp, separada por vírgula
+    Params -> lista de NOME, separada por vírgula
+
+
+Precedência e associatividade
+-----------------------------
+
+Siga as precedências e associatividades de Lua.
+
+    TABELA DE PRECEDÊNCIA
+    1   or
+    2   and
+    3   < > <= >= ~= ==
+    4   ..
+    5   + -
+    6   * / %
+    7   unários (not # - )
+    8   sufixos (chamada de função)
+
+Árvore Sintática
+----------------
+
+Construa uma árvore abstrata, com os seguintes construtores/tags
+abaixo. Não crie tags para expressão entre parênteses, nem para
+simples/sifixada/primária.
+
+    ExpNil()
+    ExpBool(b)
+    ExpInt(n)
+    ExpStr(s)
+    ExpTabela()
+    ExpNome(nome)
+    ExpUnop(op, exp)
+    ExpBinop(op, exp1, exp2)
+    ExpLuaFunc(params, body)
+    ExpChamada(expf, args)
+
+    CmdSetVar(nome, exp)
+    CmdSetTbl(exp_lhs, exp_i, exp_rhs)
+    CmdPrint(exp)
+    CmdIf(exp, bloco_true, bloco_false)
+    CmdWhile(exp, bloco)
+    CmdLocal(nome, exp, bloco)
+    CmdReturn(exp)
+
+
+Valores Em Tempo de Execução
+----------------------------
+
+Crie uma tagged union para representar os valores produzidos pelo avaliador.
+Também modifique a função de avaliação para verificar os tipos em tempo de
+execução, e produzir erros se necessário.
+
+    ValNil()
+    ValBool(b)
+    ValInt(n)
+    ValStr(s)
+    ValTbl(t)
+    ValLuaFunc(env, params, body)
+    ValLibFunc(func)

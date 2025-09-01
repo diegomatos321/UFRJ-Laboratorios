@@ -1,0 +1,9 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+    
+    Construção de listas numérica
+]]
+
+xs = {1, 2, 3, 4, 5}
+print(xs[3])

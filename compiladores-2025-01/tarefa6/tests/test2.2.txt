@@ -1,0 +1,13 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+
+    Condicional 2
+]]
+
+if 10 < 20 then
+    x = "menor"
+else
+    x = "maior ou igual"
+end
+print(x)

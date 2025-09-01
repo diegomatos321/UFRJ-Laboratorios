@@ -1,0 +1,14 @@
+--[[
+    Aluno: Diego Vasconcelos Schardosim de Matos
+    DRE: 120098723
+    Loops sem tabela
+]]
+
+result = 0
+i = 1
+while i <= 10 do
+    result = result + i * 2
+    i = i + 1
+end
+
+print(result)

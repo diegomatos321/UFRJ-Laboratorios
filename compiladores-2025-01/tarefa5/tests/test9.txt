@@ -1,0 +1,24 @@
+-- test_tables_strings.lua
+local pessoa = {
+    nome = "João",
+    idade = 30,
+    cidade = "São Paulo"
+}
+
+print("Nome: " .. pessoa.nome)
+print("Idade: " .. pessoa["idade"])
+
+pessoa.profissão = "Engenheiro"
+print("Profissão: " .. pessoa.profissão)
+
+local frutas = {"maçã", "banana", "laranja"}
+print("Primeira fruta: " .. frutas[1])
+print("Número de frutas: " .. #frutas)
+
+for i = 1, #frutas do
+    print("Fruta " .. i .. ": " .. frutas[i])
+end
+
+local mensagem = "Olá mundo Lua!"
+print("Tamanho da mensagem: " .. #mensagem)
+print("Substring: " .. string.sub(mensagem, 5, 9))
