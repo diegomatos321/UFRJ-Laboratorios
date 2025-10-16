@@ -18,51 +18,6 @@ void handle_sigterm(int sig)
     parar = 1;
 }
 
-void vira_daemon()
-{
-    pid_t pid = fork();
-
-    if (pid < 0)
-    {
-        exit(1);
-    }
-    if (pid > 0)
-    {
-        exit(0); // pai sai, filho continua
-    }
-
-    // O filho cria uma nova sessão.
-    // Isso desvincula o processo do terminal que o iniciou.
-    if (setsid() < 0)
-    {
-        exit(1);
-    }
-
-    // ignora SIGHUP e SIGCHLD
-    signal(SIGHUP, SIG_IGN);
-    signal(SIGCHLD, SIG_IGN);
-
-    // Fazer um segundo fork para garantir que o daemon não 
-    // possa readquirir um terminal de controle
-    pid = fork();
-    if (pid < 0)
-    {
-        exit(1);
-    }
-    if (pid > 0)
-    {
-        exit(0);
-    }
-
-    umask(0);   // permissões padrão
-    chdir("/"); // muda diretório para raiz
-
-    // fecha descritores padrão, um daemon não deve interagir com o terminal.
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
-}
-
 // função para checar se o nome do diretório é numérico (PID)
 int eh_numero(const char *str)
 {
@@ -184,9 +139,6 @@ int main(int argc, char *argv[])
 
     // instala o tratador de sinal para parar o daemon
     signal(SIGTERM, handle_sigterm);
-
-    // vira daemon
-    vira_daemon();
 
     // abrir arquivo de log
     FILE *logf = fopen("/tmp/przombies.log", "a");
