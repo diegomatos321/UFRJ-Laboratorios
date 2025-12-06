@@ -1,0 +1,4 @@
+Address A,Port A,Address B,Port B,Packets,Bytes,Stream ID,Packets A → B,Bytes A → B,Packets B → A,Bytes B → A,Rel Start,Duration,Bits/s A → B,Bits/s B → A
+127.0.0.1,41782,127.0.0.1,5001,11,4079,0,7,1953,4,2126,10.053243422,0.0038253099999998597,,
+127.0.0.1,33752,127.0.0.1,5000,8,1436,0,5,1224,3,212,8.01768534,0.000608612000000619,,
+,,,,3,"284,05%",,,,,,,,,

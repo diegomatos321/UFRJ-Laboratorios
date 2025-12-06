@@ -22,17 +22,17 @@ O TLS é projetado para usar o TCP para prover um serviço seguro, é caracteriz
 
 \textbf{Os Protocolos Superiores (Gerenciamento TLS)} é responsável pelo Handshake, que é definido em 4 passos:
 \begin{enumerate}
-	\item Inicialização: 
+	\item Passo 1: Inicializa conexão lógica e estabelece as capacidades de segurança. Essa troca é incializada pelo cliente
 	\begin{itemize}
-		\item \textit{client\_hello}:
+		\item cliente envia \textit{client\_hello}
 		\begin{itemize}
-			\item cliente envia a versão do TLS compatível
-			\item uma sequência inicial aleatória de bytes 
-			\item Id de sessão
-			\item indica conjuntos de cifras que ele suporta
-			\item Lista de métodos de compressão métodos
+			\item cliente envia a versão do TLS mais alta compatível
+			\item uma sequência inicial aleatória de bytes, usado para criptografia e para evitar ataques de replay 
+			\item ID de sessão
+			\item indica conjuntos de cifras que suportado
+			\item Lista de métodos de compressão suportados
 		\end{itemize}
-		\item \textit{server\_hello}:
+		\item aguarda a resposta \textit{server\_hello} do servidor:
 		\begin{itemize}
 			\item servidor responde com os mesmos parâmetros do \textit{client\_hello}
 			\item a cifra escolhida
@@ -40,14 +40,14 @@ O TLS é projetado para usar o TCP para prover um serviço seguro, é caracteriz
 		\end{itemize}
 	\end{itemize}
 	
-	\item Autenticação do Servidor: Opcionalmente servidor envia o seu certificado para o cliente autenticar e informações da chave (\textit{ServerKeyExchange}), termina com \textit{server\_done}
+	\item Passo 2: Opcionalmente servidor envia o seu certificado para o cliente autenticar e informações da chave (\textit{ServerKeyExchange}). Essa etapa termina obrigatoriamente com \textit{server\_done}
 	\begin{itemize}
 		\item Opcionalmente o servidor solicita um certificado do cliente (\textit{CertificateRequest})
 	\end{itemize}
 	
-	\item Resposta do Cliente: Caso necessário, o cliente verifica se o certificado do servidor foi emitido por uma autoridade de certificação confiável, se é válido e não revogado e se o domínio é o mesmo. Caso tudo estiver, 
+	\item Passo 3: Ao receber \textit{server\_done}, o cliente irá verificar, caso necessário, se o certificado do servidor foi emitido por uma autoridade de certificação confiável, se é válido e não revogado e se o domínio é o mesmo. Caso tudo estiver, tudo certo o cliente responde ao servidor.
 	
-	\item Finalização: O cliente envia uma mensagem de \textit{change\_cipher\_spec} e imediatamente envia mensagem \textit{finished} que verifica se a troca de chaves e a autenticação foram bem-sucedidas. O servidor também responde com \textit{change\_cipher\_spec} e com sua própria mensagem de \textit{finished}. 
+	\item Finalização: O cliente envia uma mensagem de \textit{change\_cipher\_spec}, que sinaliza que a partir deste momento as mensagens estarão criptografadas, e imediatamente envia mensagem \textit{finished} que verifica se a troca de chaves e a autenticação foram bem-sucedidas. O servidor também responde com \textit{change\_cipher\_spec} e com sua própria mensagem de \textit{finished}. 
 	
 	O handshake está completo e o cliente e servidor podem começara trocar dados da camada de aplicação de forma segura.
 	
@@ -59,7 +59,7 @@ O TLS é projetado para usar o TCP para prover um serviço seguro, é caracteriz
 \section{Comparação de Implementações}
 Foi implementado em Python dois programas cliente e servidor para cada caso: com TLS e sem TLS. As rotinas para cada caso são parecidas e suas diferenças principais são:
 
-1) Inicialização dos programas: No caso com TLS o servidor deve carregar os certificado criar seu socket normalmente
+1) Inicialização dos programas: No caso com TLS o servidor deve carregar os certificado e criar seu socket normalmente
 
 \begin{lstlisting}[caption={Inicializacao do Servidor}]
 # Rotina abaixo apenas para o caso com TLS
@@ -71,6 +71,8 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
 server.listen(1)		
 \end{lstlisting}
+
+Como a aplicação está rodando em localhost, para praticidade o cliente não irá chegar o certificado do servidor. Isso não influencia na criptografia TLS.
 
 \begin{lstlisting}[caption={Inicializacao do Cliente}]
 # Apenas para o caso com TLS
@@ -103,7 +105,7 @@ secure_sock = context.wrap_socket(raw_sock, server_hostname=HOST)
 	\caption{Pacotes enviados sem tls}
 	\label{fig:captura-sem-tls}
 \end{figure}
-Na figura~\ref{fig:captura-sem-tls} conseguimos analisar os pacotes para o caso sem TLS. Observamos uma sequência de pacotes padrão do protocolo TCP (SYN, ACK) entre o cliente e servidor em localhost (127.0.0.1) nas portas 38879 $\rightarrow$ 5000 seguido imediatamente do conteúdo da aplicação e está em \textit{plain text}. 
+Na Figura~\ref{fig:captura-sem-tls} conseguimos analisar os pacotes para o caso sem TLS. Observamos uma sequência de pacotes padrão do protocolo TCP (SYN, ACK) entre o cliente e servidor em localhost (127.0.0.1) nas portas 38879 $\rightarrow$ 5000 seguido imediatamente do conteúdo da aplicação e está em \textit{plain text}. 
 
 \begin{figure}[htb]
 	\centering
@@ -111,9 +113,15 @@ Na figura~\ref{fig:captura-sem-tls} conseguimos analisar os pacotes para o caso 
 	\caption{Pacotes enviados com tls}
 	\label{fig:captura-com-tls}
 \end{figure}
-Já para o caso com TLS observamos na figura~\ref{fig:captura-com-tls} a conexão entre o cliente e servidor em localhost (127.0.0.1) nas portas 59699 $\rightarrow$ 5001 respectivamente. Os três primeiros pacotes são referentes ao TCP, o quê já era esperado pois o TLS é executado em cima do TCP. É seguido dos pacotes de \textit{Client Hello}, \textit{Server Hello} e \textit{Change Chipher Spec}, mostrando que de fato o handshake do TLS funcionou como esperado. Como o meu programa está rodando em localhost estou pulando o passo de verificar o certificado, dessa forma o próximo pacote já é o conteúdo cifrado.
+Já para o caso com TLS observamos na Figura~\ref{fig:captura-com-tls} a conexão entre o cliente e servidor em localhost (127.0.0.1) nas portas 59699 $\rightarrow$ 5001 respectivamente. Os três primeiros pacotes são referentes ao TCP, o quê já era esperado pois o TLS é executado em cima do TCP. É seguido dos pacotes de \textit{Client Hello}, \textit{Server Hello} e \textit{Change Chipher Spec}, mostrando que de fato o handshake do TLS funcionou como esperado. Como o meu programa está rodando em localhost estou pulando o passo de verificar o certificado, dessa forma o próximo pacote já é o conteúdo cifrado. Esse fluxo é finalizado com o cliente enviando pacote de RST (RESET), que encerra a conexão.
 
-% Confirmar isso
-O wireshark não capturou os pacotes de fim de conexão, acredito que seja por quê eu matei o processo diretamente.
+\section{Análise de overhead}
+
+Usando o wireshark no menu Statistics $\rightarrow$ Conversations $\rightarrow$ TCP, foram coletados dados das conexões com e sem TLS, portas 5001 e 5000 respectivamente, que foram salvos no arquivo dados.csv. Nessa tabela vemos: 
+\begin{itemize}
+	\item na conexão com TLS foram enviados 3 pacotes adicionais 
+	\item Foram 284\% bytes enviados a mais na conexão com TLS comparado a sem TLS
+	\item a diferença da duração foi ligeiramente maior na conexão com TLS, virtualmente insignificante
+\end{itemize}
 
 \end{document}
