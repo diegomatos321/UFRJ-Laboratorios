@@ -72,7 +72,7 @@ server.bind((HOST, PORT))
 server.listen(1)		
 \end{lstlisting}
 
-Como a aplicação está rodando em localhost, para praticidade o cliente não irá chegar o certificado do servidor. Isso não influencia na criptografia TLS.
+Como a aplicação está rodando em localhost, para praticidade o cliente não irá checar o certificado do servidor. Isso não influencia na criptografia TLS.
 
 \begin{lstlisting}[caption={Inicializacao do Cliente}]
 # Apenas para o caso com TLS
@@ -120,8 +120,37 @@ Já para o caso com TLS observamos na Figura~\ref{fig:captura-com-tls} a conexã
 Usando o wireshark no menu Statistics $\rightarrow$ Conversations $\rightarrow$ TCP, foram coletados dados das conexões com e sem TLS, portas 5001 e 5000 respectivamente, que foram salvos no arquivo dados.csv. Nessa tabela vemos: 
 \begin{itemize}
 	\item na conexão com TLS foram enviados 3 pacotes adicionais 
-	\item Foram 284\% bytes enviados a mais na conexão com TLS comparado a sem TLS
-	\item a diferença da duração foi ligeiramente maior na conexão com TLS, virtualmente insignificante
+	 \item O total de bytes trafegados com TLS foi de 4079 bytes, contra 1436 bytes sem TLS, um aumento de aproximadamente 284\%.
+    \item O tempo total da conexão com TLS foi de $38.2531 \times 10^{-4}s$, enquanto sem TLS foi de $6.086120 \times 10^{-4}s$. A diferença foi de cerca de $32.16698 \times 10^{-4}s$.
 \end{itemize}
+
+
+A utilização de TLS introduz necessariamente algum overhead, tanto em termos de quantidade de pacotes quanto de tempo de processamento e latência. Esse custo decorre principalmente de dois fatores:
+
+\begin{enumerate}
+    \item \textbf{Custo do Handshake}: o handshake emprega criptografia assimétrica, que é computacionalmente mais pesada que a simétrica. O envio de mensagens adicionais (ClientHello, ServerHello, troca de chaves e ChangeCipherSpec) aumenta o número de pacotes antes que a transmissão de dados da aplicação possa começar.
+    
+    Em conexões curtas, como no cenário deste experimento, o handshake representa a maior parte do custo total.
+
+    \item \textbf{Cifragens nos Dados de Aplicação}: embora a criptografia simétrica seja eficiente, ainda há um custo adicional para cifrar e decifrar cada bloco de dados transmitido. Esse custo é pequeno em máquinas modernas, mas existe.
+\end{enumerate}
+
+Outro fator relevante é que a análise foi realizada em \textit{localhost}. Nesse ambiente:
+
+\begin{itemize}
+    \item A latência de rede é praticamente nula.
+    \item O custo da criptografia domina a análise.
+    \item O impacto do handshake torna-se proporcionalmente maior, pois a transmissão de dados é muito rápida.
+\end{itemize}
+
+Em redes reais (WAN, Wi-Fi, enlaces de longa distância), o comportamento pode ser diferente:
+
+\begin{itemize}
+    \item O número extra de pacotes do TLS tem impacto maior devido ao tempo de ida e volta (RTT).
+    \item Em conexões persistentes (HTTP/2, long-lived connections), o custo do handshake pode ser amortizado ao longo de muitas mensagens.
+    \item Implementações otimizadas de TLS (como TLS~1.3) reduzem substancialmente o número de mensagens do handshake e melhoram a performance.
+\end{itemize}
+
+Embora o TLS adicione overhead perceptível em conexões muito curtas, especialmente em ambientes locais, ele é perfeitamente aceitável em situações reais, nas quais a segurança dos dados é imprescindível. Para a maioria dos sistemas modernos, o impacto adicional é pequeno diante dos benefícios proporcionados.
 
 \end{document}
